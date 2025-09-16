@@ -8,6 +8,7 @@
     fish
     git
     unzip
+    gnutar
     tree
     rsync
     gh
@@ -28,6 +29,14 @@
       # fish_add_path exists since fish 3.2 and is idempotent; it
       # stores ~/.local/bin in the universal fish_user_paths.
       fish_add_path ~/.local/bin
+
+      # Ensure Nix profile binaries are available to shebangs like `#!/usr/bin/env node`
+      # Source fish integration if present, then force-add common Nix profile paths
+      if test -f ~/.nix-profile/etc/profile.d/nix.fish
+        . ~/.nix-profile/etc/profile.d/nix.fish
+      end
+      fish_add_path ~/.nix-profile/bin
+      fish_add_path ~/.local/state/nix/profile/bin
     '';
   };
 
@@ -107,11 +116,12 @@
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
     # Make sure node (from nix) is on PATH for npm lifecycle scripts
-    export PATH="${pkgs.nodejs_22}/bin:$HOME/.local/bin:$PATH"
+    export PATH="${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:$HOME/.local/bin:$PATH"
+    export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
-    # Always try to install/upgrade to latest; ignore failures to avoid
-    # blocking the rest of the HM switch if npm registry is temporarily down.
-    "$NPM" i -g @anthropic-ai/claude-code@latest @openai/codex@latest || true
+    # Install each CLI independently so one failing postinstall doesn't block the other
+    "$NPM" i -g @anthropic-ai/claude-code@latest || true
+    "$NPM" i -g @openai/codex@latest || true
   '';
 
   xdg.configFile."codex/config.toml".text = ''
