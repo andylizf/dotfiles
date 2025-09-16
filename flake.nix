@@ -7,9 +7,12 @@
     # Use latest Home Manager
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    # Secrets management for Home Manager
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, sops-nix, ... }:
     let
       mkHome = { system, username, homeDirectory, modules ? [ ] }:
         home-manager.lib.homeManagerConfiguration {
@@ -24,7 +27,10 @@
               home.username = username;
               home.homeDirectory = homeDirectory;
             }
+            # Enable sops-nix Home Manager module (secrets support)
+            sops-nix.homeManagerModules.sops
             ./home/common.nix
+            ./home/secrets.nix
           ] ++ modules;
         };
     in

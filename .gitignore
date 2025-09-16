@@ -8,3 +8,12 @@ result*
 # macOS cruft
 .DS_Store
 
+# Secrets (never commit plaintext secrets; encrypted files only)
+secrets/*.yaml
+!secrets/secrets.example.yaml
+!secrets/secrets.yaml
+secrets/*.json
+secrets/*.txt
+secrets/*.env
+*.agekey
+.sops.yaml.local

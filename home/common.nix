@@ -67,6 +67,15 @@
     };
   };
 
+  # SSH: enable client config and manage authorized_keys (public, safe to commit)
+  programs.ssh.enable = true;
+  home.file.".ssh/authorized_keys" = {
+    text = ''
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOp3Vontmq0bBIlnQIeUFqk/UhwGSFm3f96MRdR2T6AQ andylizf@outlook.com
+    '';
+    mode = "0600";
+  };
+
   # Optional: set npm global prefix to ~/.local (safer PATH)
   home.activation.npmPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if command -v npm >/dev/null 2>&1; then
