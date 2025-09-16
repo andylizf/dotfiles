@@ -58,11 +58,14 @@
 
 
   # Install/update CLI tools from npm to ~/.local on each switch.
-  # This keeps them tracking npm latest while remaining user-scoped.
+  # Keep tracking npm latest while remaining user-scoped.
   home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] ''
     set -e
+    # Ensure user-level prefix and directories exist
     export npm_config_prefix="$HOME/.local"
-    export PATH="$HOME/.local/bin:$PATH"
+    mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
+    # Make sure node (from nix) is on PATH for npm lifecycle scripts
+    export PATH="${pkgs.nodejs_22}/bin:$HOME/.local/bin:$PATH"
     NPM="${pkgs.nodejs_22}/bin/npm"
     # Always try to install/upgrade to latest; ignore failures to avoid
     # blocking the rest of the HM switch if npm registry is temporarily down.
