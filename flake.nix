@@ -16,7 +16,7 @@
           pkgs = import nixpkgs {
             inherit system;
             config = {
-              allowUnfree = true; # needed for pkgs.claude-code
+              allowUnfree = true;
             };
           };
           modules = [

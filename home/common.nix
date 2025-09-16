@@ -38,6 +38,15 @@
       end
       fish_add_path ~/.nix-profile/bin
       fish_add_path ~/.local/state/nix/profile/bin
+
+      # First-login init: set Claude Code notif channel once (idempotent)
+      if status --is-interactive
+        if test -x ~/.local/bin/claude; and not test -e ~/.local/state/claude/prefs_set
+          ~/.local/bin/claude config set -g preferredNotifChannel terminal_bell; or true
+          mkdir -p ~/.local/state/claude
+          touch ~/.local/state/claude/prefs_set
+        end
+      end
     '';
   };
 
@@ -66,7 +75,7 @@
     fi
   '';
 
-  xdg.configFile."claude/code/settings.json".text = ''
+  home.file.".claude/settings.json".text = ''
     {
       "$schema": "https://json.schemastore.org/claude-code-settings.json",
       "includeCoAuthoredBy": false,
@@ -125,7 +134,7 @@
     "$NPM" i -g @openai/codex@latest || true
   '';
 
-  xdg.configFile."codex/config.toml".text = ''
+  home.file.".codex/config.toml".text = ''
     # Managed by Home Manager — local changes will be overwritten.
     [tools]
     web_search = true
@@ -135,10 +144,4 @@
     args = ["-y", "@upstash/context7-mcp"]
   '';
 
-  # Configure Claude Code if installed (no-op if missing)
-  home.activation.claudeConfig = lib.hm.dag.entryAfter [ "installDevCLIs" ] ''
-    if command -v claude >/dev/null 2>&1; then
-      claude config set --global preferredNotifChannel terminal_bell || true
-    fi
-  '';
 }
