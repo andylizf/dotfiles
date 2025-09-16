@@ -4,6 +4,9 @@ resources:
   cloud: gcp
   disk_size: 50
 
+file_mounts:
+  ~/.config/sops/age/keys.txt: ~/.config/sops/age/keys.txt
+
 envs:
   DOTFILES_REPO: https://github.com/andylizf/dotfiles.git
 
