@@ -60,6 +60,14 @@
           modules = [ ./home/linux.nix ];
         };
 
+        # Linux (x86_64) for root user (AWS setup phase)
+        root-linux = mkHome {
+          system = "x86_64-linux";
+          username = "root";
+          homeDirectory = "/root";
+          modules = [ ./home/linux.nix ];
+        };
+
         # macOS (Apple Silicon). If on Intel mac, switch to x86_64-darwin.
         andyl-darwin = mkHome {
           system = "aarch64-darwin";

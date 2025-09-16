@@ -21,6 +21,7 @@ You can also run Home Manager directly once Nix is installed:
 
 ```
 # macOS
+nix profile add github:nix-community/home-manager
 home-manager switch --flake .#andyl-darwin
 
 # Linux
