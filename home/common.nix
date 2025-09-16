@@ -67,19 +67,15 @@
     };
   };
 
-  # SSH: enable client config and manage authorized_keys (public, safe to commit)
-  programs.ssh.enable = true;
-  home.file.".ssh/authorized_keys" = {
-    text = ''
-      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOp3Vontmq0bBIlnQIeUFqk/UhwGSFm3f96MRdR2T6AQ andylizf@outlook.com
-    '';
-  };
 
   home.activation.fixSshPerms = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.ssh"
     chmod 700 "$HOME/.ssh" || true
-    if [ -f "$HOME/.ssh/authorized_keys" ]; then
-      chmod 600 "$HOME/.ssh/authorized_keys" || true
+    touch "$HOME/.ssh/authorized_keys"
+    chmod 600 "$HOME/.ssh/authorized_keys" || true
+    PUBKEY='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOp3Vontmq0bBIlnQIeUFqk/UhwGSFm3f96MRdR2T6AQ andylizf@outlook.com'
+    if ! grep -Fxq "$PUBKEY" "$HOME/.ssh/authorized_keys"; then
+      printf '%s\n' "$PUBKEY" >> "$HOME/.ssh/authorized_keys"
     fi
   '';
 
