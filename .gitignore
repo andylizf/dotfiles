@@ -1,0 +1,10 @@
+# Nix / Home Manager builds & symlinks
+result*
+*.drv
+
+# Direnv
+.direnv/
+
+# macOS cruft
+.DS_Store
+
