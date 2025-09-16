@@ -20,8 +20,6 @@
 
   programs.fish = {
     enable = true;
-    # Set fish as login shell where supported; may still require manual chsh.
-    setLoginShell = true;
     shellInit = ''
       # Claude Code env flag you requested
       set -gx CLAUDE_CODE_USE_VERTEX 1
