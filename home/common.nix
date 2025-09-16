@@ -15,6 +15,7 @@
     gh
     uv
     nodejs_22
+    direnv
   ];
 
   # Ensure ~/.local/bin is in PATH for user-managed tools if needed
@@ -23,8 +24,14 @@
   programs.fish = {
     enable = true;
     shellInit = ''
-      # Claude Code env flag you requested
+      # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 1
+      set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
+
+      # Direnv integration for fish
+      if command -v direnv >/dev/null 2>&1
+        direnv hook fish | source
+      end
 
       # Ensure npm global bin (~/.local/bin) is in PATH for fish.
       # fish_add_path exists since fish 3.2 and is idempotent; it
