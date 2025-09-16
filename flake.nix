@@ -61,10 +61,10 @@
         };
 
         # Linux (x86_64) for root user (AWS setup phase)
-        root-linux = mkHome {
+        ubuntu-linux = mkHome {
           system = "x86_64-linux";
-          username = "root";
-          homeDirectory = "/root";
+          username = "ubuntu";
+          homeDirectory = "/home/ubuntu";
           modules = [ ./home/linux.nix ];
         };
 
