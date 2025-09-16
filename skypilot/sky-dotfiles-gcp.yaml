@@ -38,14 +38,6 @@ setup: |
   cd "$HOME/dotfiles"
   nix run home-manager/master -- switch --flake .#gcpuser-linux
 
-  # Set fish as login shell using the Nix-installed fish, if present
-  FISH_BIN="$HOME/.nix-profile/bin/fish"
-  if [ -x "$FISH_BIN" ]; then
-    if ! grep -qx "$FISH_BIN" /etc/shells; then
-      echo "$FISH_BIN" | sudo tee -a /etc/shells >/dev/null
-    fi
-  fi
-
 run: |
   set -euxo pipefail
   . "$HOME/.nix-profile/etc/profile.d/nix.sh" || true

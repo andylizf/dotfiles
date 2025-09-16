@@ -56,6 +56,48 @@
     fi
   '';
 
+  xdg.configFile."claude/code/settings.json".text = ''
+    {
+      "$schema": "https://json.schemastore.org/claude-code-settings.json",
+      "includeCoAuthoredBy": false,
+      "permissions": {
+        "allow": [
+          "Bash(grep:*)",
+          "Read(*)",
+          "Bash(gh pr diff:*)",
+          "Bash(git pr diff view:*)",
+          "Bash(git pr view:*)",
+          "Bash(git pr review:*)",
+          "Bash(git pr list:*)",
+          "Bash(git pr describe:*)",
+          "Bash(gh issue view:*)",
+          "Bash(git log:*)",
+          "Bash(git rev-parse:*)",
+          "Bash(ls:*)",
+          "Bash(pwd:*)",
+          "Bash(cat:*)",
+          "Bash(aws s3 ls:*)",
+          "Bash(gsutil ls:*)",
+          "Bash(s5cmd ls:*)",
+          "Bash(du:*)",
+          "Bash(gh api repos/skypilot-org/skypilot/issues:*)",
+          "Bash(sleep:*)",
+          "Bash(sky status:*)",
+          "Bash(sky queue:*)",
+          "Bash(sky logs:*)",
+          "Bash(sky jobs logs:*)",
+          "Bash(sky jobs status:*)",
+          "Bash(sky serve status:*)",
+          "Bash(sky serve logs:*)",
+          "Bash(sky api status:*)",
+          "Bash(sky api info:*)",
+          "Bash(sky api logs:*)"
+        ]
+      },
+      "model": "opus",
+      "gitAttribution": false
+    }
+  '';
 
   # Install/update CLI tools from npm to ~/.local on each switch.
   # Keep tracking npm latest while remaining user-scoped.
@@ -70,6 +112,16 @@
     # Always try to install/upgrade to latest; ignore failures to avoid
     # blocking the rest of the HM switch if npm registry is temporarily down.
     "$NPM" i -g @anthropic-ai/claude-code@latest @openai/codex@latest || true
+  '';
+
+  xdg.configFile."codex/config.toml".text = ''
+    # Managed by Home Manager — local changes will be overwritten.
+    [tools]
+    web_search = true
+
+    [mcp_servers.context7]
+    command = "npx"
+    args = ["-y", "@upstash/context7-mcp"]
   '';
 
   # Configure Claude Code if installed (no-op if missing)
