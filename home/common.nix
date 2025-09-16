@@ -23,6 +23,11 @@
     shellInit = ''
       # Claude Code env flag you requested
       set -gx CLAUDE_CODE_USE_VERTEX 1
+
+      # Ensure npm global bin (~/.local/bin) is in PATH for fish.
+      # fish_add_path exists since fish 3.2 and is idempotent; it
+      # stores ~/.local/bin in the universal fish_user_paths.
+      fish_add_path ~/.local/bin
     '';
   };
 
