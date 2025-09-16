@@ -13,7 +13,12 @@
     let
       mkHome = { system, username, homeDirectory, modules ? [ ] }:
         home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs { inherit system; };
+          pkgs = import nixpkgs {
+            inherit system;
+            config = {
+              allowUnfree = true; # needed for pkgs.claude-code
+            };
+          };
           modules = [
             {
               home.username = username;
