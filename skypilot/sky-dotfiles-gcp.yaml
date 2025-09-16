@@ -44,8 +44,6 @@ setup: |
     if ! grep -qx "$FISH_BIN" /etc/shells; then
       echo "$FISH_BIN" | sudo tee -a /etc/shells >/dev/null
     fi
-    # try with sudo (for managed images) then fallback to self
-    sudo chsh -s "$FISH_BIN" "$USER" || chsh -s "$FISH_BIN" || true
   fi
 
 run: |
