@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-detect_target() {
+detect_os() {
   case "$(uname -s)" in
-    Darwin) echo "user-darwin" ;;
-    Linux)  echo "user-linux"  ;;
+    Darwin) echo "darwin" ;;
+    Linux)  echo "linux"  ;;
     *)      echo "" ;;
   esac
 }
 
-TARGET="$(detect_target)"
-if [[ -z "$TARGET" ]]; then
+OS_TARGET="$(detect_os)"
+if [[ -z "$OS_TARGET" ]]; then
   echo "Unsupported OS: $(uname -a)" >&2
   exit 1
 fi
@@ -25,5 +25,25 @@ fi
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Activating Home Manager configuration for user: $USER at $HOME"
-nix run home-manager/master -- switch --flake "$HERE#$TARGET" --override-input nixpkgs/lib.home.username "$USER" --override-input nixpkgs/lib.home.homeDirectory "$HOME"
+# Create a temporary site flake with current user info
+SITE_DIR="${TMPDIR:-/tmp}/dotfiles-site-$$"
+mkdir -p "$SITE_DIR"
+cat > "$SITE_DIR/flake.nix" <<EOF
+{
+  description = "Site-specific configuration for $USER@$(hostname)";
+  outputs = { ... }: {
+    homeModule = { ... }: {
+      home.username = "$USER";
+      home.homeDirectory = "$HOME";
+    };
+  };
+}
+EOF
+
+echo "Activating Home Manager configuration for $USER@$HOME"
+nix run home-manager/master -- switch \
+  --flake "$HERE#$OS_TARGET" \
+  --override-input site "path:$SITE_DIR"
+
+# Clean up
+rm -rf "$SITE_DIR"
