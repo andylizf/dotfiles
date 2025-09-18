@@ -36,35 +36,19 @@
     in
     {
       homeConfigurations = {
-        # Linux (x86_64)
-        andyl-linux = mkHome {
+        # Auto-detect user Linux (x86_64)
+        user-linux = mkHome {
           system = "x86_64-linux";
-          username = "andyl";
-          homeDirectory = "/home/andyl";
+          username = builtins.getEnv "USER";
+          homeDirectory = builtins.getEnv "HOME";
           modules = [ ./home/linux.nix ];
         };
 
-        # Linux (x86_64) for cloud VMs with default user 'ubuntu'
-        ubuntu-linux = mkHome {
-          system = "x86_64-linux";
-          username = "ubuntu";
-          homeDirectory = "/home/ubuntu";
-          modules = [ ./home/linux.nix ];
-        };
-
-        # Linux (x86_64) for SkyPilot GCP default user 'gcpuser'
-        gcpuser-linux = mkHome {
-          system = "x86_64-linux";
-          username = "gcpuser";
-          homeDirectory = "/home/gcpuser";
-          modules = [ ./home/linux.nix ];
-        };
-
-        # macOS (Apple Silicon). If on Intel mac, switch to x86_64-darwin.
-        andyl-darwin = mkHome {
+        # Auto-detect user macOS (Apple Silicon). If on Intel mac, switch to x86_64-darwin.
+        user-darwin = mkHome {
           system = "aarch64-darwin";
-          username = "andyl";
-          homeDirectory = "/Users/andyl";
+          username = builtins.getEnv "USER";
+          homeDirectory = builtins.getEnv "HOME";
           modules = [ ./home/darwin.nix ];
         };
       };
