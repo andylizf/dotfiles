@@ -37,7 +37,7 @@
         };
     in
     {
-      homeConfigurations = {
+      homeConfigurations = rec {
         # Generic Linux configuration (uses site module for user/home)
         linux = home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
@@ -51,6 +51,9 @@
             ./home/linux.nix
           ] ++ (if site ? homeModule then [ site.homeModule ] else []);
         };
+
+        # Alias for CI/hosts that expect "ubuntu-linux"
+        "ubuntu-linux" = linux;
 
         # Generic macOS configuration (uses site module for user/home)
         darwin = home-manager.lib.homeManagerConfiguration {
