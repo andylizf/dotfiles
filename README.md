@@ -2,15 +2,20 @@
 
 My Nix + Home Manager setup. Auto-adapts to any machine.
 
-## Setup
+## Setup (one command)
 
 ```bash
 git clone https://github.com/andylizf/dotfiles
 cd dotfiles
-./bootstrap.sh
+bash scripts/setup.sh
 ```
 
-Installs Nix via [Zero to Nix](https://zero-to-nix.com/) and auto-configures for current user/OS.
+The script will:
+- install Nix via the Zero to Nix installer if missing
+- detect OS (Linux/macOS) and source the Nix environment in non-login shells
+- auto-inject current USER/HOME via a temporary site flake (pure flakes; no `--impure`)
+- activate Home Manager for this machine
+- if `~/.config/sops/age/keys.txt` exists at setup time, secrets are enabled automatically; otherwise they are skipped so first‑run always succeeds
 
 ### For secrets
 
@@ -37,12 +42,14 @@ cursor --remote ssh-remote+dev-machine sky_workdir
 
 ## Secrets (sops-nix)
 
-We use sops-nix to encrypt and decrypt secrets. The initialization should only be run once on the local machine to generate the age key `~/.config/sops/age/keys.txt`.
+We use sops-nix to encrypt/decrypt secrets.
+
+The initialization should only be run once on the local machine to generate the age key `~/.config/sops/age/keys.txt`.
 
 ```bash
-# Initialize
+# Initialize keys locally (once)
 bash scripts/sops-init.sh
 
-# Edit
+# Edit encrypted file
 SOPS_EDITOR="cursor --wait" sops secrets/secrets.yaml
 ```

@@ -1,0 +1,25 @@
+name: dotfiles
+
+resources:
+  cloud: gcp
+  disk_size: 50
+
+file_mounts:
+  # Mount sops decryption key if present (optional)
+  ~/.config/sops/age/keys.txt: ~/.config/sops/age/keys.txt
+
+envs:
+  DOTFILES_REPO: https://github.com/andylizf/dotfiles.git
+
+setup: |
+  set -euxo pipefail
+  # Clone and run unified setup
+  if [ ! -d "$HOME/dotfiles/.git" ]; then
+    git clone "$DOTFILES_REPO" "$HOME/dotfiles"
+  fi
+  cd "$HOME/dotfiles"
+  bash scripts/setup.sh
+
+run: |
+  # Simple verification
+  echo "System ready. Run 'fish' to use fish shell."
