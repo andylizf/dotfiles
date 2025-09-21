@@ -58,7 +58,7 @@ install_nix() {
 
   if ! command -v nix >/dev/null 2>&1; then
     log "Installing single-user Nix…"
-    sh <(curl --proto '=https' --tlsv1.2 -sSf https://nixos.org/nix/install) --no-daemon --yes
+    sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) --no-daemon --yes
   fi
 
   if [ -f "$profile_sh" ]; then
