@@ -1,8 +1,7 @@
 name: dotfiles
 
 resources:
-  cloud: gcp
-  disk_size: 50
+  cloud: ssh
 
 file_mounts:
   # Mount sops decryption key if present (optional)

@@ -10,6 +10,12 @@ set -euo pipefail
 : "${DOTFILES_REPO:=https://github.com/andylizf/dotfiles.git}"
 : "${DOTFILES_DIR:=$HOME/dotfiles}"
 
+# Some environments (e.g., SkyPilot setup) run as root with USER unset; fall back to `id -un`.
+RUN_USER="${USER:-$(id -un)}"
+if [ "$RUN_USER" = "root" ] && [ "${HOME:-/root}" != "/root" ]; then
+  RUN_USER="$(basename "${HOME:-/root}")"
+fi
+
 log() { printf "[setup] %s\n" "$*"; }
 
 install_deps() {
@@ -74,10 +80,10 @@ main() {
   fi
   cat > "$SITE_DIR/flake.nix" <<EOF
 {
-  description = "Site-specific configuration for $USER@$(hostname)";
+  description = "Site-specific configuration for $RUN_USER@$(hostname)";
   outputs = { ... }: {
     homeModule = { ... }: {
-      home.username = "$USER";
+      home.username = "$RUN_USER";
       home.homeDirectory = "$HOME";
       $ENABLE_SECRETS_LINE
     };
