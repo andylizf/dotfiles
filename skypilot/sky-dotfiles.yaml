@@ -15,6 +15,9 @@ setup: |
   # Clone and run unified setup
   if [ ! -d "$HOME/dotfiles/.git" ]; then
     git clone "$DOTFILES_REPO" "$HOME/dotfiles"
+  else
+    git -C "$HOME/dotfiles" fetch --all -q
+    git -C "$HOME/dotfiles" reset --hard origin/main -q
   fi
   cd "$HOME/dotfiles"
   bash scripts/setup.sh
