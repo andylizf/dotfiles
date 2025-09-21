@@ -44,6 +44,9 @@ install_nix() {
     # shellcheck disable=SC1090
     . "$profile_sh" || true
   fi
+  if [ -d "$HOME/.nix-profile/bin" ]; then
+    export PATH="$HOME/.nix-profile/bin:$PATH"
+  fi
 
   # If a previous multi-user install exists (root-owned /nix), remove it so we can
   # reinstall as a single user. This keeps SkyPilot jobs from tripping over daemon locks.
@@ -61,6 +64,9 @@ install_nix() {
   if [ -f "$profile_sh" ]; then
     # shellcheck disable=SC1090
     . "$profile_sh"
+  fi
+  if [ -d "$HOME/.nix-profile/bin" ]; then
+    export PATH="$HOME/.nix-profile/bin:$PATH"
   fi
 
   ensure_nix_features
