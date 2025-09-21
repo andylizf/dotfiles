@@ -15,6 +15,9 @@ RUN_USER="${USER:-$(id -un)}"
 if [ "$RUN_USER" = "root" ] && [ "${HOME:-/root}" != "/root" ]; then
   RUN_USER="$(basename "${HOME:-/root}")"
 fi
+if [ -z "${USER:-}" ]; then
+  export USER="$RUN_USER"
+fi
 
 log() { printf "[setup] %s\n" "$*"; }
 
