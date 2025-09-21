@@ -27,6 +27,12 @@ install_deps() {
 }
 
 install_nix() {
+  local profile_sh="$HOME/.nix-profile/etc/profile.d/nix.sh"
+  if [ -f "$profile_sh" ]; then
+    # shellcheck disable=SC1090
+    . "$profile_sh" || true
+  fi
+
   # If a previous multi-user install exists (root-owned /nix), remove it so we can
   # reinstall as a single user. This keeps SkyPilot jobs from tripping over daemon locks.
   if [ -d /nix/var/nix/db ] && [ ! -w /nix/var/nix/db ]; then
@@ -40,9 +46,9 @@ install_nix() {
     sh <(curl --proto '=https' --tlsv1.2 -sSf https://nixos.org/nix/install) --no-daemon --yes
   fi
 
-  if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  if [ -f "$profile_sh" ]; then
     # shellcheck disable=SC1090
-    . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+    . "$profile_sh"
   fi
 }
 
