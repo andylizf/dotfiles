@@ -27,18 +27,20 @@ install_deps() {
 }
 
 install_nix() {
-  if ! command -v nix >/dev/null 2>&1; then
-    log "Installing Nix with Zero to Nix installer…"
-    curl --proto '=https' --tlsv1.2 -sSf -L \
-      https://install.determinate.systems/nix | sh -s -- install --no-confirm
+  # If a previous multi-user install exists (root-owned /nix), remove it so we can
+  # reinstall as a single user. This keeps SkyPilot jobs from tripping over daemon locks.
+  if [ -d /nix/var/nix/db ] && [ ! -w /nix/var/nix/db ]; then
+    log "Removing existing multi-user Nix installation…"
+    sudo sh -c 'systemctl stop nix-daemon 2>/dev/null' || true
+    sudo rm -rf /nix /etc/nix /etc/profile.d/nix-daemon.sh /etc/profile.d/nix.sh
   fi
 
-  # Source daemon profile if present (multi-user) else single-user profile.
-  # Zero to Nix generally wires this up, but sourcing helps in non-login shells (e.g., CI/SkyPilot).
-  if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
-    # shellcheck disable=SC1091
-    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh || true
-  elif [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  if ! command -v nix >/dev/null 2>&1; then
+    log "Installing single-user Nix…"
+    sh <(curl --proto '=https' --tlsv1.2 -sSf https://nixos.org/nix/install) --no-daemon --yes
+  fi
+
+  if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
     # shellcheck disable=SC1090
     . "$HOME/.nix-profile/etc/profile.d/nix.sh"
   fi
