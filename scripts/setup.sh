@@ -21,6 +21,15 @@ fi
 
 log() { printf "[setup] %s\n" "$*"; }
 
+ensure_nix_features() {
+  local nix_conf="$HOME/.config/nix/nix.conf"
+  mkdir -p "$(dirname "$nix_conf")"
+  if ! grep -q 'nix-command' "$nix_conf" 2>/dev/null; then
+    log "Enabling nix-command/flakes in $nix_conf…"
+    printf 'experimental-features = nix-command flakes\n' >>"$nix_conf"
+  fi
+}
+
 install_deps() {
   if command -v apt-get >/dev/null 2>&1; then
     log "Installing apt deps (curl git)…"
@@ -53,6 +62,8 @@ install_nix() {
     # shellcheck disable=SC1090
     . "$profile_sh"
   fi
+
+  ensure_nix_features
 }
 
 ensure_repo() {
