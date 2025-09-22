@@ -42,6 +42,14 @@ ensure_shell_inits() {
   done
 }
 
+register_login_shell() {
+  local fish_path="$HOME/.nix-profile/bin/fish"
+  if [ -x "$fish_path" ] && ! grep -qxF "$fish_path" /etc/shells 2>/dev/null; then
+    log "Registering $fish_path in /etc/shells…"
+    printf '%s\n' "$fish_path" | sudo tee -a /etc/shells >/dev/null
+  fi
+}
+
 install_deps() {
   if command -v apt-get >/dev/null 2>&1; then
     log "Installing apt deps (curl git)…"
@@ -83,6 +91,7 @@ install_nix() {
 
   ensure_nix_features
   ensure_shell_inits
+  register_login_shell
 }
 
 ensure_repo() {
