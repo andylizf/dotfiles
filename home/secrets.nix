@@ -29,6 +29,16 @@ in
       mode = "0600";
     };
 
+    # 3) AWS credentials/config (optional)
+    sops.secrets."aws/credentials" = {
+      path = "${config.home.homeDirectory}/.aws/credentials";
+      mode = "0600";
+    };
+    sops.secrets."aws/config" = {
+      path = "${config.home.homeDirectory}/.aws/config";
+      mode = "0600";
+    };
+
     # 2) Optional tokens (examples)
     # sops.secrets."tokens/claude" = {
     #   path = "${config.home.homeDirectory}/.config/claude/token";

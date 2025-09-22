@@ -101,6 +101,11 @@
     chmod 700 "$HOME/.config/gcloud" || true
   '';
 
+  home.activation.ensureAwsDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.aws"
+    chmod 700 "$HOME/.aws" || true
+  '';
+
   home.file.".claude/settings.json".text = ''
     {
       "$schema": "https://json.schemastore.org/claude-code-settings.json",
