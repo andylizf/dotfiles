@@ -51,5 +51,6 @@ The initialization should only be run once on the local machine to generate the 
 bash scripts/sops-init.sh
 
 # Edit encrypted file
+export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 SOPS_EDITOR="cursor --wait" sops secrets/secrets.yaml
 ```
