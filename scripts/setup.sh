@@ -30,6 +30,18 @@ ensure_nix_features() {
   fi
 }
 
+ensure_shell_inits() {
+  local rc
+  local snippet='if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then\n  . "$HOME/.nix-profile/etc/profile.d/nix.sh"\nfi'
+
+  for rc in "$HOME/.profile" "$HOME/.bashrc"; do
+    if [ ! -f "$rc" ] || ! grep -Fq '.nix-profile/etc/profile.d/nix.sh' "$rc"; then
+      printf '\n%s\n' "$snippet" >>"$rc"
+      log "Added nix profile sourcing to $rc"
+    fi
+  done
+}
+
 install_deps() {
   if command -v apt-get >/dev/null 2>&1; then
     log "Installing apt deps (curl git)…"
@@ -70,6 +82,7 @@ install_nix() {
   fi
 
   ensure_nix_features
+  ensure_shell_inits
 }
 
 ensure_repo() {
