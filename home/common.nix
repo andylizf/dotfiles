@@ -5,6 +5,8 @@
 
   # Core packages common to Linux and macOS
   home.packages = with pkgs; [
+    awscli2
+    google-cloud-sdk
     fish
     git
     unzip
