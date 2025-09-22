@@ -46,7 +46,7 @@ register_login_shell() {
   local fish_path="$HOME/.nix-profile/bin/fish"
   if [ -x "$fish_path" ] && ! grep -qxF "$fish_path" /etc/shells 2>/dev/null; then
     log "Registering $fish_path in /etc/shells…"
-    printf '%s\n' "$fish_path" | sudo tee -a /etc/shells >/dev/null
+    sudo sh -c "printf '%s\\n' '$fish_path' >> /etc/shells"
   fi
 }
 
