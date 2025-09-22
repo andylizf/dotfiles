@@ -147,6 +147,8 @@ EOF
     --override-input site "path:$SITE_DIR"
 
   rm -rf "$SITE_DIR"
+
+  register_login_shell
 }
 
 main "$@"
