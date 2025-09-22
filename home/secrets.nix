@@ -23,6 +23,12 @@ in
       mode = "0600";
     };
 
+    # 2) GCP ADC credentials for local tooling (optional)
+    sops.secrets."gcloud/application_default_credentials" = {
+      path = "${config.home.homeDirectory}/.config/gcloud/application_default_credentials.json";
+      mode = "0600";
+    };
+
     # 2) Optional tokens (examples)
     # sops.secrets."tokens/claude" = {
     #   path = "${config.home.homeDirectory}/.config/claude/token";

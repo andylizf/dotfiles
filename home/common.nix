@@ -94,6 +94,11 @@
     fi
   '';
 
+  home.activation.ensureGcloudDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.config/gcloud"
+    chmod 700 "$HOME/.config/gcloud" || true
+  '';
+
   home.file.".claude/settings.json".text = ''
     {
       "$schema": "https://json.schemastore.org/claude-code-settings.json",
