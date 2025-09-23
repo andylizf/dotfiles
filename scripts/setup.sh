@@ -32,7 +32,9 @@ ensure_nix_features() {
 
 ensure_shell_inits() {
   local rc
-  local snippet='if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then\n  . "$HOME/.nix-profile/etc/profile.d/nix.sh"\nfi'
+  local snippet='if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+fi'
 
   for rc in "$HOME/.profile" "$HOME/.bashrc"; do
     if [ ! -f "$rc" ] || ! grep -Fq '.nix-profile/etc/profile.d/nix.sh' "$rc"; then
