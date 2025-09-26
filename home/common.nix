@@ -187,7 +187,7 @@
 
       # Log payloads so we can confirm the CLI actually invokes the script.
       log_file="$HOME/.codex/notify_bell.log"
-      printf '%(%Y-%m-%d %H:%M:%S)T %s\n' -1 "${1:-<no-payload>}" >> "$log_file" 2>/dev/null || true
+      printf '%(%Y-%m-%d %H:%M:%S)T %s\n' -1 "''${1:-<no-payload>}" >> "$log_file" 2>/dev/null || true
 
       ring_bell() {
         local dest="$1"
