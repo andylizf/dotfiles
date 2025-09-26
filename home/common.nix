@@ -53,11 +53,6 @@
       fish_add_path ~/.local/state/nix/profile/bin
 
       # Sync Hugging Face token into default cache for CLI detection
-      if test -f ~/.config/huggingface/token
-        mkdir -p ~/.cache/huggingface
-        cp ~/.config/huggingface/token ~/.cache/huggingface/token
-        chmod 600 ~/.cache/huggingface/token || true
-      end
 
       # First-login init: set Claude Code notif channel once (idempotent)
       if status --is-interactive
@@ -117,6 +112,13 @@
   home.activation.ensureAwsDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.aws"
     chmod 700 "$HOME/.aws" || true
+  '';
+
+  home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ -f "$HOME/.config/huggingface/token" ]; then
+      mkdir -p "$HOME/.cache/huggingface"
+      install -m 600 "$HOME/.config/huggingface/token" "$HOME/.cache/huggingface/token"
+    fi
   '';
 
   home.file.".claude/settings.json".text = ''
