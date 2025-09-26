@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 {
   # Set once and bump intentionally when adopting changed defaults.
   home.stateVersion = "24.05";
