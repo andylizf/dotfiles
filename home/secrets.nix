@@ -39,6 +39,24 @@ in
       mode = "0600";
     };
 
+    # 4) GitHub credential store (Personal Access Token, etc.)
+    sops.secrets."github/git-credentials" = {
+      path = "${config.home.homeDirectory}/.git-credentials";
+      mode = "0600";
+    };
+
+    # 5) GitHub CLI auth config (hosts.yml)
+    sops.secrets."github/gh-hosts" = {
+      path = "${config.home.homeDirectory}/.config/gh/hosts.yml";
+      mode = "0600";
+    };
+
+    # 6) Hugging Face CLI token (used for HF_TOKEN)
+    sops.secrets."huggingface/token" = {
+      path = "${config.home.homeDirectory}/.config/huggingface/token";
+      mode = "0600";
+    };
+
     # 2) Optional tokens (examples)
     # sops.secrets."tokens/claude" = {
     #   path = "${config.home.homeDirectory}/.config/claude/token";

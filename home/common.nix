@@ -18,6 +18,7 @@
     uv
     nodejs_22
     direnv
+    python312Packages.huggingface-hub
   ];
 
   # Ensure ~/.local/bin is in PATH for user-managed tools if needed
@@ -29,6 +30,9 @@
       # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 1
       set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
+      if test -f ~/.config/huggingface/token
+        set -gx HF_TOKEN (string trim (cat ~/.config/huggingface/token))
+      end
 
       # Direnv integration for fish
       if command -v direnv >/dev/null 2>&1
@@ -47,6 +51,13 @@
       end
       fish_add_path ~/.nix-profile/bin
       fish_add_path ~/.local/state/nix/profile/bin
+
+      # Sync Hugging Face token into default cache for CLI detection
+      if test -f ~/.config/huggingface/token
+        mkdir -p ~/.cache/huggingface
+        cp ~/.config/huggingface/token ~/.cache/huggingface/token
+        chmod 600 ~/.cache/huggingface/token || true
+      end
 
       # First-login init: set Claude Code notif channel once (idempotent)
       if status --is-interactive
@@ -68,11 +79,13 @@
       push.default = "current";
       branch.autoSetupMerge = false;
       init.defaultBranch = "main";
-      credential.helper = "store";
+      credential.helper = "!gh auth git-credential";
+      credential."https://huggingface.co".helper = "store";
       core.editor = "cursor --wait";
       pull.rebase = true;
       rebase.autoStash = true;
       color.ui = "auto";
+      core.sshCommand = "ssh -i ~/.ssh/id_ed25519 -F ~/.ssh/config";
     };
   };
 
