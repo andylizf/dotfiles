@@ -32,7 +32,10 @@ ensure_nix_features() {
 
 ensure_shell_inits() {
   local rc
-  local snippet='if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+  local snippet='if [ -z "${USER-}" ]; then
+  export USER="$(id -un)"
+fi
+if [ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
   . "$HOME/.nix-profile/etc/profile.d/nix.sh"
 fi'
 
