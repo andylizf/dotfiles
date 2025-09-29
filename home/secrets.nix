@@ -9,7 +9,24 @@ in
     description = "Enable sops-nix secrets management for this user.";
   };
 
-  config = lib.mkIf cfg.enableSecrets {
+  config = lib.mkIf cfg.enableSecrets (let
+    sopsExec = lib.attrByPath [ "systemd" "user" "services" "sops-nix" "Service" "ExecStart" ] null config;
+    systemctlPathOrNull = lib.attrByPath [ "systemd" "user" "systemctlPath" ] null config;
+    systemctlCheckSnippet =
+      if systemctlPathOrNull != null then ''
+        if [ -x ${systemctlPathOrNull} ]; then
+          ${systemctlPathOrNull} --user is-system-running >/dev/null 2>&1
+        else
+          false
+        fi
+      '' else ''
+        if command -v systemctl >/dev/null 2>&1; then
+          systemctl --user is-system-running >/dev/null 2>&1
+        else
+          false
+        fi
+      '';
+  in {
     # Use sops-nix to decrypt secret files to user directory.
     # Convention: encrypted files are in ../secrets/secrets.yaml
     # Age private key expected at ~/.config/sops/age/keys.txt
@@ -66,5 +83,14 @@ in
     #   path = "${config.home.homeDirectory}/.config/openai/token";
     #   mode = "0600";
     # };
-  };
+    home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
+      (lib.hm.dag.entryAfter [ "sops-nix" ] ''
+        if ! (
+          ${systemctlCheckSnippet}
+        ); then
+          echo "[dotfiles] user systemd unavailable; installing secrets via sops-nix manually"
+          ${sopsExec}
+        fi
+      '');
+  });
 }
