@@ -89,6 +89,11 @@ in
           ${systemctlCheckSnippet}
         ); then
           echo "[dotfiles] user systemd unavailable; installing secrets via sops-nix manually"
+          if [ -z "${XDG_RUNTIME_DIR:-}" ]; then
+            export XDG_RUNTIME_DIR="$HOME/.local/run"
+            mkdir -p "$XDG_RUNTIME_DIR"
+            chmod 700 "$XDG_RUNTIME_DIR" || true
+          fi
           ${sopsExec}
         fi
       '');
