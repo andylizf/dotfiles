@@ -82,8 +82,15 @@ install_nix() {
   fi
 
   if ! command -v nix >/dev/null 2>&1; then
-    log "Installing single-user Nix…"
-    sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) --no-daemon --yes
+    local install_flags=(--yes)
+    if [ "$(id -u)" -eq 0 ]; then
+      log "Installing multi-user Nix…"
+      install_flags+=(--daemon)
+    else
+      log "Installing single-user Nix…"
+      install_flags+=(--no-daemon)
+    fi
+    sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) "${install_flags[@]}"
   fi
 
   if [ -f "$profile_sh" ]; then
