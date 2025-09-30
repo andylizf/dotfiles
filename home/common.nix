@@ -64,6 +64,8 @@
           touch ~/.local/state/claude/prefs_set
         end
       end
+
+      alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
   };
 
