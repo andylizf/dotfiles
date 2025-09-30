@@ -10,8 +10,10 @@
     fish
     git
     unzip
+    zip
     gnutar
     gzip
+    less
     tree
     rsync
     gh

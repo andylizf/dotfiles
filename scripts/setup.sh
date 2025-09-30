@@ -19,6 +19,17 @@ if [ -z "${USER:-}" ]; then
   export USER="$RUN_USER"
 fi
 
+HOST_NAME="$(
+  if command -v hostname >/dev/null 2>&1; then
+    hostname
+  elif [ -r /proc/sys/kernel/hostname ]; then
+    cat /proc/sys/kernel/hostname
+  else
+    uname -n 2>/dev/null || echo "unknown-host"
+  fi
+)"
+HOST_NAME="${HOST_NAME:-unknown-host}"
+
 log() { printf "[setup] %s\n" "$*"; }
 
 ensure_nix_features() {
@@ -142,7 +153,7 @@ main() {
   fi
   cat > "$SITE_DIR/flake.nix" <<EOF
 {
-  description = "Site-specific configuration for $RUN_USER@$(hostname)";
+  description = "Site-specific configuration for $RUN_USER@$HOST_NAME";
   outputs = { ... }: {
     homeModule = { ... }: {
       home.username = "$RUN_USER";
