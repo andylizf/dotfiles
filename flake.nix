@@ -2,71 +2,53 @@
   description = "Andy Lee's dotfiles with Nix Flakes + Home Manager";
 
   inputs = {
-    # Track latest unstable for freshest packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    # Use latest Home Manager
+
     home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    # Secrets management for Home Manager
+
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-    # Site-specific configuration (can be overridden with --override-input)
+
     site.url = "path:./site-default";
+
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, sops-nix, site, ... }:
-    let
-      mkHome = { system, username, homeDirectory, modules ? [ ] }:
-        home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            inherit system;
-            config = {
-              allowUnfree = true;
+  outputs = inputs@{ self, nixpkgs, home-manager, sops-nix, site, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" "aarch64-darwin" ];
+
+      perSystem = { system, ... }: { };  # placeholders for future dev envs
+
+      flake = let
+        mkHome = { system, extraModules ? [ ] }:
+          home-manager.lib.homeManagerConfiguration {
+            pkgs = import nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
             };
+            modules = baseModules ++ extraModules ++ siteModules;
           };
-          modules = [
-            {
-              home.username = username;
-              home.homeDirectory = homeDirectory;
-            }
-            # Enable sops-nix Home Manager module (secrets support)
-            sops-nix.homeManagerModules.sops
-            ./home/common.nix
-            ./home/secrets.nix
-          ] ++ modules;
-        };
-    in
-    {
-      homeConfigurations = rec {
-        # Generic Linux configuration (uses site module for user/home)
-        linux = home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            system = "x86_64-linux";
-            config.allowUnfree = true;
-          };
-          modules = [
-            sops-nix.homeManagerModules.sops
-            ./home/common.nix
-            ./home/secrets.nix
-            ./home/linux.nix
-          ] ++ (if site ? homeModule then [ site.homeModule ] else []);
-        };
 
-        # Alias for CI/hosts that expect "ubuntu-linux"
-        "ubuntu-linux" = linux;
+        baseModules = [
+          sops-nix.homeManagerModules.sops
+          ./home/common.nix
+          ./home/secrets.nix
+        ];
 
-        # Generic macOS configuration (uses site module for user/home)
-        darwin = home-manager.lib.homeManagerConfiguration {
-          pkgs = import nixpkgs {
-            system = "aarch64-darwin";
-            config.allowUnfree = true;
-          };
-          modules = [
-            sops-nix.homeManagerModules.sops
-            ./home/common.nix
-            ./home/secrets.nix
-            ./home/darwin.nix
-          ] ++ (if site ? homeModule then [ site.homeModule ] else []);
+        siteModules = if site ? homeModule then [ site.homeModule ] else [];
+      in {
+        homeConfigurations = let
+          linuxModules = [ ./home/linux.nix ];
+          darwinModules = [ ./home/darwin.nix ];
+          linuxConfig = mkHome { system = "x86_64-linux"; extraModules = linuxModules; };
+          darwinConfig = mkHome { system = "aarch64-darwin"; extraModules = darwinModules; };
+        in {
+          linux = linuxConfig;
+          "ubuntu-linux" = linuxConfig;
+          darwin = darwinConfig;
         };
       };
     };
