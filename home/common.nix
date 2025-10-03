@@ -80,6 +80,9 @@
       init.defaultBranch = "main";
       credential.helper = "!gh auth git-credential";
       credential."https://huggingface.co".helper = "store";
+      credential."https://git.overleaf.com".helper =
+        "store --file ${config.home.homeDirectory}/.config/overleaf/git-credentials";
+      credential."https://git.overleaf.com".username = "git";
       core.editor = "cursor --wait";
       pull.rebase = true;
       rebase.autoStash = true;
@@ -125,6 +128,25 @@
     fi
   '';
 
+  home.activation.ensureOverleafConfigDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.config/overleaf"
+    chmod 700 "$HOME/.config/overleaf" || true
+  '';
+
+  home.activation.syncOverleafGitCredentials = lib.hm.dag.entryAfter [ "ensureOverleafConfigDir" ] ''
+    token_file="$HOME/.config/overleaf/git-token"
+    cred_file="$HOME/.config/overleaf/git-credentials"
+    if [ -f "$token_file" ]; then
+      token="$(tr -d '\n\r' < "$token_file")"
+      if [ -n "$token" ]; then
+        tmp_file="${cred_file}.tmp"
+        printf 'https://git:%s@git.overleaf.com\n' "$token" > "$tmp_file"
+        chmod 600 "$tmp_file"
+        mv "$tmp_file" "$cred_file"
+      fi
+    fi
+  '';
+
   home.file.".claude/settings.json".text = ''
     {
       "$schema": "https://json.schemastore.org/claude-code-settings.json",
@@ -163,7 +185,7 @@
           "Bash(sky api logs:*)"
         ]
       },
-      "model": "opus",
+      "alwaysThinkingEnabled": true,
       "gitAttribution": false
     }
   '';
@@ -199,7 +221,7 @@
   '';
 
   # Ensure VS Code remote terminals default to Nix-provided fish shell.
-  home.file.".vscode-server/data/Machine/settings.json".text =
+  home.file.".cursor-server/data/Machine/settings.json".text =
     builtins.toJSON {
       "terminal.integrated.profiles.linux" = {
         "fish-nix" = {

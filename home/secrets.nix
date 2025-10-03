@@ -74,6 +74,12 @@ in
       mode = "0600";
     };
 
+    # 7) Overleaf Git token (used for HTTPS remotes)
+    sops.secrets."overleaf/git-token" = {
+      path = "${config.home.homeDirectory}/.config/overleaf/git-token";
+      mode = "0600";
+    };
+
     # 2) Optional tokens (examples)
     # sops.secrets."tokens/claude" = {
     #   path = "${config.home.homeDirectory}/.config/claude/token";
