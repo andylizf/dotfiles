@@ -139,7 +139,7 @@
     if [ -f "$token_file" ]; then
       token="$(tr -d '\n\r' < "$token_file")"
       if [ -n "$token" ]; then
-        tmp_file="${cred_file}.tmp"
+        tmp_file="$cred_file.tmp"
         printf 'https://git:%s@git.overleaf.com\n' "$token" > "$tmp_file"
         chmod 600 "$tmp_file"
         mv "$tmp_file" "$cred_file"
