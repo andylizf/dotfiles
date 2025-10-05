@@ -59,7 +59,7 @@
       # First-login init: set Claude Code notif channel once (idempotent)
       if status --is-interactive
         if test -x ~/.local/bin/claude; and not test -e ~/.local/state/claude/prefs_set
-          ~/.local/bin/claude config set -g preferredNotifChannel terminal_bell; or true
+          ~/.local/bin/claude config set --global preferredNotifChannel terminal_bell; or true
           mkdir -p ~/.local/state/claude
           touch ~/.local/state/claude/prefs_set
         end
