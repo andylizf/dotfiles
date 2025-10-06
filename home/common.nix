@@ -103,6 +103,13 @@
     fi
   '';
 
+  home.activation.ensureSshConfig = lib.hm.dag.entryAfter [ "fixSshPerms" ] ''
+    if [ ! -f "$HOME/.ssh/config" ]; then
+      touch "$HOME/.ssh/config"
+      chmod 600 "$HOME/.ssh/config" || true
+    fi
+  '';
+
   # Optional: set npm global prefix to ~/.local (safer PATH)
   home.activation.npmPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if command -v npm >/dev/null 2>&1; then
