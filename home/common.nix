@@ -128,6 +128,11 @@
     chmod 700 "$HOME/.aws" || true
   '';
 
+  home.activation.ensureDockerConfigDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.docker"
+    chmod 700 "$HOME/.docker" || true
+  '';
+
   home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ -f "$HOME/.config/huggingface/token" ]; then
       mkdir -p "$HOME/.cache/huggingface"

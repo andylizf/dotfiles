@@ -80,6 +80,12 @@ in
       mode = "0600";
     };
 
+    # 8) Docker registry credentials (~/.docker/config.json)
+    sops.secrets."docker/config.json" = {
+      path = "${config.home.homeDirectory}/.docker/config.json";
+      mode = "0600";
+    };
+
     # 2) Optional tokens (examples)
     # sops.secrets."tokens/claude" = {
     #   path = "${config.home.homeDirectory}/.config/claude/token";
