@@ -36,7 +36,7 @@ ensure_nix_features() {
   local nix_conf="$HOME/.config/nix/nix.conf"
   mkdir -p "$(dirname "$nix_conf")"
   if ! grep -q 'nix-command' "$nix_conf" 2>/dev/null; then
-    log "Enabling nix-command/flakes in $nix_conf…"
+    log "Enabling nix-command/flakes in $nix_conf..."
     printf 'experimental-features = nix-command flakes\n' >>"$nix_conf"
   fi
 }
@@ -61,14 +61,14 @@ fi'
 register_login_shell() {
   local fish_path="$HOME/.nix-profile/bin/fish"
   if [ -x "$fish_path" ] && ! grep -qxF "$fish_path" /etc/shells 2>/dev/null; then
-    log "Registering $fish_path in /etc/shells…"
+    log "Registering $fish_path in /etc/shells..."
     sudo sh -c "printf '%s\\n' '$fish_path' >> /etc/shells"
   fi
 }
 
 install_deps() {
   if command -v apt-get >/dev/null 2>&1; then
-    log "Installing apt deps (curl git)…"
+    log "Installing apt deps (curl git)..."
     sudo apt-get update -y
     sudo apt-get install -y curl git
   fi
@@ -90,21 +90,29 @@ install_nix() {
     install_multi_user="true"
   fi
 
-  # If we are about to install a single-user Nix but a multi-user install exists,
-  # remove it so we avoid daemon lock issues (common on ephemeral Linux hosts).
-  if [ "$install_multi_user" = "false" ] && [ -d /nix/var/nix/db ] && [ ! -w /nix/var/nix/db ]; then
-    log "Removing existing multi-user Nix installation…"
+  # If we are about to install single-user on Linux but a multi-user install exists,
+  # remove it to avoid daemon locks on ephemeral hosts.
+  if [ "$sys" = "Linux" ] && [ "$install_multi_user" = "false" ] && [ -d /nix/var/nix/db ] && [ ! -w /nix/var/nix/db ]; then
+    log "Removing existing multi-user Nix installation..."
     sudo sh -c 'systemctl stop nix-daemon 2>/dev/null' || true
     sudo rm -rf /nix /etc/nix /etc/profile.d/nix-daemon.sh /etc/profile.d/nix.sh
   fi
 
   if ! command -v nix >/dev/null 2>&1; then
+    # macOS: upstream installer requires multi-user; keep it simple and exit after install.
+    if [ "$sys" = "Darwin" ]; then
+      log "Installing multi-user Nix..."
+      sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) --daemon --yes
+      log "Nix installed. Open a new terminal and rerun this script."
+      exit 0
+    fi
+    # Linux: choose daemon if root, otherwise single-user
     local install_flags=(--yes)
     if [ "$install_multi_user" = "true" ]; then
-      log "Installing multi-user Nix…"
+      log "Installing multi-user Nix..."
       install_flags+=(--daemon)
     else
-      log "Installing single-user Nix…"
+      log "Installing single-user Nix..."
       install_flags+=(--no-daemon)
     fi
     sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) "${install_flags[@]}"
@@ -125,18 +133,18 @@ install_nix() {
 
 ensure_repo() {
   if [ -d "$DOTFILES_DIR/.git" ]; then
-    log "Updating existing repo at $DOTFILES_DIR…"
+    log "Updating existing repo at $DOTFILES_DIR..."
     git -C "$DOTFILES_DIR" fetch --all -q
     git -C "$DOTFILES_DIR" checkout -B main origin/main -q
     git -C "$DOTFILES_DIR" reset --hard origin/main -q
   else
-    log "Cloning repo to $DOTFILES_DIR…"
+    log "Cloning repo to $DOTFILES_DIR..."
     git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
   fi
 }
 
 main() {
-  log "Starting unified setup…"
+  log "Starting unified setup..."
   install_deps
   install_nix
   ensure_repo
@@ -170,7 +178,7 @@ main() {
 }
 EOF
 
-  log "Activating Home Manager (#$OS_TARGET) with site override…"
+  log "Activating Home Manager (#$OS_TARGET) with site override..."
   nix run home-manager/master -- switch \
     --flake ".#$OS_TARGET" \
     --override-input site "path:$SITE_DIR"
