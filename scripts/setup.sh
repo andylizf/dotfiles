@@ -84,9 +84,15 @@ install_nix() {
     export PATH="$HOME/.nix-profile/bin:$PATH"
   fi
 
-  # If a previous multi-user install exists (root-owned /nix), remove it so we can
-  # reinstall as a single user. This keeps SkyPilot jobs from tripping over daemon locks.
-  if [ -d /nix/var/nix/db ] && [ ! -w /nix/var/nix/db ]; then
+  local sys="$(uname -s)"
+  local install_multi_user="false"
+  if [ "$sys" = "Darwin" ] || [ "$(id -u)" -eq 0 ]; then
+    install_multi_user="true"
+  fi
+
+  # If we are about to install a single-user Nix but a multi-user install exists,
+  # remove it so we avoid daemon lock issues (common on ephemeral Linux hosts).
+  if [ "$install_multi_user" = "false" ] && [ -d /nix/var/nix/db ] && [ ! -w /nix/var/nix/db ]; then
     log "Removing existing multi-user Nix installation…"
     sudo sh -c 'systemctl stop nix-daemon 2>/dev/null' || true
     sudo rm -rf /nix /etc/nix /etc/profile.d/nix-daemon.sh /etc/profile.d/nix.sh
@@ -94,7 +100,7 @@ install_nix() {
 
   if ! command -v nix >/dev/null 2>&1; then
     local install_flags=(--yes)
-    if [ "$(id -u)" -eq 0 ]; then
+    if [ "$install_multi_user" = "true" ]; then
       log "Installing multi-user Nix…"
       install_flags+=(--daemon)
     else
