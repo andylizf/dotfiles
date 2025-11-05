@@ -224,8 +224,8 @@
     # Managed by Home Manager — local changes will be overwritten.
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
 
-    [tools]
-    web_search = true
+    [features]
+    web_search_request = true
 
     [mcp_servers.context7]
     command = "npx"
