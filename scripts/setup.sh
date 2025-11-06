@@ -38,11 +38,11 @@ multiuser_source_env() {
   if [ -f "$pf" ]; then
     # shellcheck disable=SC1090
     . "$pf" || true
+    export NIX_REMOTE=${NIX_REMOTE:-daemon}
   fi
   if [ -d "/nix/var/nix/profiles/default/bin" ]; then
     export PATH="/nix/var/nix/profiles/default/bin:$PATH"
   fi
-  export NIX_REMOTE=${NIX_REMOTE:-daemon}
 }
 
 darwin_start_daemons() {
@@ -204,6 +204,12 @@ install_nix() {
   ensure_nix_features
   ensure_shell_inits
   register_login_shell
+
+  # If we are on Linux and not using a daemon (no daemon socket),
+  # assume single-user install and ensure bubblewrap is present.
+  if [ "$sys" = "Linux" ] && [ ! -S /nix/var/nix/daemon-socket/socket ]; then
+    ensure_bwrap_if_needed
+  fi
 }
 
 ensure_repo() {
