@@ -32,6 +32,47 @@ HOST_NAME="${HOST_NAME:-unknown-host}"
 
 log() { printf "[setup] %s\n" "$*"; }
 
+multiuser_source_env() {
+  # Source multi-user Nix profile for both Linux and macOS if present
+  local pf="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+  if [ -f "$pf" ]; then
+    # shellcheck disable=SC1090
+    . "$pf" || true
+  fi
+  if [ -d "/nix/var/nix/profiles/default/bin" ]; then
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+  fi
+  export NIX_REMOTE=${NIX_REMOTE:-daemon}
+}
+
+darwin_start_daemons() {
+  if [ "$(uname -s)" != "Darwin" ]; then return; fi
+  for svc in org.nixos.darwin-store org.nixos.nix-daemon; do
+    if [ -f "/Library/LaunchDaemons/$svc.plist" ]; then
+      sudo launchctl bootstrap system "/Library/LaunchDaemons/$svc.plist" >/dev/null 2>&1 || true
+      sudo launchctl enable system/$svc >/dev/null 2>&1 || true
+      sudo launchctl kickstart -k system/$svc >/dev/null 2>&1 || true
+    fi
+  done
+}
+
+darwin_wait_daemon() {
+  if [ "$(uname -s)" != "Darwin" ]; then return 0; fi
+  local sock="/nix/var/nix/daemon-socket/socket"
+  for _ in $(seq 1 60); do
+    if [ -S "$sock" ]; then return 0; fi
+    sleep 0.5
+  done
+  return 1
+}
+
+darwin_repair_if_needed() {
+  if [ "$(uname -s)" != "Darwin" ]; then return; fi
+  if [ -x /nix/nix-installer ]; then
+    sudo /nix/nix-installer repair || true
+  fi
+}
+
 ensure_nix_features() {
   local nix_conf="$HOME/.config/nix/nix.conf"
   mkdir -p "$(dirname "$nix_conf")"
@@ -74,6 +115,17 @@ install_deps() {
   fi
 }
 
+ensure_bwrap_if_needed() {
+  # For Linux single-user installs, bubblewrap is required so that /nix/store
+  # exists inside the build chroot. Install it if missing on apt systems.
+  if [ "$(uname -s)" = "Linux" ] && ! command -v bwrap >/dev/null 2>&1; then
+    if command -v apt-get >/dev/null 2>&1; then
+      log "Installing bubblewrap for single-user Nix..."
+      sudo apt-get install -y bubblewrap || true
+    fi
+  fi
+}
+
 install_nix() {
   local profile_sh="$HOME/.nix-profile/etc/profile.d/nix.sh"
   if [ -f "$profile_sh" ]; then
@@ -86,8 +138,15 @@ install_nix() {
 
   local sys="$(uname -s)"
   local install_multi_user="false"
-  if [ "$sys" = "Darwin" ] || [ "$(id -u)" -eq 0 ]; then
+  if [ "$sys" = "Darwin" ]; then
     install_multi_user="true"
+  else
+    # On Linux, prefer multi-user when systemd + sudo are available
+    if [ "$(id -u)" -eq 0 ]; then
+      install_multi_user="true"
+    elif command -v sudo >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
+      install_multi_user="true"
+    fi
   fi
 
   # If we are about to install single-user on Linux but a multi-user install exists,
@@ -99,23 +158,36 @@ install_nix() {
   fi
 
   if ! command -v nix >/dev/null 2>&1; then
-    # macOS: upstream installer requires multi-user; keep it simple and exit after install.
     if [ "$sys" = "Darwin" ]; then
-      log "Installing multi-user Nix..."
-      sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) --daemon --yes
-      log "Nix installed. Open a new terminal and rerun this script."
-      exit 0
-    fi
-    # Linux: choose daemon if root, otherwise single-user
-    local install_flags=(--yes)
-    if [ "$install_multi_user" = "true" ]; then
-      log "Installing multi-user Nix..."
-      install_flags+=(--daemon)
+      log "Installing multi-user Nix (Determinate)..."
+      curl --proto '=https' --tlsv1.2 -fsSL https://install.determinate.systems/nix \
+        | sh -s -- install macos --no-confirm --determinate
+      multiuser_source_env
+      darwin_start_daemons
+      if ! darwin_wait_daemon; then
+        log "Daemon not ready; attempting repair..."
+        darwin_repair_if_needed
+        darwin_start_daemons
+        if ! darwin_wait_daemon; then
+          log "Nix daemon still not ready. Open a new terminal and rerun this script."
+          exit 1
+        fi
+      fi
     else
-      log "Installing single-user Nix..."
-      install_flags+=(--no-daemon)
+      # Linux: prefer multi-user (daemon) when possible
+      local install_flags=(--yes)
+      if [ "$install_multi_user" = "true" ]; then
+        log "Installing multi-user Nix..."
+        install_flags+=(--daemon)
+      else
+        log "Installing single-user Nix..."
+        install_flags+=(--no-daemon)
+      fi
+      sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) "${install_flags[@]}"
+      if [ "$install_multi_user" = "false" ]; then
+        ensure_bwrap_if_needed
+      fi
     fi
-    sh <(curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install) "${install_flags[@]}"
   fi
 
   if [ -f "$profile_sh" ]; then
@@ -125,6 +197,9 @@ install_nix() {
   if [ -d "$HOME/.nix-profile/bin" ]; then
     export PATH="$HOME/.nix-profile/bin:$PATH"
   fi
+
+  # Ensure daemon-backed environment when available
+  multiuser_source_env
 
   ensure_nix_features
   ensure_shell_inits
@@ -179,7 +254,12 @@ main() {
 EOF
 
   log "Activating Home Manager (#$OS_TARGET) with site override..."
-  nix run home-manager/master -- switch \
+  if [ "$OS_TARGET" = "darwin" ]; then
+    NIX_ARGS=(--store daemon)
+  else
+    NIX_ARGS=()
+  fi
+  nix "${NIX_ARGS[@]}" run home-manager/master -- switch \
     --flake ".#$OS_TARGET" \
     --override-input site "path:$SITE_DIR"
 
