@@ -18,6 +18,14 @@ The script will:
 - activate Home Manager for this machine
 - if `~/.config/sops/age/keys.txt` exists at setup time, secrets are enabled automatically; otherwise they are skipped so first‑run always succeeds
 
+### Linux notes (multi-user Nix)
+
+- On Linux, the setup script now prefers a multi-user (daemon) Nix install. This avoids bubblewrap/userns issues common on Ubuntu 24.04 and cloud VMs.
+- The script auto-detects the daemon socket. If `/run/nix/daemon-socket/socket` exists, it sets `NIX_REMOTE=unix:///run/nix/daemon-socket/socket` to ensure the client talks to the correct socket.
+- When Home Manager would overwrite existing files, the script passes `-b backup` so your originals are preserved with a `.backup` suffix.
+
+If you previously used single-user Nix and hit errors like `/nix/store/.../bash: No such file or directory`, switch to multi-user with the installer, or enable user namespaces and install `bubblewrap`. The script will try to install `bubblewrap` automatically if it detects single-user mode.
+
 ### For secrets
 
 ```bash

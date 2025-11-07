@@ -38,10 +38,15 @@ multiuser_source_env() {
   if [ -f "$pf" ]; then
     # shellcheck disable=SC1090
     . "$pf" || true
-    export NIX_REMOTE=${NIX_REMOTE:-daemon}
   fi
   if [ -d "/nix/var/nix/profiles/default/bin" ]; then
     export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+  fi
+  # Prefer runtime socket path when present; otherwise fall back to daemon
+  if [ -S /run/nix/daemon-socket/socket ]; then
+    export NIX_REMOTE="unix:///run/nix/daemon-socket/socket"
+  elif [ -S /nix/var/nix/daemon-socket/socket ] || [ -f "$pf" ]; then
+    export NIX_REMOTE=${NIX_REMOTE:-daemon}
   fi
 }
 
@@ -176,6 +181,13 @@ install_nix() {
     else
       # Linux: prefer multi-user (daemon) when possible
       local install_flags=(--yes)
+      # If a pre-existing nixbld group exists, reuse its GID to satisfy installer
+      if getent group nixbld >/dev/null 2>&1; then
+        NIX_BUILD_GROUP_ID="$(getent group nixbld | awk -F: '{print $3}')"
+        export NIX_BUILD_GROUP_ID
+        log "Reusing existing nixbld group (GID=${NIX_BUILD_GROUP_ID}) for install."
+      fi
+
       if [ "$install_multi_user" = "true" ]; then
         log "Installing multi-user Nix..."
         install_flags+=(--daemon)
@@ -260,12 +272,20 @@ main() {
 EOF
 
   log "Activating Home Manager (#$OS_TARGET) with site override..."
+  # Ensure NIX_REMOTE is set appropriately (multiuser_source_env may already have done this)
+  if [ -z "${NIX_REMOTE:-}" ]; then
+    if [ -S /run/nix/daemon-socket/socket ]; then
+      export NIX_REMOTE="unix:///run/nix/daemon-socket/socket"
+    elif [ -S /nix/var/nix/daemon-socket/socket ] || [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+      export NIX_REMOTE=daemon
+    fi
+  fi
   if [ "$OS_TARGET" = "darwin" ]; then
     NIX_ARGS=(--store daemon)
   else
     NIX_ARGS=()
   fi
-  nix "${NIX_ARGS[@]}" run home-manager/master -- switch \
+  nix "${NIX_ARGS[@]}" run home-manager/master -- switch -b backup \
     --flake ".#$OS_TARGET" \
     --override-input site "path:$SITE_DIR"
 
