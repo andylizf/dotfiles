@@ -219,7 +219,9 @@ install_nix() {
 
   # If we are on Linux and not using a daemon (no daemon socket),
   # assume single-user install and ensure bubblewrap is present.
-  if [ "$sys" = "Linux" ] && [ ! -S /nix/var/nix/daemon-socket/socket ]; then
+  if [ "$sys" = "Linux" ] \
+     && [ ! -S /nix/var/nix/daemon-socket/socket ] \
+     && [ ! -S /run/nix/daemon-socket/socket ]; then
     ensure_bwrap_if_needed
   fi
 }
