@@ -74,13 +74,19 @@ in
       mode = "0600";
     };
 
-    # 7) Overleaf Git token (used for HTTPS remotes)
+    # 7) Gemini API token (used for GOOGLE_API_KEY / GEMINI_API_KEY)
+    sops.secrets."tokens/gemini" = {
+      path = "${config.home.homeDirectory}/.config/gemini/token";
+      mode = "0600";
+    };
+
+    # 8) Overleaf Git token (used for HTTPS remotes)
     sops.secrets."overleaf/git-token" = {
       path = "${config.home.homeDirectory}/.config/overleaf/git-token";
       mode = "0600";
     };
 
-    # 8) Docker registry credentials (~/.docker/config.json)
+    # 9) Docker registry credentials (~/.docker/config.json)
     sops.secrets."docker/config.json" = {
       path = "${config.home.homeDirectory}/.docker/config.json";
       mode = "0600";

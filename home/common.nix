@@ -36,6 +36,17 @@
         set -gx HF_TOKEN (string trim (cat ~/.config/huggingface/token))
       end
 
+      # Gemini: export GOOGLE_API_KEY (and GEMINI_API_KEY fallback) if present
+      if test -f ~/.config/gemini/token
+        set -l _GEMINI_TOKEN (string trim (cat ~/.config/gemini/token))
+        if test -n "$_GEMINI_TOKEN"
+          set -gx GOOGLE_API_KEY "$_GEMINI_TOKEN"
+          if not set -q GEMINI_API_KEY
+            set -gx GEMINI_API_KEY "$_GEMINI_TOKEN"
+          end
+        end
+      end
+
       # Direnv integration for fish
       if command -v direnv >/dev/null 2>&1
         direnv hook fish | source
@@ -216,6 +227,7 @@
     # Install each CLI independently so one failing postinstall doesn't block the other
     "$NPM" i -g @anthropic-ai/claude-code@latest || true
     "$NPM" i -g @openai/codex@latest || true
+    "$NPM" i -g @google/gemini-cli || true
   '';
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;

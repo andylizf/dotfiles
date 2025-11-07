@@ -11,6 +11,7 @@ bash scripts/setup.sh
 ```
 
 The script will:
+
 - install Nix via the Zero to Nix installer if missing
 - detect OS (Linux/macOS) and source the Nix environment in non-login shells
 - auto-inject current USER/HOME via a temporary site flake (pure flakes; no `--impure`)
@@ -31,8 +32,6 @@ echo "YOUR_AGE_KEY" > ~/.config/sops/age/keys.txt  # on remote
 - Git config: user, email, push/pull defaults, default branch, editor, colors
 - Fish config: PATH via Home Manager, `CLAUDE_CODE_USE_VERTEX=1`
 
-
-
 ## SkyPilot
 
 ```bash
@@ -51,6 +50,6 @@ The initialization should only be run once on the local machine to generate the 
 bash scripts/sops-init.sh
 
 # Edit encrypted file
-export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
+export SOPS_AGE_KEY_FILE=$HOME/.config/sops/age/keys.txt
 SOPS_EDITOR="cursor --wait" sops secrets/secrets.yaml
 ```
