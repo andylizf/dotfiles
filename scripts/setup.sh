@@ -42,10 +42,11 @@ multiuser_source_env() {
   if [ -d "/nix/var/nix/profiles/default/bin" ]; then
     export PATH="/nix/var/nix/profiles/default/bin:$PATH"
   fi
-  # Prefer runtime socket path when present; otherwise fall back to daemon
+  # Prefer runtime socket path; only fall back to 'daemon' if the
+  # legacy /nix/var socket actually exists.
   if [ -S /run/nix/daemon-socket/socket ]; then
     export NIX_REMOTE="unix:///run/nix/daemon-socket/socket"
-  elif [ -S /nix/var/nix/daemon-socket/socket ] || [ -f "$pf" ]; then
+  elif [ -S /nix/var/nix/daemon-socket/socket ]; then
     export NIX_REMOTE=${NIX_REMOTE:-daemon}
   fi
 }
@@ -226,6 +227,19 @@ install_nix() {
   fi
 }
 
+ensure_linux_daemon_socket() {
+  if [ "$(uname -s)" != "Linux" ]; then return; fi
+  if ! command -v systemctl >/dev/null 2>&1; then return; fi
+  # Ensure runtime socket exists and legacy path points to it.
+  sudo mkdir -p /run/nix/daemon-socket /nix/var/nix || true
+  if [ ! -S /run/nix/daemon-socket/socket ]; then
+    sudo systemctl enable --now nix-daemon.socket >/dev/null 2>&1 || true
+    sudo systemctl restart nix-daemon.service >/dev/null 2>&1 || true
+  fi
+  # Symlink legacy path so that 'daemon' fallback works everywhere.
+  sudo ln -sfn /run/nix/daemon-socket /nix/var/nix/daemon-socket >/dev/null 2>&1 || true
+}
+
 ensure_repo() {
   if [ -d "$DOTFILES_DIR/.git" ]; then
     log "Updating existing repo at $DOTFILES_DIR..."
@@ -274,11 +288,13 @@ main() {
 EOF
 
   log "Activating Home Manager (#$OS_TARGET) with site override..."
+  # Make sure daemon socket is available on Linux hosts
+  ensure_linux_daemon_socket
   # Ensure NIX_REMOTE is set appropriately (multiuser_source_env may already have done this)
   if [ -z "${NIX_REMOTE:-}" ]; then
     if [ -S /run/nix/daemon-socket/socket ]; then
       export NIX_REMOTE="unix:///run/nix/daemon-socket/socket"
-    elif [ -S /nix/var/nix/daemon-socket/socket ] || [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+    elif [ -S /nix/var/nix/daemon-socket/socket ]; then
       export NIX_REMOTE=daemon
     fi
   fi
