@@ -244,8 +244,20 @@
     args = ["-y", "@upstash/context7-mcp"]
   '';
 
-  # Ensure VS Code remote terminals default to Nix-provided fish shell.
+  # Ensure Cursor remote terminals default to Nix-provided fish shell.
   home.file.".cursor-server/data/Machine/settings.json".text =
+    builtins.toJSON {
+      "terminal.integrated.profiles.linux" = {
+        "fish-nix" = {
+          path = "${config.home.homeDirectory}/.nix-profile/bin/fish";
+          args = [ "--login" ];
+        };
+      };
+      "terminal.integrated.defaultProfile.linux" = "fish-nix";
+    } + "\n";
+
+  # Mirror the same logic for VS Code Remote Server.
+  home.file.".vscode-server/data/Machine/settings.json".text =
     builtins.toJSON {
       "terminal.integrated.profiles.linux" = {
         "fish-nix" = {

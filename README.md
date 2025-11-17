@@ -44,7 +44,10 @@ echo "YOUR_AGE_KEY" > ~/.config/sops/age/keys.txt  # on remote
 
 ```bash
 sky launch -c dev-machine skypilot/sky-dotfiles-gcp.yaml -y
+# Cursor Remote
 cursor --remote ssh-remote+dev-machine sky_workdir
+# VS Code Remote
+code --remote ssh-remote+dev-machine sky_workdir
 ```
 
 ## Secrets (sops-nix)
@@ -57,7 +60,9 @@ The initialization should only be run once on the local machine to generate the 
 # Initialize keys locally (once)
 bash scripts/sops-init.sh
 
-# Edit encrypted file
+# Edit encrypted file (use Cursor or VS Code)
 export SOPS_AGE_KEY_FILE=$HOME/.config/sops/age/keys.txt
 SOPS_EDITOR="cursor --wait" sops secrets/secrets.yaml
+# or
+SOPS_EDITOR="code --wait" sops secrets/secrets.yaml
 ```
