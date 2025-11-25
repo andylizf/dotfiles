@@ -31,7 +31,7 @@
     shellInit = ''
       # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 1
-      set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
+      set -gx ANTHROPIC_VERTEX_PROJECT_ID skypilot-375900
       if test -f ~/.config/huggingface/token
         set -gx HF_TOKEN (string trim (cat ~/.config/huggingface/token))
       end
