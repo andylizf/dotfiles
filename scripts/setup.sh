@@ -267,7 +267,8 @@ main() {
   esac
 
   # Create a temporary site flake with current user info (pure flakes, no --impure)
-  SITE_DIR="${TMPDIR:-/tmp}/dotfiles-site-$$"
+  # Use realpath to resolve symlinks (macOS /var -> /private/var) as Nix flakes reject symlink paths
+  SITE_DIR="$(cd "${TMPDIR:-/tmp}" && pwd -P)/dotfiles-site-$$"
   mkdir -p "$SITE_DIR"
   if [ -f "$HOME/.config/sops/age/keys.txt" ]; then
     ENABLE_SECRETS_LINE='dotfiles.enableSecrets = true;'

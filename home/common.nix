@@ -29,6 +29,11 @@
   programs.fish = {
     enable = true;
     shellInit = ''
+      # Anthropic API key (for Claude CLI, etc.)
+      if test -f ~/.config/anthropic/token
+        set -gx ANTHROPIC_API_KEY (string trim (cat ~/.config/anthropic/token))
+      end
+
       # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 1
       set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
@@ -68,7 +73,7 @@
 
       # Sync Hugging Face token into default cache for CLI detection
 
-      # First-login init: set Claude Code notif channel once (idempotent)
+      # First-login init: set Claude Code prefs once (idempotent)
       if status --is-interactive
         if test -x ~/.local/bin/claude; and not test -e ~/.local/state/claude/prefs_set
           ~/.local/bin/claude config set --global preferredNotifChannel terminal_bell; or true
@@ -145,6 +150,11 @@
     chmod 700 "$HOME/.docker" || true
   '';
 
+  home.activation.ensureAnthropicDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.config/anthropic"
+    chmod 700 "$HOME/.config/anthropic" || true
+  '';
+
   home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ -f "$HOME/.config/huggingface/token" ]; then
       mkdir -p "$HOME/.cache/huggingface"
@@ -178,7 +188,7 @@
       "permissions": {
         "allow": [
           "Bash(grep:*)",
-          "Read(*)",
+          "Read",
           "Bash(gh pr diff:*)",
           "Bash(git pr diff view:*)",
           "Bash(git pr view:*)",

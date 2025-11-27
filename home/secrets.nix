@@ -80,13 +80,19 @@ in
       mode = "0600";
     };
 
-    # 8) Overleaf Git token (used for HTTPS remotes)
+    # 8) Anthropic API key (used for ANTHROPIC_API_KEY)
+    sops.secrets."tokens/claude" = {
+      path = "${config.home.homeDirectory}/.config/anthropic/token";
+      mode = "0600";
+    };
+
+    # 9) Overleaf Git token (used for HTTPS remotes)
     sops.secrets."overleaf/git-token" = {
       path = "${config.home.homeDirectory}/.config/overleaf/git-token";
       mode = "0600";
     };
 
-    # 9) Docker registry credentials (~/.docker/config.json)
+    # 10) Docker registry credentials (~/.docker/config.json)
     sops.secrets."docker/config.json" = {
       path = "${config.home.homeDirectory}/.docker/config.json";
       mode = "0600";
