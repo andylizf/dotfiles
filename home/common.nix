@@ -86,6 +86,39 @@
     '';
   };
 
+  programs.tmux = {
+    enable = true;
+    shell = "${config.home.homeDirectory}/.nix-profile/bin/fish";
+    mouse = true;
+    historyLimit = 50000;
+    plugins = with pkgs.tmuxPlugins; [
+      {
+        plugin = resurrect;
+        extraConfig = "set -g @resurrect-capture-pane-contents 'on'";
+      }
+      {
+        plugin = continuum;
+        extraConfig = ''
+          set -g @continuum-restore 'on'
+          set -g @continuum-save-interval '15'
+        '';
+      }
+      {
+        plugin = logging;
+        extraConfig = ''
+          set -g @logging-path '~/.tmux/logs'
+          set -g @logging-auto-start 'on'
+          set -g @logging-filename '#{session_name}-#{window_index}-#{pane_index}.log'
+        '';
+      }
+    ];
+    extraConfig = ''
+      set -g set-titles on
+      set -g set-titles-string "#S"
+      set -g remain-on-exit on
+    '';
+  };
+
   programs.git = {
     enable = true;
     userName = "Andy Lee";
