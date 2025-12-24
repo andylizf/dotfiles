@@ -53,6 +53,43 @@
         end
       end
 
+      # Lambda Labs Cloud API (multiple profiles)
+      # 'default' → LAMBDA_API_KEY, others → LAMBDA_API_KEY_<NAME>
+      for f in ~/.config/lambda/*
+        if test -f $f
+          set -l profile_name (basename $f)
+          set -l token_value (string trim (cat $f))
+          if test -n "$token_value"
+            if test "$profile_name" = "default"
+              set -gx LAMBDA_API_KEY "$token_value"
+            else
+              set -l var_name "LAMBDA_API_KEY_"(string upper $profile_name)
+              set -gx $var_name "$token_value"
+            end
+          end
+        end
+      end
+
+      # Switch Lambda profile: lambda-use <profile>
+      function lambda-use
+        if test (count $argv) -eq 0
+          echo "Usage: lambda-use <profile>"
+          echo "Available profiles:"
+          for f in ~/.config/lambda/*
+            test -f $f; and echo "  "(basename $f)
+          end
+          return 1
+        end
+        set -l profile $argv[1]
+        if test -f ~/.config/lambda/$profile
+          set -gx LAMBDA_API_KEY (string trim (cat ~/.config/lambda/$profile))
+          echo "Switched to Lambda profile: $profile"
+        else
+          echo "Profile not found: $profile"
+          return 1
+        end
+      end
+
       # Direnv integration for fish
       if command -v direnv >/dev/null 2>&1
         direnv hook fish | source
@@ -186,6 +223,11 @@
   home.activation.ensureAnthropicDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.config/anthropic"
     chmod 700 "$HOME/.config/anthropic" || true
+  '';
+
+  home.activation.ensureLambdaDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.config/lambda"
+    chmod 700 "$HOME/.config/lambda" || true
   '';
 
   home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

@@ -98,7 +98,19 @@ in
       mode = "0600";
     };
 
-    # 2) Optional tokens (examples)
+    # 11) Lambda Labs Cloud API keys (multiple profiles)
+    # 'default' → ~/.config/lambda/default → LAMBDA_API_KEY
+    # '<name>'  → ~/.config/lambda/<name>  → LAMBDA_API_KEY_<NAME>
+    sops.secrets."lambda/default" = {
+      path = "${config.home.homeDirectory}/.config/lambda/default";
+      mode = "0600";
+    };
+    sops.secrets."lambda/work" = {
+      path = "${config.home.homeDirectory}/.config/lambda/work";
+      mode = "0600";
+    };
+
+    # Optional tokens (examples)
     # sops.secrets."tokens/claude" = {
     #   path = "${config.home.homeDirectory}/.config/claude/token";
     #   mode = "0600";
