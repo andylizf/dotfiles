@@ -220,12 +220,17 @@
     chmod 700 "$HOME/.docker" || true
   '';
 
-  # Sync Docker config from sops-nix staging path to ~/.docker/config.json
+  # Sync Docker config from sops-nix secrets to ~/.docker/config.json
   # Docker Desktop cannot handle symlinks (cross-device link errors).
+  # sops-nix stores secrets at ~/.config/sops-nix/secrets/<name>, not at custom paths.
   home.activation.syncDockerConfig = lib.hm.dag.entryAfter [ "ensureDockerConfigDir" ] ''
-    src="$HOME/.config/sops-nix/docker-config.json"
+    src="$HOME/.config/sops-nix/secrets/docker/config.json"
     dst="$HOME/.docker/config.json"
-    if [ -f "$src" ]; then
+    if [ -f "$src" ] || [ -L "$src" ]; then
+      # Remove any existing symlink first (sops-nix may have created one)
+      if [ -L "$dst" ]; then
+        rm "$dst"
+      fi
       # Only update if content differs (preserve Docker Desktop modifications)
       if [ ! -f "$dst" ] || ! cmp -s "$src" "$dst"; then
         install -m 600 "$src" "$dst"
