@@ -220,6 +220,19 @@
     chmod 700 "$HOME/.docker" || true
   '';
 
+  # Sync Docker config from sops-nix staging path to ~/.docker/config.json
+  # Docker Desktop cannot handle symlinks (cross-device link errors).
+  home.activation.syncDockerConfig = lib.hm.dag.entryAfter [ "ensureDockerConfigDir" ] ''
+    src="$HOME/.config/sops-nix/docker-config.json"
+    dst="$HOME/.docker/config.json"
+    if [ -f "$src" ]; then
+      # Only update if content differs (preserve Docker Desktop modifications)
+      if [ ! -f "$dst" ] || ! cmp -s "$src" "$dst"; then
+        install -m 600 "$src" "$dst"
+      fi
+    fi
+  '';
+
   home.activation.ensureAnthropicDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.config/anthropic"
     chmod 700 "$HOME/.config/anthropic" || true

@@ -92,9 +92,11 @@ in
       mode = "0600";
     };
 
-    # 10) Docker registry credentials (~/.docker/config.json)
+    # 10) Docker registry credentials
+    # Note: We decrypt to a staging path first, then copy via activation script.
+    # Docker Desktop cannot handle symlinks (cross-device link errors).
     sops.secrets."docker/config.json" = {
-      path = "${config.home.homeDirectory}/.docker/config.json";
+      path = "${config.home.homeDirectory}/.config/sops-nix/docker-config.json";
       mode = "0600";
     };
 
