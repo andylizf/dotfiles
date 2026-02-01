@@ -313,6 +313,18 @@
     }
   '';
 
+  # Global MCP servers for Claude Code
+  home.file.".mcp.json".text = ''
+    {
+      "mcpServers": {
+        "context7": {
+          "command": "npx",
+          "args": ["-y", "@upstash/context7-mcp"]
+        }
+      }
+    }
+  '';
+
   # Install/update CLI tools from npm to ~/.local on each switch.
   # Keep tracking npm latest while remaining user-scoped.
   home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] ''
