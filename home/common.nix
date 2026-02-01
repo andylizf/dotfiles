@@ -42,6 +42,11 @@
         set -gx HF_TOKEN (string trim (cat ~/.config/huggingface/token))
       end
 
+      # OpenAI: export OPENAI_API_KEY if present
+      if test -f ~/.config/openai/token
+        set -gx OPENAI_API_KEY (string trim (cat ~/.config/openai/token))
+      end
+
       # Gemini: export GOOGLE_API_KEY (and GEMINI_API_KEY fallback) if present
       if test -f ~/.config/gemini/token
         set -l _GEMINI_TOKEN (string trim (cat ~/.config/gemini/token))

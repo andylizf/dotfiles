@@ -117,10 +117,10 @@ in
     #   path = "${config.home.homeDirectory}/.config/claude/token";
     #   mode = "0600";
     # };
-    # sops.secrets."tokens/openai" = {
-    #   path = "${config.home.homeDirectory}/.config/openai/token";
-    #   mode = "0600";
-    # };
+    sops.secrets."tokens/openai" = {
+      path = "${config.home.homeDirectory}/.config/openai/token";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (
