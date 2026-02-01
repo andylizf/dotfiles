@@ -329,7 +329,8 @@
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
     # Install each CLI independently so one failing postinstall doesn't block the other
-    "$NPM" i -g @anthropic-ai/claude-code@latest || true
+    # Claude Code: use native installer instead of npm
+    curl -fsSL https://claude.ai/install.sh | sh || true
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
   '';
@@ -338,10 +339,12 @@
 
   home.file.".codex/config.toml".text = ''
     # Managed by Home Manager — local changes will be overwritten.
+    model = "gpt-5.2-codex"
+    reasoning_effort = "extra_high"
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
 
     [features]
-    web_search_request = true
+    web_search = "live"
 
     [mcp_servers.context7]
     command = "npx"
