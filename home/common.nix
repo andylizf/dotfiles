@@ -342,10 +342,8 @@
     # Managed by Home Manager — local changes will be overwritten.
     model = "gpt-5.2-codex"
     reasoning_effort = "extra_high"
+    web_search = "live"
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
-
-    [features]
-    web_search_request = true
 
     [mcp_servers.context7]
     command = "npx"
