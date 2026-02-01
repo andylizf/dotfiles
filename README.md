@@ -60,9 +60,6 @@ The initialization should only be run once on the local machine to generate the 
 # Initialize keys locally (once)
 bash scripts/sops-init.sh
 
-# Edit encrypted file (use Cursor or VS Code)
-export SOPS_AGE_KEY_FILE=$HOME/.config/sops/age/keys.txt
-SOPS_EDITOR="cursor --wait" sops secrets/secrets.yaml
-# or
-SOPS_EDITOR="code --wait" sops secrets/secrets.yaml
+# Edit encrypted file
+SOPS_AGE_KEY_FILE=$HOME/.config/sops/age/keys.txt SOPS_EDITOR="code --wait" sops secrets/secrets.yaml
 ```
