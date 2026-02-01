@@ -344,7 +344,7 @@
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
 
     [features]
-    web_search = "live"
+    web_search = true
 
     [mcp_servers.context7]
     command = "npx"
