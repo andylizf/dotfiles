@@ -332,8 +332,8 @@
     # Ensure user-level prefix and directories exist
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
-    # Make sure node (from nix) is on PATH for npm lifecycle scripts
-    export PATH="${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH"
+    # Make sure node, curl (from nix) are on PATH for npm lifecycle scripts and installers
+    export PATH="${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
     CURL="${pkgs.curl}/bin/curl"
