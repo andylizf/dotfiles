@@ -328,9 +328,10 @@
     export PATH="${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
+    CURL="${pkgs.curl}/bin/curl"
     # Install each CLI independently so one failing postinstall doesn't block the other
     # Claude Code: use native installer instead of npm
-    curl -fsSL https://claude.ai/install.sh | sh || true
+    "$CURL" -fsSL https://claude.ai/install.sh | sh || true
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
   '';
