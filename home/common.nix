@@ -110,14 +110,8 @@
 
       # Sync Hugging Face token into default cache for CLI detection
 
-      # First-login init: set Claude Code prefs once (idempotent)
-      if status --is-interactive
-        if test -x ~/.local/bin/claude; and not test -e ~/.local/state/claude/prefs_set
-          ~/.local/bin/claude config set --global preferredNotifChannel terminal_bell; or true
-          mkdir -p ~/.local/state/claude
-          touch ~/.local/state/claude/prefs_set
-        end
-      end
+      # Note: preferredNotifChannel is stored in ~/.claude.json, not settings.json
+      # The 'claude config' command is deprecated but still needed for this setting
 
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
@@ -277,43 +271,45 @@
   home.file.".claude/settings.json".text = ''
     {
       "$schema": "https://json.schemastore.org/claude-code-settings.json",
-      "includeCoAuthoredBy": false,
+      "attribution": {
+        "commit": "",
+        "pr": ""
+      },
       "permissions": {
         "allow": [
-          "Bash(grep:*)",
+          "Bash(grep *)",
           "Read",
-          "Bash(gh pr diff:*)",
-          "Bash(git pr diff view:*)",
-          "Bash(git pr view:*)",
-          "Bash(git pr review:*)",
-          "Bash(git pr list:*)",
-          "Bash(git pr describe:*)",
-          "Bash(gh issue view:*)",
-          "Bash(git log:*)",
-          "Bash(git rev-parse:*)",
-          "Bash(ls:*)",
-          "Bash(pwd:*)",
-          "Bash(cat:*)",
-          "Bash(aws s3 ls:*)",
-          "Bash(gsutil ls:*)",
-          "Bash(s5cmd ls:*)",
-          "Bash(du:*)",
-          "Bash(gh api repos/skypilot-org/skypilot/issues:*)",
-          "Bash(sleep:*)",
-          "Bash(sky status:*)",
-          "Bash(sky queue:*)",
-          "Bash(sky logs:*)",
-          "Bash(sky jobs logs:*)",
-          "Bash(sky jobs status:*)",
-          "Bash(sky serve status:*)",
-          "Bash(sky serve logs:*)",
-          "Bash(sky api status:*)",
-          "Bash(sky api info:*)",
-          "Bash(sky api logs:*)"
+          "Bash(gh pr diff *)",
+          "Bash(git pr diff view *)",
+          "Bash(git pr view *)",
+          "Bash(git pr review *)",
+          "Bash(git pr list *)",
+          "Bash(git pr describe *)",
+          "Bash(gh issue view *)",
+          "Bash(git log *)",
+          "Bash(git rev-parse *)",
+          "Bash(ls *)",
+          "Bash(pwd *)",
+          "Bash(cat *)",
+          "Bash(aws s3 ls *)",
+          "Bash(gsutil ls *)",
+          "Bash(s5cmd ls *)",
+          "Bash(du *)",
+          "Bash(gh api repos/skypilot-org/skypilot/issues *)",
+          "Bash(sleep *)",
+          "Bash(sky status *)",
+          "Bash(sky queue *)",
+          "Bash(sky logs *)",
+          "Bash(sky jobs logs *)",
+          "Bash(sky jobs status *)",
+          "Bash(sky serve status *)",
+          "Bash(sky serve logs *)",
+          "Bash(sky api status *)",
+          "Bash(sky api info *)",
+          "Bash(sky api logs *)"
         ]
       },
-      "alwaysThinkingEnabled": true,
-      "gitAttribution": false
+      "alwaysThinkingEnabled": true
     }
   '';
 
