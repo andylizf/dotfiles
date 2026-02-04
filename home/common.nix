@@ -338,12 +338,16 @@
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
     # Make sure node, curl (from nix) are on PATH for npm lifecycle scripts and installers
-    export PATH="${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH"
+    # Include /usr/bin for shasum (needed by claude installer)
+    export PATH="${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:/usr/bin:$PATH"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
     CURL="${pkgs.curl}/bin/curl"
     # Install each CLI independently so one failing postinstall doesn't block the other
     # Claude Code: use native installer instead of npm
+    # First remove old npm version and stale symlinks
+    "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
+    rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
     "$CURL" -fsSL https://claude.ai/install.sh | sh || true
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
