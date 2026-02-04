@@ -46,6 +46,12 @@ in
       mode = "0600";
     };
 
+    # GCP ADC for personal account (andylizf@gmail.com)
+    sops.secrets."gcloud/adc_personal" = {
+      path = "${config.home.homeDirectory}/.config/gcloud/adc_personal.json";
+      mode = "0600";
+    };
+
     # 3) AWS credentials/config (optional)
     sops.secrets."aws/credentials" = {
       path = "${config.home.homeDirectory}/.aws/credentials";
