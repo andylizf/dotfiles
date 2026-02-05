@@ -348,7 +348,7 @@
     # First remove old npm version and stale symlinks
     "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
     rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
-    "$CURL" -fsSL https://claude.ai/install.sh | sh || true
+    "$CURL" -fsSL https://claude.ai/install.sh | bash -s -- || true
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
   '';
