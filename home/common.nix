@@ -37,7 +37,7 @@
       # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 0
       set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
-      set -gx ANTHROPIC_MODEL claude-opus-4-5-20251101
+      set -gx ANTHROPIC_MODEL claude-opus-4-6
       if test -f ~/.config/huggingface/token
         set -gx HF_TOKEN (string trim (cat ~/.config/huggingface/token))
       end
@@ -357,7 +357,7 @@
 
   home.file.".codex/config.toml".text = ''
     # Managed by Home Manager — local changes will be overwritten.
-    model = "gpt-5.2-codex"
+    model = "gpt-5.3-codex"
     reasoning_effort = "extra_high"
     web_search = "live"
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
