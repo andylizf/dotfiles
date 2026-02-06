@@ -244,8 +244,13 @@ ensure_repo() {
   if [ -d "$DOTFILES_DIR/.git" ]; then
     log "Updating existing repo at $DOTFILES_DIR..."
     git -C "$DOTFILES_DIR" fetch --all -q
-    git -C "$DOTFILES_DIR" checkout -B main origin/main -q
-    git -C "$DOTFILES_DIR" reset --hard origin/main -q
+    # Avoid overwriting local changes during active debugging.
+    if git -C "$DOTFILES_DIR" diff --quiet && git -C "$DOTFILES_DIR" diff --quiet --cached; then
+      git -C "$DOTFILES_DIR" checkout -B main origin/main -q
+      git -C "$DOTFILES_DIR" reset --hard origin/main -q
+    else
+      log "Repo has local changes; skipping hard reset."
+    fi
   else
     log "Cloning repo to $DOTFILES_DIR..."
     git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
@@ -299,12 +304,15 @@ EOF
       export NIX_REMOTE=daemon
     fi
   fi
+  # On macOS, run Home Manager with GNU coreutils available (readlink -e).
   if [ "$OS_TARGET" = "darwin" ]; then
     NIX_ARGS=(--store daemon)
+    HM_RUN=(nix "${NIX_ARGS[@]}" shell nixpkgs#coreutils home-manager/master -c home-manager)
   else
     NIX_ARGS=()
+    HM_RUN=(nix "${NIX_ARGS[@]}" run home-manager/master --)
   fi
-  nix "${NIX_ARGS[@]}" run home-manager/master -- switch -b backup \
+  "${HM_RUN[@]}" switch -b backup \
     --flake ".#$OS_TARGET" \
     --override-input site "path:$SITE_DIR"
 
