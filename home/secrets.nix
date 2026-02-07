@@ -127,6 +127,12 @@ in
       path = "${config.home.homeDirectory}/.config/openai/token";
       mode = "0600";
     };
+
+    # W&B API key
+    sops.secrets."tokens/wandb" = {
+      path = "${config.home.homeDirectory}/.config/wandb/token";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (

@@ -48,6 +48,11 @@
         set -gx OPENAI_API_KEY (string trim (cat ~/.config/openai/token))
       end
 
+      # Weights & Biases: export WANDB_API_KEY if present
+      if test -f ~/.config/wandb/token
+        set -gx WANDB_API_KEY (string trim (cat ~/.config/wandb/token))
+      end
+
       # Gemini: export GOOGLE_API_KEY (and GEMINI_API_KEY fallback) if present
       if test -f ~/.config/gemini/token
         set -l _GEMINI_TOKEN (string trim (cat ~/.config/gemini/token))
@@ -253,6 +258,11 @@
   home.activation.ensureLambdaDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "$HOME/.config/lambda"
     chmod 700 "$HOME/.config/lambda" || true
+  '';
+
+  home.activation.ensureWandbDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.config/wandb"
+    chmod 700 "$HOME/.config/wandb" || true
   '';
 
   home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
