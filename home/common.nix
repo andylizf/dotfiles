@@ -121,8 +121,11 @@
 
       # Sync Hugging Face token into default cache for CLI detection
 
-      # Note: preferredNotifChannel is stored in ~/.claude.json, not settings.json
-      # The 'claude config' command is deprecated but still needed for this setting
+      # Register Claude Code MCP servers at user scope (auto-trusted, no approval prompt)
+      if command -q claude; and not test -f ~/.claude/.mcp-registered
+        claude mcp add --scope user -t stdio context7 -- npx -y @upstash/context7-mcp 2>/dev/null
+        and touch ~/.claude/.mcp-registered
+      end
 
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
@@ -332,21 +335,24 @@
           "Bash(sky api logs *)"
         ]
       },
-      "alwaysThinkingEnabled": true
-    }
-  '';
-
-  # Global MCP servers for Claude Code
-  home.file.".mcp.json".text = ''
-    {
-      "mcpServers": {
-        "context7": {
-          "command": "npx",
-          "args": ["-y", "@upstash/context7-mcp"]
-        }
+      "alwaysThinkingEnabled": true,
+      "hooks": {
+        "Notification": [
+          {
+            "matcher": "",
+            "hooks": [
+              {
+                "type": "command",
+                "command": "printf '\\a' > /dev/tty; osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
+              }
+            ]
+          }
+        ]
       }
     }
   '';
+
+  # Global MCP servers for Claude Code (user scope → auto-trusted, no approval prompt)
 
   # Install/update CLI tools from npm to ~/.local on each switch.
   # Keep tracking npm latest while remaining user-scoped.
@@ -362,12 +368,13 @@
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
     CURL="${pkgs.curl}/bin/curl"
-    # Install each CLI independently so one failing postinstall doesn't block the other
-    # Claude Code: use native installer instead of npm
-    # First remove old npm version and stale symlinks
+    # Claude Code: use system curl (Nix OpenSSL has TLS issues with claude.ai)
     "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
     rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
-    "$CURL" -fsSL https://claude.ai/install.sh | bash -s -- || true
+    for _attempt in 1 2 3; do
+      command -p curl -fsSL https://claude.ai/install.sh | bash -s -- && break
+      sleep 2
+    done
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
   '';
