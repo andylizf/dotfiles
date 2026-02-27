@@ -368,13 +368,18 @@
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
     CURL="${pkgs.curl}/bin/curl"
-    # Claude Code: use system curl (Nix OpenSSL has TLS issues with claude.ai)
+    # Claude Code: use /usr/bin/curl (Nix OpenSSL has TLS issues with claude.ai)
     "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
     rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
+    _claude_ok=false
     for _attempt in 1 2 3; do
-      command -p curl -fsSL https://claude.ai/install.sh | bash -s -- && break
+      if /usr/bin/curl -fsSL https://claude.ai/install.sh | bash -s --; then
+        _claude_ok=true
+        break
+      fi
       sleep 2
     done
+    $_claude_ok
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
   '';
