@@ -373,7 +373,7 @@
     rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
     _claude_ok=false
     for _attempt in 1 2 3; do
-      if /usr/bin/curl -fsSL https://claude.ai/install.sh | bash -s --; then
+      if PATH="/usr/bin:$PATH" /usr/bin/curl -fsSL https://claude.ai/install.sh | PATH="/usr/bin:$PATH" bash -s --; then
         _claude_ok=true
         break
       fi
