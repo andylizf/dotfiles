@@ -337,13 +337,24 @@
       },
       "alwaysThinkingEnabled": true,
       "hooks": {
+        "Stop": [
+          {
+            "matcher": "",
+            "hooks": [
+              {
+                "type": "command",
+                "command": "printf '\\a' > /dev/tty; if command -v afplay >/dev/null 2>&1; then afplay /System/Library/Sounds/Hero.aiff & elif command -v paplay >/dev/null 2>&1; then paplay /usr/share/sounds/freedesktop/stereo/complete.oga & fi"
+              }
+            ]
+          }
+        ],
         "Notification": [
           {
             "matcher": "",
             "hooks": [
               {
                 "type": "command",
-                "command": "printf '\\a' > /dev/tty; osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
+                "command": "printf '\\a' > /dev/tty; if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' 'Claude Code needs your attention'; fi"
               }
             ]
           }
