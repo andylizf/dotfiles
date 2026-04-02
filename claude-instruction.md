@@ -75,3 +75,5 @@ Assume servers die, processes get killed, and sessions get interrupted at any ti
 **Observability:** Everything gets logged. Use proper log levels, flush to files (not ephemeral temp paths), stream output so partial progress is visible. Logs should survive the crash they're documenting.
 
 **Incremental verification:** Verify each step before moving to the next. Don't stack a chain of changes and test only at the end — when it breaks you won't know where.
+
+**Reproducibility:** Every experiment, pipeline, or non-trivial command should be reproducible. Write it as a script file, not a one-off shell command or inline python -c. Don't put outputs in /tmp — they get cleaned. Document what the script does, what inputs it needs, and where outputs go. If you can't re-run it tomorrow and get the same result, it doesn't count.

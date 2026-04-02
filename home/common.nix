@@ -127,6 +127,12 @@
         and touch ~/.claude/.mcp-registered
       end
 
+      # First-time plugin download (enabledPlugins in settings.json handles activation,
+      # but cache files need to exist). Uses --print to avoid interactive mode.
+      if command -q claude; and not test -d ~/.claude/plugins/cache/claude-plugins-official/superpowers
+        claude plugin install superpowers@claude-plugins-official &>/dev/null
+      end
+
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
   };
