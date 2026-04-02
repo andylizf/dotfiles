@@ -294,6 +294,8 @@
     fi
   '';
 
+  home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
+
   home.file.".claude/settings.json".text = ''
     {
       "$schema": "https://json.schemastore.org/claude-code-settings.json",
