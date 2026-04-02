@@ -127,6 +127,11 @@
         and touch ~/.claude/.mcp-registered
       end
 
+      if command -q claude; and not test -f ~/.claude/.plugins-installed
+        claude plugin install superpowers@claude-plugins-official 2>/dev/null
+        and touch ~/.claude/.plugins-installed
+      end
+
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
   };

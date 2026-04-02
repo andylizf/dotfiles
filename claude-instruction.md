@@ -47,3 +47,13 @@ Be concise. Match length to complexity. No preamble, no repeating my question ba
 Tool and environment configs (IDE settings, `.claude/`, `.env`) belong in `.gitignore` — that's what it's for.
 
 Personal files whose names alone are sensitive (private notes, chat dumps, temp files unrelated to the project) stay out of `.gitignore` — they just don't get committed.
+
+## Resilience
+
+Assume servers die, processes get killed, and sessions get interrupted at any time.
+
+**Recoverability:** Anything expensive, long-running, or time-sensitive gets checkpointed. Checkpoints should be independent (no overwriting), and it should be possible to resume from any one of them.
+
+**Observability:** Everything gets logged. Use proper log levels, flush to files (not ephemeral temp paths), stream output so partial progress is visible. Logs should survive the crash they're documenting.
+
+**Incremental verification:** Verify each step before moving to the next. Don't stack a chain of changes and test only at the end — when it breaks you won't know where.
