@@ -12,11 +12,13 @@
 
     site.url = "path:./site-default";
 
+    system-manager.url = "github:numtide/system-manager";
+
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, sops-nix, site, flake-parts, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, sops-nix, site, system-manager, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" "aarch64-darwin" ];
 
@@ -40,6 +42,10 @@
 
         siteModules = if site ? homeModule then [ site.homeModule ] else [];
       in {
+        systemConfigs.default = system-manager.lib.makeSystemConfig {
+          modules = [ ./system ];
+        };
+
         homeConfigurations = let
           linuxModules = [ ./home/linux.nix ];
           darwinModules = [ ./home/darwin.nix ];

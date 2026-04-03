@@ -121,6 +121,24 @@ install_deps() {
   fi
 }
 
+activate_system_manager() {
+  # system-manager manages system-level config (auditd rules, etc.)
+  # declaratively via Nix. Only runs on Linux with systemd.
+  if [ "$(uname -s)" != "Linux" ] || [ ! -d /run/systemd/system ]; then
+    return
+  fi
+  log "Activating system-manager..."
+  (cd "$DOTFILES_DIR" && nix run 'github:numtide/system-manager' -- switch --flake ".") || {
+    log "system-manager activation failed; skipping"
+    return
+  }
+  # Reload auditd rules if auditctl is available
+  if command -v auditctl >/dev/null 2>&1 || test -x /usr/sbin/auditctl; then
+    sudo augenrules --load 2>/dev/null || true
+    sudo systemctl enable --now auditd 2>/dev/null || true
+  fi
+}
+
 ensure_bwrap_if_needed() {
   # For Linux single-user installs, bubblewrap is required so that /nix/store
   # exists inside the build chroot. Install it if missing on apt systems.
@@ -318,6 +336,7 @@ EOF
 
   rm -rf "$SITE_DIR"
 
+  activate_system_manager
   register_login_shell
 }
 
