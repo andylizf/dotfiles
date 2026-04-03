@@ -20,7 +20,7 @@
     # Skip on systems without systemd (containers, WSL1, etc.)
     if [ ! -d /run/systemd/system ]; then
       echo "[dotfiles] no systemd; skipping audit setup" >&2
-    elif ! command -v auditctl >/dev/null 2>&1; then
+    elif ! command -v auditctl >/dev/null 2>&1 && ! test -x /usr/sbin/auditctl; then
       echo "[dotfiles] auditd not installed; skipping rules (run setup.sh first)" >&2
     else
       tmpRules="$(mktemp)"

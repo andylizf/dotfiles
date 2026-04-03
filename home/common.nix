@@ -393,15 +393,12 @@
     # Claude Code: use /usr/bin/curl (Nix OpenSSL has TLS issues with claude.ai)
     "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
     rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
-    _claude_ok=false
     for _attempt in 1 2 3; do
       if PATH="/usr/bin:$PATH" /usr/bin/curl -fsSL https://claude.ai/install.sh | PATH="/usr/bin:$PATH" bash -s --; then
-        _claude_ok=true
         break
       fi
       sleep 2
-    done
-    $_claude_ok
+    done || echo "[dotfiles] claude install failed (network/region issue); skipping"
     "$NPM" i -g @openai/codex@latest || true
     "$NPM" i -g @google/gemini-cli || true
   '';
