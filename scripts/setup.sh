@@ -117,7 +117,7 @@ install_deps() {
   if command -v apt-get >/dev/null 2>&1; then
     log "Installing apt deps (curl git)..."
     sudo apt-get update -y
-    sudo apt-get install -y curl git
+    sudo apt-get install -y curl git auditd
   fi
 }
 

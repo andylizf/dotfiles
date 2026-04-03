@@ -74,6 +74,8 @@ Personal files whose names alone are sensitive (private notes, chat dumps, temp 
 
 For Python projects, always commit `uv.lock`.
 
+Everything committed to git (code comments, docs, commit messages) must be in English unless I say otherwise. Conversation language doesn't affect this.
+
 ## Resilience
 
 Assume servers die, processes get killed, and sessions get interrupted at any time.
