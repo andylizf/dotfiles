@@ -86,6 +86,12 @@ ensure_nix_features() {
     log "Enabling nix-command/flakes in $nix_conf..."
     printf 'experimental-features = nix-command flakes\n' >>"$nix_conf"
   fi
+  # Also enable system-wide so sudo'd nix commands work
+  local sys_conf="/etc/nix/nix.conf"
+  if [ -d /etc/nix ] && ! grep -q 'nix-command' "$sys_conf" 2>/dev/null; then
+    log "Enabling nix-command/flakes in $sys_conf..."
+    sudo sh -c "printf 'experimental-features = nix-command flakes\n' >> $sys_conf"
+  fi
 }
 
 ensure_shell_inits() {
@@ -128,7 +134,7 @@ activate_system_manager() {
     return
   fi
   log "Activating system-manager..."
-  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" HOME="$HOME" nix --extra-experimental-features "nix-command flakes" run 'github:numtide/system-manager' -- switch --flake ".") || {
+  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" HOME="$HOME" nix run 'github:numtide/system-manager' -- switch --flake ".") || {
     log "system-manager activation failed; skipping"
     return
   }
