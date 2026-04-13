@@ -92,6 +92,12 @@ ensure_nix_features() {
     log "Enabling nix-command/flakes in $sys_conf..."
     sudo sh -c "printf 'experimental-features = nix-command flakes\n' >> $sys_conf"
   fi
+  # Auto-accept flake-declared substituters (e.g. cache.numtide.com from system-manager)
+  # so that sudo'd nix commands don't prompt interactively.
+  if [ -d /etc/nix ] && ! grep -q 'accept-flake-config' "$sys_conf" 2>/dev/null; then
+    log "Enabling accept-flake-config in $sys_conf..."
+    sudo sh -c "printf 'accept-flake-config = true\n' >> $sys_conf"
+  fi
 }
 
 ensure_shell_inits() {
@@ -134,7 +140,7 @@ activate_system_manager() {
     return
   fi
   log "Activating system-manager..."
-  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" nix run --accept-flake-config 'github:numtide/system-manager' -- switch --flake ".") || {
+  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" nix run 'github:numtide/system-manager' -- switch --flake ".") || {
     log "system-manager activation failed; skipping"
     return
   }
