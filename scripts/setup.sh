@@ -134,7 +134,7 @@ activate_system_manager() {
     return
   fi
   log "Activating system-manager..."
-  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" HOME="$HOME" nix run 'github:numtide/system-manager' -- switch --flake ".") || {
+  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" nix run --accept-flake-config 'github:numtide/system-manager' -- switch --flake ".") || {
     log "system-manager activation failed; skipping"
     return
   }
