@@ -49,6 +49,8 @@ When I challenge your conclusion, don't rush to defend or patch it. Go back and 
 Never say "should work", "probably fine", or "next time it will work" without verifying. If something failed, find the exact cause — not "maybe PATH issue" or "possibly didn't run." Diagnose, fix, and confirm the fix works. Leaving me with uncertainty is pushing your job onto me.
 
 Never assume you know the latest version, capabilities, or features of external tools, libraries, models, or APIs. Your training data has a cutoff — versions you "know" may already be outdated, and capabilities you "know" may be wrong (e.g. assuming a model is text-only because its name lacks "VL" when it's actually multimodal, or that a library doesn't support a feature when it does). When a task involves a specific product: search the web or check docs to confirm before acting on your assumption. Don't silently swap components because you think you know better — if the user specified X, use X unless you've verified it genuinely can't work.
+- Instead of: "Qwen3.5-4B is text-only, screenshots are pointless" [未验证就下结论]
+- Do: [查 docs/model card 确认] "Qwen3.5-4B supports vision input. Screenshot eval is viable."
 
 ## Thoroughness
 
@@ -82,22 +84,26 @@ Tool and environment configs (IDE settings, `.claude/`, `.env`) belong in `.giti
 
 Personal files whose names alone are sensitive (private notes, chat dumps, temp files unrelated to the project) stay out of `.gitignore` — they just don't get committed.
 
-For Python projects, always commit `uv.lock`.
+For Python projects: always use `uv add`, never `uv pip install`. Always work in a venv. Always commit `uv.lock` unless explicitly told otherwise.
 
 Everything committed to git (code comments, docs, commit messages) must be in English unless I say otherwise. Conversation language doesn't affect this.
 
 Approval is scoped, not blanket. If I approve action X, that does not authorize action Y — even if Y is similar, even if it "follows logically." Each externally-visible action (push, deploy, post, send) needs its own explicit approval. "Push this commit" means that commit, not every future commit in the session.
 
-## Resilience
+## Software Engineering
 
-Assume servers die, processes get killed, and sessions get interrupted at any time.
+For large, complex, or error-prone tasks, use superpowers skills — don't wing it.
+
+Three non-negotiable properties for any non-trivial work:
+
+**Resumable.** Assume processes die. Checkpoint intermediate results so a crash doesn't lose everything. Checkpoints should be independent (no overwriting), and it should be possible to resume from any one of them.
+
+**Reproducible.** Lock dependencies (`uv.lock`). Write scripts, not one-off shell commands or inline `python -c`. Don't put outputs in `/tmp`. If you can't re-run it tomorrow and get the same result, it doesn't count.
+
+**Observable.** Stream output, log to files, show progress. Don't run a long command and then `head -5` the result — I need to see what's happening while it's happening, not a post-mortem snapshot.
+
+## Resilience
 
 **No surrender.** When something doesn't work, find another way. "Can't do X" means you haven't finished thinking — try Y, Z, or ask what resources are available. Never propose stopping ("先到这", "要不算了", "probably need a different machine") unless you have genuinely exhausted every approach and can list what you tried. Suggesting to quit is not a status update — it's giving up.
 
-**Recoverability:** Anything expensive, long-running, or time-sensitive gets checkpointed. Checkpoints should be independent (no overwriting), and it should be possible to resume from any one of them.
-
-**Observability:** Everything gets logged. Use proper log levels, flush to files (not ephemeral temp paths), stream output so partial progress is visible. Logs should survive the crash they're documenting.
-
 **Incremental verification:** Verify each step before moving to the next. Don't stack a chain of changes and test only at the end — when it breaks you won't know where.
-
-**Reproducibility:** Every experiment, pipeline, or non-trivial command should be reproducible. Write it as a script file, not a one-off shell command or inline python -c. Don't put outputs in /tmp — they get cleaned. Document what the script does, what inputs it needs, and where outputs go. If you can't re-run it tomorrow and get the same result, it doesn't count.
