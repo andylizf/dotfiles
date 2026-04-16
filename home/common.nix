@@ -38,7 +38,7 @@
       # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 0
       set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
-      set -gx ANTHROPIC_MODEL claude-opus-4-6
+      set -gx ANTHROPIC_MODEL claude-opus-4-7
       set -gx ANTHROPIC_DEFAULT_HAIKU_MODEL claude-sonnet-4-6
       # set -gx ANTHROPIC_DEFAULT_SONNET_MODEL claude-opus-4-6
       if test -f ~/.config/huggingface/token
