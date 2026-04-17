@@ -331,6 +331,7 @@
         "document-skills@anthropic-agent-skills": true
       },
       "alwaysThinkingEnabled": true,
+      "skipDangerousModePermissionPrompt": true,
       "hooks": {
         "Stop": [
           {
