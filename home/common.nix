@@ -317,7 +317,6 @@
       "enabledPlugins": {
         "superpowers@claude-plugins-official": true
       },
-      "effortLevel": "high",
       "alwaysThinkingEnabled": true,
       "hooks": {
         "Stop": [
