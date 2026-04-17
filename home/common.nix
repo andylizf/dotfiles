@@ -103,6 +103,14 @@
         end
       end
 
+      # Nix: use GitHub token for higher API rate limits (60/h → 5000/h)
+      if command -q gh
+        set -l _gh_token (gh auth token 2>/dev/null)
+        if test -n "$_gh_token"
+          set -gx NIX_CONFIG "access-tokens = github.com=$_gh_token"
+        end
+      end
+
       # Direnv integration for fish
       if command -v direnv >/dev/null 2>&1
         direnv hook fish | source
