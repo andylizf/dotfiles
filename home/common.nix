@@ -142,6 +142,10 @@
       if command -q claude; and not test -d ~/.claude/plugins/cache/claude-plugins-official/superpowers
         claude plugin install superpowers@claude-plugins-official &>/dev/null
       end
+      if command -q claude; and not test -d ~/.claude/plugins/cache/anthropic-agent-skills/document-skills
+        claude plugin marketplace add anthropics/skills &>/dev/null
+        claude plugin install document-skills@anthropic-agent-skills &>/dev/null
+      end
 
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
@@ -323,7 +327,8 @@
         "defaultMode": "bypassPermissions"
       },
       "enabledPlugins": {
-        "superpowers@claude-plugins-official": true
+        "superpowers@claude-plugins-official": true,
+        "document-skills@anthropic-agent-skills": true
       },
       "alwaysThinkingEnabled": true,
       "hooks": {
