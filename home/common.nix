@@ -111,8 +111,7 @@
         end
       end
 
-      # Direnv integration for fish (clear stale hooks from old nix-profile paths)
-      functions -e __direnv_export_eval __direnv_export_eval_at_prompt 2>/dev/null
+      # Direnv integration for fish
       if command -v direnv >/dev/null 2>&1
         direnv hook fish | source
       end
