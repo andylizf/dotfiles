@@ -59,6 +59,8 @@
             ./system/darwin.nix
             home-manager.darwinModules.home-manager
             {
+              system.stateVersion = 6;
+              system.primaryUser = darwinUser;
               nixpkgs.config.allowUnfree = true;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
