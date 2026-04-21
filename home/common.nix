@@ -365,18 +365,17 @@
   # Install/update CLI tools from npm to ~/.local on each switch.
   # Keep tracking npm latest while remaining user-scoped.
   home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] ''
+    # Skip when running under sudo (nix-darwin activation) — HOME is wrong.
+    if [ "$(id -u)" -eq 0 ] || [ "$(id -un)" != "$(stat -f%Su "$HOME" 2>/dev/null || stat -c%U "$HOME" 2>/dev/null)" ]; then
+      echo "[dotfiles] skipping installDevCLIs under sudo; run 'home-manager switch' as your user or rerun setup without sudo"
+      return 0 2>/dev/null || exit 0
+    fi
     set -e
-    # Ensure user-level prefix and directories exist
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
-    # Ensure GNU coreutils precedes macOS utilities for scripts that need readlink -e.
-    # Make sure node, curl (from nix) are on PATH for npm lifecycle scripts and installers.
-    # Include /usr/bin for shasum (needed by claude installer).
     export PATH="${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH:/usr/bin"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
-    CURL="${pkgs.curl}/bin/curl"
-    # Claude Code: use /usr/bin/curl (Nix OpenSSL has TLS issues with claude.ai)
     "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
     rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
     for _attempt in 1 2 3; do
