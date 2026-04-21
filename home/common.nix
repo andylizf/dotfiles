@@ -111,7 +111,8 @@
         end
       end
 
-      # Direnv integration for fish
+      # Direnv integration for fish (clear stale hooks from old nix-profile paths)
+      functions -e __direnv_export_eval __direnv_export_eval_at_prompt 2>/dev/null
       if command -v direnv >/dev/null 2>&1
         direnv hook fish | source
       end
@@ -371,28 +372,16 @@
     export PATH="${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH:/usr/bin"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
-    # Claude Code: download binary directly and symlink (install.sh's `claude install` hangs without tty)
-    DOWNLOAD_BASE_URL="https://downloads.claude.ai/claude-code-releases"
-    CLAUDE_DIR="$HOME/.claude"
-    mkdir -p "$CLAUDE_DIR/downloads"
-    CLAUDE_VERSION=$(/usr/bin/curl -fsSL "$DOWNLOAD_BASE_URL/latest" 2>/dev/null) || true
-    if [ -n "$CLAUDE_VERSION" ]; then
-      os="darwin"; case "$(uname -s)" in Linux) os="linux" ;; esac
-      arch="arm64"; case "$(uname -m)" in x86_64|amd64) arch="x64" ;; esac
-      platform="$os-$arch"
-      CLAUDE_BIN="$CLAUDE_DIR/downloads/claude-$CLAUDE_VERSION-$platform"
-      if [ ! -x "$CLAUDE_BIN" ]; then
-        /usr/bin/curl -fsSL -o "$CLAUDE_BIN" "$DOWNLOAD_BASE_URL/$CLAUDE_VERSION/$platform/claude" || true
-        chmod +x "$CLAUDE_BIN" 2>/dev/null || true
+    # Claude Code: install via official script (downloads ~60MB binary, may take a minute)
+    echo "[dotfiles] installing Claude Code (this may take a minute)..."
+    for _attempt in 1 2 3; do
+      if PATH="/usr/bin:$PATH" /usr/bin/curl -fsSL https://claude.ai/install.sh | PATH="/usr/bin:$PATH" bash -s --; then
+        break
       fi
-      if [ -x "$CLAUDE_BIN" ]; then
-        ln -sf "$CLAUDE_BIN" "$HOME/.local/bin/claude"
-      fi
-    else
-      echo "[dotfiles] claude download failed; skipping"
-    fi
+      sleep 2
+    done || echo "[dotfiles] claude install failed (network/region issue); skipping"
     "$NPM" i -g @openai/codex@latest 2>&1 || true
-    "$NPM" i -g @google/gemini-cli 2>&1 || true
+    "$NPM" i -g --force @google/gemini-cli 2>&1 || true
   '';
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
