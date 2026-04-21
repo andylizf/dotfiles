@@ -121,13 +121,14 @@
       # stores ~/.local/bin in the universal fish_user_paths.
       fish_add_path ~/.local/bin
 
-      # Ensure Nix profile binaries are available to shebangs like `#!/usr/bin/env node`
-      # Source fish integration if present, then force-add common Nix profile paths
+      # Ensure Nix profile binaries are available
       if test -f ~/.nix-profile/etc/profile.d/nix.fish
         . ~/.nix-profile/etc/profile.d/nix.fish
       end
       fish_add_path ~/.nix-profile/bin
       fish_add_path ~/.local/state/nix/profile/bin
+      fish_add_path /etc/profiles/per-user/$USER/bin
+      fish_add_path /run/current-system/sw/bin
 
       # Sync Hugging Face token into default cache for CLI detection
 
@@ -153,7 +154,7 @@
 
   programs.tmux = {
     enable = true;
-    shell = "${config.home.homeDirectory}/.nix-profile/bin/fish";
+    shell = "${pkgs.fish}/bin/fish";
     mouse = true;
     historyLimit = 50000;
     plugins = with pkgs.tmuxPlugins; [
