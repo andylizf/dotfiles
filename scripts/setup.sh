@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Unified installer/runner for local and SkyPilot environments.
+# Dotfiles setup — run from within the repo (bootstrap.sh handles cloning).
 # - Installs minimal deps (curl/git) on apt-based systems
-# - Installs Nix (Zero to Nix) if missing and enables flakes
-# - Clones or updates the dotfiles repo if needed
-# - Auto-injects USER/HOME via a temporary site flake and activates Home Manager
+# - Installs Nix if missing and enables flakes
+# - Activates nix-darwin (macOS) or Home Manager + system-manager (Linux)
 
-: "${DOTFILES_REPO:=https://github.com/andylizf/dotfiles.git}"
-: "${DOTFILES_DIR:=$HOME/dotfiles}"
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # Some environments (e.g., SkyPilot setup) run as root with USER unset; fall back to `id -un`.
 RUN_USER="${USER:-$(id -un)}"
@@ -270,28 +268,11 @@ ensure_linux_daemon_socket() {
   sudo ln -sfn /run/nix/daemon-socket /nix/var/nix/daemon-socket >/dev/null 2>&1 || true
 }
 
-ensure_repo() {
-  if [ -d "$DOTFILES_DIR/.git" ]; then
-    log "Updating existing repo at $DOTFILES_DIR..."
-    git -C "$DOTFILES_DIR" fetch --all -q
-    # Avoid overwriting local changes during active debugging.
-    if git -C "$DOTFILES_DIR" diff --quiet && git -C "$DOTFILES_DIR" diff --quiet --cached; then
-      git -C "$DOTFILES_DIR" checkout -B main origin/main -q
-      git -C "$DOTFILES_DIR" reset --hard origin/main -q
-    else
-      log "Repo has local changes; skipping hard reset."
-    fi
-  else
-    log "Cloning repo to $DOTFILES_DIR..."
-    git clone "$DOTFILES_REPO" "$DOTFILES_DIR"
-  fi
-}
 
 main() {
   log "Starting unified setup..."
   install_deps
   install_nix
-  ensure_repo
 
   cd "$DOTFILES_DIR"
   # Detect OS target
@@ -309,6 +290,19 @@ main() {
     ENABLE_SECRETS_LINE='dotfiles.enableSecrets = true;'
   else
     ENABLE_SECRETS_LINE=''
+    printf '\n'
+    printf '  ┌─────────────────────────────────────────────────────────────┐\n'
+    printf '  │  ⚠  SOPS age key not found!                               │\n'
+    printf '  │                                                             │\n'
+    printf '  │  Missing: ~/.config/sops/age/keys.txt                      │\n'
+    printf '  │  Secrets (SSH keys, API tokens, credentials) will NOT be   │\n'
+    printf '  │  decrypted. You will need to set them up manually.         │\n'
+    printf '  │                                                             │\n'
+    printf '  │  To fix: copy your age key to the path above, then rerun.  │\n'
+    printf '  │  See: scripts/sops-init.sh                                 │\n'
+    printf '  └─────────────────────────────────────────────────────────────┘\n'
+    printf '\n'
+    sleep 3
   fi
   cat > "$SITE_DIR/flake.nix" <<EOF
 {
@@ -319,11 +313,13 @@ main() {
       home.homeDirectory = "$HOME";
       $ENABLE_SECRETS_LINE
     };
+    darwinUser = "$RUN_USER";
+    darwinHome = "$HOME";
+    darwinEnableSecrets = $([ -n "$ENABLE_SECRETS_LINE" ] && echo "true" || echo "false");
   };
 }
 EOF
 
-  log "Activating Home Manager (#$OS_TARGET) with site override..."
   # Make sure daemon socket is available on Linux hosts
   ensure_linux_daemon_socket
   # Ensure NIX_REMOTE is set appropriately (multiuser_source_env may already have done this)
@@ -334,21 +330,23 @@ EOF
       export NIX_REMOTE=daemon
     fi
   fi
-  # On macOS, run Home Manager with GNU coreutils available (readlink -e).
+
   if [ "$OS_TARGET" = "darwin" ]; then
-    NIX_ARGS=(--store daemon)
-    HM_RUN=(nix "${NIX_ARGS[@]}" shell nixpkgs#coreutils home-manager/master -c home-manager)
+    log "Activating nix-darwin (#default) with site override..."
+    sudo nix run nix-darwin -- switch \
+      --flake ".#default" \
+      --override-input site "path:$SITE_DIR"
   else
+    log "Activating Home Manager (#$OS_TARGET) with site override..."
     NIX_ARGS=()
     HM_RUN=(nix "${NIX_ARGS[@]}" run home-manager/master --)
+    "${HM_RUN[@]}" switch -b backup \
+      --flake ".#$OS_TARGET" \
+      --override-input site "path:$SITE_DIR"
+    activate_system_manager
   fi
-  "${HM_RUN[@]}" switch -b backup \
-    --flake ".#$OS_TARGET" \
-    --override-input site "path:$SITE_DIR"
 
   rm -rf "$SITE_DIR"
-
-  activate_system_manager
   register_login_shell
 }
 
