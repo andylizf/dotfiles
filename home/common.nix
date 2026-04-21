@@ -365,27 +365,34 @@
   # Install/update CLI tools from npm to ~/.local on each switch.
   # Keep tracking npm latest while remaining user-scoped.
   home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] ''
-    # Skip when running under sudo (nix-darwin activation) — HOME is wrong.
-    if [ "$(id -u)" -eq 0 ] || [ "$(id -un)" != "$(stat -f%Su "$HOME" 2>/dev/null || stat -c%U "$HOME" 2>/dev/null)" ]; then
-      echo "[dotfiles] skipping installDevCLIs under sudo; run 'home-manager switch' as your user or rerun setup without sudo"
-      return 0 2>/dev/null || exit 0
-    fi
     set -e
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
     export PATH="${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH:/usr/bin"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
-    "$NPM" uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
-    rm -f "$HOME/.local/bin/claude" 2>/dev/null || true
-    for _attempt in 1 2 3; do
-      if PATH="/usr/bin:$PATH" /usr/bin/curl -fsSL https://claude.ai/install.sh | PATH="/usr/bin:$PATH" bash -s --; then
-        break
+    # Claude Code: download binary directly and symlink (install.sh's `claude install` hangs without tty)
+    DOWNLOAD_BASE_URL="https://downloads.claude.ai/claude-code-releases"
+    CLAUDE_DIR="$HOME/.claude"
+    mkdir -p "$CLAUDE_DIR/downloads"
+    CLAUDE_VERSION=$(/usr/bin/curl -fsSL "$DOWNLOAD_BASE_URL/latest" 2>/dev/null) || true
+    if [ -n "$CLAUDE_VERSION" ]; then
+      os="darwin"; case "$(uname -s)" in Linux) os="linux" ;; esac
+      arch="arm64"; case "$(uname -m)" in x86_64|amd64) arch="x64" ;; esac
+      platform="$os-$arch"
+      CLAUDE_BIN="$CLAUDE_DIR/downloads/claude-$CLAUDE_VERSION-$platform"
+      if [ ! -x "$CLAUDE_BIN" ]; then
+        /usr/bin/curl -fsSL -o "$CLAUDE_BIN" "$DOWNLOAD_BASE_URL/$CLAUDE_VERSION/$platform/claude" || true
+        chmod +x "$CLAUDE_BIN" 2>/dev/null || true
       fi
-      sleep 2
-    done || echo "[dotfiles] claude install failed (network/region issue); skipping"
-    "$NPM" i -g @openai/codex@latest || true
-    "$NPM" i -g @google/gemini-cli || true
+      if [ -x "$CLAUDE_BIN" ]; then
+        ln -sf "$CLAUDE_BIN" "$HOME/.local/bin/claude"
+      fi
+    else
+      echo "[dotfiles] claude download failed; skipping"
+    fi
+    "$NPM" i -g @openai/codex@latest 2>&1 || true
+    "$NPM" i -g @google/gemini-cli 2>&1 || true
   '';
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
