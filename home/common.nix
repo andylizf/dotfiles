@@ -138,12 +138,13 @@
         and touch ~/.claude/.mcp-registered
       end
 
-      # First-time plugin download (enabledPlugins in settings.json handles activation,
-      # but cache files need to exist). Uses --print to avoid interactive mode.
-      if command -q claude; and not test -d ~/.claude/plugins/cache/claude-plugins-official/superpowers
+      # First-time plugin download. Check installed_plugins.json (not just the
+      # cache dir) so orphaned/incomplete installs get retried.
+      if command -q claude; and not grep -q 'superpowers@claude-plugins-official' ~/.claude/plugins/installed_plugins.json 2>/dev/null
+        claude plugin marketplace add anthropics/claude-plugins-official &>/dev/null
         claude plugin install superpowers@claude-plugins-official &>/dev/null
       end
-      if command -q claude; and not test -d ~/.claude/plugins/cache/anthropic-agent-skills/document-skills
+      if command -q claude; and not grep -q 'document-skills@anthropic-agent-skills' ~/.claude/plugins/installed_plugins.json 2>/dev/null
         claude plugin marketplace add anthropics/skills &>/dev/null
         claude plugin install document-skills@anthropic-agent-skills &>/dev/null
       end
@@ -317,47 +318,64 @@
 
   home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
 
-  home.file.".claude/settings.json".text = ''
-    {
-      "$schema": "https://json.schemastore.org/claude-code-settings.json",
-      "attribution": {
-        "commit": "",
-        "pr": ""
-      },
-      "permissions": {
-        "defaultMode": "bypassPermissions"
-      },
-      "enabledPlugins": {
-        "superpowers@claude-plugins-official": true,
-        "document-skills@anthropic-agent-skills": true
-      },
-      "alwaysThinkingEnabled": true,
-      "skipDangerousModePermissionPrompt": true,
-      "hooks": {
-        "Stop": [
-          {
-            "matcher": "",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "printf '\\a' > /dev/tty; if command -v afplay >/dev/null 2>&1; then afplay /System/Library/Sounds/Hero.aiff & elif command -v paplay >/dev/null 2>&1; then paplay /usr/share/sounds/freedesktop/stereo/complete.oga & fi"
-              }
-            ]
-          }
-        ],
-        "Notification": [
-          {
-            "matcher": "",
-            "hooks": [
-              {
-                "type": "command",
-                "command": "printf '\\a' > /dev/tty; if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' 'Claude Code needs your attention'; fi"
-              }
-            ]
-          }
-        ]
+  # Claude Code settings.json must be a writable real file (not a nix-store
+  # symlink), because `claude plugin install` rewrites it when enabling plugins.
+  # We seed it from the nix-derived template on first setup, and also migrate
+  # away from any old read-only symlink left by previous generations.
+  home.activation.installClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    mkdir -p "$HOME/.claude"
+    dst="$HOME/.claude/settings.json"
+    src="${pkgs.writeText "claude-settings.json" ''
+      {
+        "$schema": "https://json.schemastore.org/claude-code-settings.json",
+        "attribution": {
+          "commit": "",
+          "pr": ""
+        },
+        "permissions": {
+          "defaultMode": "bypassPermissions"
+        },
+        "enabledPlugins": {
+          "superpowers@claude-plugins-official": true,
+          "document-skills@anthropic-agent-skills": true
+        },
+        "alwaysThinkingEnabled": true,
+        "skipDangerousModePermissionPrompt": true,
+        "hooks": {
+          "Stop": [
+            {
+              "matcher": "",
+              "hooks": [
+                {
+                  "type": "command",
+                  "command": "printf '\\a' > /dev/tty; if command -v afplay >/dev/null 2>&1; then afplay /System/Library/Sounds/Hero.aiff & elif command -v paplay >/dev/null 2>&1; then paplay /usr/share/sounds/freedesktop/stereo/complete.oga & fi"
+                }
+              ]
+            }
+          ],
+          "Notification": [
+            {
+              "matcher": "",
+              "hooks": [
+                {
+                  "type": "command",
+                  "command": "printf '\\a' > /dev/tty; if command -v osascript >/dev/null 2>&1; then osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'; elif command -v notify-send >/dev/null 2>&1; then notify-send 'Claude Code' 'Claude Code needs your attention'; fi"
+                }
+              ]
+            }
+          ]
+        }
       }
-    }
+    ''}"
+    # Replace any stale read-only symlink from a previous nix generation.
+    if [ -L "$dst" ]; then
+      rm "$dst"
+    fi
+    # Seed from the nix template only if missing — preserve any in-place
+    # modifications written by `claude plugin install` or the user.
+    if [ ! -f "$dst" ]; then
+      install -m 644 "$src" "$dst"
+    fi
   '';
 
   # Global MCP servers for Claude Code (user scope → auto-trusted, no approval prompt)
