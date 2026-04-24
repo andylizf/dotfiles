@@ -405,7 +405,7 @@
 
   home.file.".codex/config.toml".text = ''
     # Managed by Home Manager — local changes will be overwritten.
-    model = "gpt-5.4"
+    model = "gpt-5.5"
     reasoning_effort = "extra_high"
     web_search = "live"
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
