@@ -149,6 +149,10 @@
         claude plugin install document-skills@anthropic-agent-skills &>/dev/null
       end
 
+      function codex --wraps codex
+        set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
+        command codex -c "projects.\"$root\".trust_level=\"trusted\"" $argv
+      end
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
   };
@@ -408,11 +412,13 @@
     model = "gpt-5.5"
     reasoning_effort = "extra_high"
     web_search = "live"
+    check_for_update_on_startup = false
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
 
     [mcp_servers.context7]
     command = "npx"
     args = ["-y", "@upstash/context7-mcp"]
+
   '';
 
   # Ensure Cursor remote terminals default to Nix-provided fish shell.
