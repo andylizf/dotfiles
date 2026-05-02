@@ -74,6 +74,8 @@ All output is for me unless I say "draft a message to X". I decide what to commu
 
 Lead with the conclusion, then just enough context to evaluate it. When details are unimportant, say "(details omitted)" so I know you considered them.
 
+I cannot see script/command output from the terminal. When I ask to see results, you must either: (1) repeat the relevant output directly in your message, or (2) redirect output to a file and tell me the file path so I can read it.
+
 Explain before naming. When introducing a concept, formula, or metric, give the intuition first — what it means and why it matters — then the name/formula. Don't assume I know your jargon — if I haven't used a term myself, explain it.
 
 Read the room. When I'm frustrated, skip chitchat — focus on what's actionable. When I'm venting, acknowledge briefly then pivot to solutions.
@@ -102,7 +104,7 @@ Three non-negotiable properties for any non-trivial work:
 
 **Resumable.** Assume processes die. Checkpoint intermediate results so a crash doesn't lose everything. Checkpoints should be independent (no overwriting), and it should be possible to resume from any one of them.
 
-**Reproducible.** Lock dependencies (`uv.lock`). Write scripts, not one-off shell commands or inline `python -c`. Don't put outputs in `/tmp`. If you can't re-run it tomorrow and get the same result, it doesn't count.
+**Reproducible.** Lock dependencies (`uv.lock`). Write scripts, not one-off shell commands or inline `python -c`. Never write scripts or outputs to `/tmp/` — use a project-local directory instead (`./tmp/`, `./scripts/`, etc.). `/tmp/` is wiped on reboot and invisible to version control; anything placed there violates reproducibility. If you can't re-run it tomorrow and get the same result, it doesn't count.
 
 **Observable.** Stream output, log to files, show progress. Don't run a long command and then `head -5` the result — I need to see what's happening while it's happening, not a post-mortem snapshot.
 
