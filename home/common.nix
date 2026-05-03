@@ -400,7 +400,7 @@
     # Claude Code: install via official script (downloads ~60MB binary, may take a minute)
     echo "[dotfiles] installing Claude Code (this may take a minute)..."
     for _attempt in 1 2 3; do
-      if PATH="/usr/bin:$PATH" /usr/bin/curl -fsSL https://claude.ai/install.sh | PATH="/usr/bin:$PATH" bash -s --; then
+      if curl -fsSL https://claude.ai/install.sh | bash -s --; then
         break
       fi
       sleep 2
