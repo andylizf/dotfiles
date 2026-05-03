@@ -105,6 +105,8 @@ Three non-negotiable properties for any non-trivial work:
 **Resumable.** Assume processes die. Checkpoint intermediate results so a crash doesn't lose everything. Checkpoints should be independent (no overwriting), and it should be possible to resume from any one of them.
 
 **Reproducible.** Lock dependencies (`uv.lock`). Write scripts, not one-off shell commands or inline `python -c`. Never write scripts or outputs to `/tmp/` — use a project-local directory instead (`./tmp/`, `./scripts/`, etc.). `/tmp/` is wiped on reboot and invisible to version control; anything placed there violates reproducibility. If you can't re-run it tomorrow and get the same result, it doesn't count.
+- Store full inputs alongside outputs. Every experiment result file must include the complete input (prompts, messages, retrieval context) that produced it — not just the response. If you can't re-run a single failed example without re-querying an external API or reconstructing the prompt from partial data, the result is not reproducible.
+- Never overwrite original results without a backup. When re-running, patching, or correcting experiment outputs, either write to a new file (e.g. `_patched.jsonl`, `_v2.jsonl`) or back up the original first (e.g. `cp foo.jsonl foo.jsonl.bak`). The original is the audit trail — destroying it destroys the ability to compare before/after or diagnose what went wrong.
 
 **Observable.** Stream output, log to files, show progress. Don't run a long command and then `head -5` the result — I need to see what's happening while it's happening, not a post-mortem snapshot.
 
