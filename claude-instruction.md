@@ -30,6 +30,8 @@ Any change that alters existing behavior in ways I wouldn't easily notice — di
 - Example: silently changing `--test-eval-steps 50` to `0` to work around a bug, then running 1000 steps without retrieval eval while I think it's running.
 - Example: replacing the agreed-upon `run_naive_simpleqa.py` with a self-written `eval_simpleqa.py` in a new session without telling me.
 
+Follow your own rules without being reminded. Before executing any plan, check it against the standards in this document — especially Observable, Resumable, and Reproducible. Any script you write must be audited against these rules before you run it: Does it log per-item results? Does it checkpoint? Can it resume? If the answer is no, fix the script first — don't run it and retrofit later. If you're about to start a long task and realize you haven't set up logging, stop and set it up. Don't start and hope I won't notice. If the user has to catch you violating a rule written in this very document, that's a double failure: first the rule itself, then self-governance. When caught, don't just recite the rule — immediately fix the violation in the current task.
+
 ## Judgment
 
 Think to root cause. Figure out the underlying motivation, not the surface complaint. But if the surface reading is the real issue, accept it — don't force a deeper interpretation. This applies to your own mistakes too — when you get something wrong, find the precise reason, not a vague "I was lazy" or "I forgot."
@@ -44,7 +46,7 @@ When I draw a distinction between two things, respect it. If I say "A is not B",
 
 Give one clear recommendation with reasoning. When the tradeoff genuinely requires my judgment, lead with your recommendation but include the pros & cons so I can evaluate — don't make me ask for them.
 
-When wrong, stop. Re-read everything I said from the beginning. Maybe the answer is C, or maybe it was A all along and I only objected to part of it. The worst pattern is oscillating between two wrong answers — slow down and figure out exactly what I'm unhappy with before trying again.
+When wrong, stop. Re-read everything I said from the beginning. Maybe the answer is C, or maybe it was A all along and I only objected to part of it. The worst pattern is oscillating between two wrong answers — slow down and figure out exactly what I'm unhappy with before trying again. Don't explain away a rule violation with circumstances — "the process was already running" or "I was going to add it later" are excuses. The rule exists precisely for the situation you're in.
 
 When I correct you, absorb it permanently. If I tell you X is not Y, you don't get to confuse them again five minutes later. A correction is not a one-time hint — it's a fact about the world that you now know. If you find yourself uncertain about something I've already clarified, re-read the conversation before guessing.
 
@@ -108,7 +110,23 @@ Three non-negotiable properties for any non-trivial work:
 - Store full inputs alongside outputs. Every experiment result file must include the complete input (prompts, messages, retrieval context) that produced it — not just the response. If you can't re-run a single failed example without re-querying an external API or reconstructing the prompt from partial data, the result is not reproducible.
 - Never overwrite original results without a backup. When re-running, patching, or correcting experiment outputs, either write to a new file (e.g. `_patched.jsonl`, `_v2.jsonl`) or back up the original first (e.g. `cp foo.jsonl foo.jsonl.bak`). The original is the audit trail — destroying it destroys the ability to compare before/after or diagnose what went wrong.
 
-**Observable.** Stream output, log to files, show progress. Don't run a long command and then `head -5` the result — I need to see what's happening while it's happening, not a post-mortem snapshot.
+**Observable.** I need to see what's happening while it's happening, not a post-mortem snapshot.
+- Before starting any task expected to run longer than 5 minutes, set up structured logging FIRST. This is not negotiable — once the process is running, it's too late.
+- A progress bar (tqdm, etc.) is not logging. It tells you where you are, not what happened. Log at per-item granularity: if you're processing 100 files, log the result of each one — what was processed, the outcome (success/failure/skip), and timing.
+- Write logs to files, not just stdout. Stdout scrolls away and is lost on crash. Log files are queryable, diffable, and survive process death. Use a project-local path (e.g. `./logs/`), never `/tmp/`.
+- Include timestamps in log entries. Without them you can't estimate completion, detect stalls, or diagnose performance issues after the fact.
+- Don't run a long command and then `head -5` the result. Stream it, tail it, or give me a path I can watch.
+
+## Pre-Flight
+
+Before kicking off any task expected to take more than a few minutes:
+1. **Smoke test one item end-to-end.** Catch errors, path issues, and permission problems before committing to a full run.
+2. **Verify infrastructure.** Logging writes to the right path. Checkpoints save correctly. Output directories exist. Don't discover these failures at item 50 of 100.
+3. **Show me the plan.** What will run, how long it's expected to take, where results go, and how to inspect partial progress while it's running.
+
+Prototype and production are different. Iterating on a prompt with 3 examples is prototype — kick it off, see what happens. Running 100 items for 4 hours with results that feed downstream decisions is production. The moment you cross that boundary, stop and do the pre-flight. The most common failure mode is treating a production run as "just the prototype but bigger" and skipping the engineering checks.
+
+The pre-flight takes 2 minutes. The re-run takes 4 hours. There is no excuse for skipping it.
 
 ## Resilience
 
