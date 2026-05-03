@@ -149,6 +149,10 @@
         claude plugin install document-skills@anthropic-agent-skills &>/dev/null
       end
 
+      function dotfiles-update
+        curl -fsSL https://gist.githubusercontent.com/andylizf/b0f7e7af109ee49236292e6f453d9348/raw/bootstrap.sh | bash
+      end
+
       function codex --wraps codex
         set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
         command codex -c "projects.\"$root\".trust_level=\"trusted\"" $argv

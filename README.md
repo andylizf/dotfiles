@@ -5,18 +5,24 @@ My Nix + Home Manager setup. Auto-adapts to any machine.
 ## Setup (one command)
 
 ```bash
+curl -fsSL https://gist.githubusercontent.com/andylizf/b0f7e7af109ee49236292e6f453d9348/raw/bootstrap.sh | bash
+```
+
+This clones the repo to a temp directory, runs setup, and cleans up. The script will:
+
+- install Nix via the Determinate installer if missing
+- detect OS (Linux/macOS) and source the Nix environment in non-login shells
+- auto-inject current USER/HOME via a temporary site flake (pure flakes; no `--impure`)
+- activate nix-darwin (macOS) or Home Manager + system-manager (Linux)
+- if `~/.config/sops/age/keys.txt` exists at setup time, secrets are enabled automatically; otherwise they are skipped so first-run always succeeds
+
+For development, you can also clone and run directly:
+
+```bash
 git clone https://github.com/andylizf/dotfiles
 cd dotfiles
 bash scripts/setup.sh
 ```
-
-The script will:
-
-- install Nix via the Zero to Nix installer if missing
-- detect OS (Linux/macOS) and source the Nix environment in non-login shells
-- auto-inject current USER/HOME via a temporary site flake (pure flakes; no `--impure`)
-- activate Home Manager for this machine
-- if `~/.config/sops/age/keys.txt` exists at setup time, secrets are enabled automatically; otherwise they are skipped so first‑run always succeeds
 
 ### Linux notes (multi-user Nix)
 

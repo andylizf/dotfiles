@@ -169,6 +169,7 @@ install_nix() {
   if [ -d "$HOME/.nix-profile/bin" ]; then
     export PATH="$HOME/.nix-profile/bin:$PATH"
   fi
+  multiuser_source_env
 
   local sys="$(uname -s)"
   local install_multi_user="false"
