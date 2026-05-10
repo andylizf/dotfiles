@@ -92,6 +92,18 @@ in
       mode = "0600";
     };
 
+    # 8b) Claude Code OAuth token (used for CLAUDE_CODE_OAUTH_TOKEN — subscription-based, multi-machine)
+    sops.secrets."tokens/claude_oauth" = {
+      path = "${config.home.homeDirectory}/.config/anthropic/claude-oauth-token";
+      mode = "0600";
+    };
+
+    # 12) Codex auth.json (ChatGPT Pro OAuth — decrypted to staging, copied on first use)
+    sops.secrets."codex/auth" = {
+      path = "${config.home.homeDirectory}/.config/sops-nix/codex-auth.json";
+      mode = "0600";
+    };
+
     # 9) Overleaf Git token (used for HTTPS remotes)
     sops.secrets."overleaf/git-token" = {
       path = "${config.home.homeDirectory}/.config/overleaf/git-token";

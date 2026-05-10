@@ -11,7 +11,6 @@
     git
     unzip
     zip
-    gnutar
     gzip
     coreutils
     less
@@ -35,6 +34,11 @@
         set -gx ANTHROPIC_API_KEY (string trim (cat ~/.config/anthropic/token))
       end
 
+      # Claude Code OAuth token (for Linux headless — macOS uses Keychain which auto-refreshes)
+      if test (uname) != Darwin; and test -f ~/.config/anthropic/claude-oauth-token
+        set -gx CLAUDE_CODE_OAUTH_TOKEN (string trim (cat ~/.config/anthropic/claude-oauth-token))
+      end
+
       # Claude Code env flags
       set -gx CLAUDE_CODE_USE_VERTEX 0
       set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
@@ -48,6 +52,13 @@
       # OpenAI: export OPENAI_API_KEY if present
       if test -f ~/.config/openai/token
         set -gx OPENAI_API_KEY (string trim (cat ~/.config/openai/token))
+      end
+
+      # Codex auth.json: seed from sops on Linux if not already present
+      if test (uname) != Darwin; and test -f ~/.config/sops-nix/codex-auth.json; and not test -f ~/.codex/auth.json
+        mkdir -p ~/.codex
+        cp ~/.config/sops-nix/codex-auth.json ~/.codex/auth.json
+        chmod 600 ~/.codex/auth.json
       end
 
       # Weights & Biases: export WANDB_API_KEY if present
