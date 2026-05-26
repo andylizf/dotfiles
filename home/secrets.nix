@@ -32,6 +32,8 @@ in
     # Age private key expected at ~/.config/sops/age/keys.txt
     sops.defaultSopsFile = ./../secrets/secrets.yaml;
     sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+    sops.defaultSymlinkPath = "${config.home.homeDirectory}/.config/sops-nix/secrets";
+    sops.defaultSecretsMountPoint = "${config.home.homeDirectory}/.config/sops-nix/secrets.d";
 
     # Map secrets to disk paths (add/remove as needed).
     # 1) SSH private key (mode 0600)

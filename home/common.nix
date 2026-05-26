@@ -416,8 +416,8 @@
       fi
       sleep 2
     done || echo "[dotfiles] claude install failed (network/region issue); skipping"
-    "$NPM" i -g @openai/codex@latest 2>&1 || true
-    "$NPM" i -g --force @google/gemini-cli 2>&1 || true
+    "$NPM" i -g @openai/codex@latest --prefix ~/.local 2>&1 || true
+    "$NPM" i -g --force @google/gemini-cli --prefix ~/.local 2>&1 || true
   '';
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
@@ -429,6 +429,9 @@
     web_search = "live"
     check_for_update_on_startup = false
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
+
+    [features]
+    hooks = true
 
     [mcp_servers.context7]
     command = "npx"
