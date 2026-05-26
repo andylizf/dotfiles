@@ -20,6 +20,7 @@
     uv
     nodejs_22
     direnv
+    ripgrep
     python312Packages.huggingface-hub
   ];
 
