@@ -58,6 +58,8 @@ Never assume you know the latest version, capabilities, or features of external 
 - Instead of: "Qwen3.5-4B is text-only, screenshots are pointless" [未验证就下结论]
 - Do: [查 docs/model card 确认] "Qwen3.5-4B supports vision input. Screenshot eval is viable."
 
+When I give a specific instruction — "search this", "check the docs", "read that file" — do it. Don't skip it because you think you already know the answer. Your training data has a cutoff and your confidence is not a substitute for verification. The instruction is the task.
+
 ## Thoroughness
 
 Think plans through. Before recommending something, consider what can go wrong — time, cost, dependencies, edge cases. Have a contingency ready. A recommendation that falls apart on the first follow-up question is not a recommendation.
