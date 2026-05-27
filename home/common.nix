@@ -433,6 +433,36 @@
 
     [features]
     hooks = true
+    plugins = true
+    plugin_hooks = true
+
+    [marketplaces.codex-memory-repro]
+    source_type = "local"
+    source = "${config.home.homeDirectory}/Projects/codex-memory-reproduce"
+
+    [plugins."codex-memory-reproduction@codex-memory-repro"]
+    enabled = true
+
+    [projects."/Users/andyl/Projects/codex-memory-reproduce"]
+    trust_level = "trusted"
+
+    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:pre_tool_use:0:0"]
+    trusted_hash = "sha256:9d8b745dc3d71b2ca62a865e51cbca24c5ff57c824c713201866a85626e9b111"
+
+    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:post_tool_use:0:0"]
+    trusted_hash = "sha256:202aca64974ccdd59e36c6eaba5c21001aa54a8799134f34773207cc5cd20b0d"
+
+    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:post_compact:0:0"]
+    trusted_hash = "sha256:84b3a9c9cd1aff87de8d2ed3e111d69e8fd0770266a4fef6a6af74f179cb91a1"
+
+    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:user_prompt_submit:0:0"]
+    trusted_hash = "sha256:a7d5c001fcbf7c9a85c3ebab31894bd559e28e2802f7cb854c74d5c5aeaf2668"
+
+    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:subagent_start:0:0"]
+    trusted_hash = "sha256:0bcd1d7351843dfdfd41339bdd366953a0a71767256d893a5df83b7392d898ed"
+
+    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:subagent_stop:0:0"]
+    trusted_hash = "sha256:72943dde20be870dd6b1e654b100a6fdbf4ea2b2337e99804bd6c7e6eaa089d7"
 
     [mcp_servers.context7]
     command = "npx"
