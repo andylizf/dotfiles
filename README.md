@@ -32,6 +32,8 @@ bash scripts/setup.sh
 
 If you previously used single-user Nix and hit errors like `/nix/store/.../bash: No such file or directory`, switch to multi-user with the installer, or enable user namespaces and install `bubblewrap`. The script will try to install `bubblewrap` automatically if it detects single-user mode.
 
+On restricted / China-based networks (slow `cache.nixos.org`, blocked `proxy.golang.org`, Debian hosts, etc.), see [docs/troubleshooting.md](docs/troubleshooting.md) for the binary-cache mirror, `GOPROXY`, and `allowAnyDistro` fixes.
+
 ### For secrets
 
 ```bash
