@@ -3,6 +3,14 @@
   config = {
     nixpkgs.hostPlatform = "x86_64-linux";
 
+    # system-manager only officially supports NixOS and Ubuntu. Some target
+    # hosts run Debian (e.g. internal GPU boxes), where the osVersion
+    # pre-activation assertion would otherwise abort with
+    # "This OS is not currently supported". Debian is Ubuntu's upstream and
+    # the modules we use here (/etc files, systemd units, auditd rules) are
+    # distro-agnostic, so opt into any-distro mode. See docs/troubleshooting.md.
+    system-manager.allowAnyDistro = true;
+
     # ── Auditd: server observability ──────────────────────────────────
     # Tracks command execution, process kills, file deletion, Docker
     # access, privilege escalation, and identity file changes.
