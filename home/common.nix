@@ -208,7 +208,7 @@
 
   programs.git = {
     enable = true;
-    userName = "Andy Lee";
+    userName = "Zhifei Li";
     userEmail = "andylizf@outlook.com";
     extraConfig = {
       push.autoSetupRemote = true;

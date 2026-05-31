@@ -1,5 +1,5 @@
 {
-  description = "Andy Lee's dotfiles with Nix Flakes + Home Manager";
+  description = "Zhifei Li's dotfiles with Nix Flakes + Home Manager";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
