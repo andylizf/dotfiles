@@ -310,6 +310,24 @@
     chmod 700 "$HOME/.config/wandb" || true
   '';
 
+  home.activation.syncPypirc = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    token_file="$HOME/.config/pypi/token"
+    dst="$HOME/.pypirc"
+    if [ -f "$token_file" ]; then
+      token="$(tr -d '\n\r' < "$token_file")"
+      if [ -n "$token" ]; then
+        tmp="$dst.tmp"
+        cat > "$tmp" <<PYPIRC
+[pypi]
+username = __token__
+password = $token
+PYPIRC
+        chmod 600 "$tmp"
+        mv "$tmp" "$dst"
+      fi
+    fi
+  '';
+
   home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ -f "$HOME/.config/huggingface/token" ]; then
       mkdir -p "$HOME/.cache/huggingface"

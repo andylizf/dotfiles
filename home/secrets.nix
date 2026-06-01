@@ -147,6 +147,12 @@ in
       path = "${config.home.homeDirectory}/.config/wandb/token";
       mode = "0600";
     };
+
+    # PyPI API token (used for publishing packages)
+    sops.secrets."tokens/pypi" = {
+      path = "${config.home.homeDirectory}/.config/pypi/token";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (
