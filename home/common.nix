@@ -55,6 +55,11 @@
         set -gx OPENAI_API_KEY (string trim (cat ~/.config/openai/token))
       end
 
+      # Vercel: export VERCEL_TOKEN if present
+      if test -f ~/.config/vercel/token
+        set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))
+      end
+
       # Codex auth.json: seed from sops on Linux if not already present
       if test (uname) != Darwin; and test -f ~/.config/sops-nix/codex-auth.json; and not test -f ~/.codex/auth.json
         mkdir -p ~/.codex

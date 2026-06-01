@@ -153,6 +153,12 @@ in
       path = "${config.home.homeDirectory}/.config/pypi/token";
       mode = "0600";
     };
+
+    # Vercel API token (used for VERCEL_TOKEN)
+    sops.secrets."tokens/vercel" = {
+      path = "${config.home.homeDirectory}/.config/vercel/token";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (
