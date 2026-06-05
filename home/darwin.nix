@@ -18,6 +18,30 @@
     run mkdir -p "${config.home.homeDirectory}/.config/lark-sync"
   '';
 
+  # bws (Bitwarden Secrets Manager CLI): the nixpkgs package fails to build, so fetch the
+  # prebuilt binary to ~/.local/bin on first activation (idempotent).
+  home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -x "${config.home.homeDirectory}/.local/bin/bws" ]; then
+      run mkdir -p "${config.home.homeDirectory}/.local/bin"
+      arch="$(uname -m)"
+      case "$arch" in
+        arm64) triple="aarch64-apple-darwin" ;;
+        x86_64) triple="x86_64-apple-darwin" ;;
+        *) triple="" ;;
+      esac
+      if [ -n "$triple" ]; then
+        url="https://github.com/bitwarden/sdk-sm/releases/download/bws-v2.1.0/bws-$triple-2.1.0.zip"
+        tmp="$(mktemp -d)"
+        if ${pkgs.curl}/bin/curl -sL -o "$tmp/bws.zip" "$url" && ${pkgs.unzip}/bin/unzip -o "$tmp/bws.zip" -d "$tmp" >/dev/null 2>&1; then
+          run mv -f "$tmp/bws" "${config.home.homeDirectory}/.local/bin/bws"
+          run chmod +x "${config.home.homeDirectory}/.local/bin/bws"
+          run xattr -d com.apple.quarantine "${config.home.homeDirectory}/.local/bin/bws" 2>/dev/null || true
+        fi
+        rm -rf "$tmp"
+      fi
+    fi
+  '';
+
   launchd.agents.lark-sync-pull = {
     enable = true;
     config = {
