@@ -166,6 +166,13 @@ in
       path = "${config.home.homeDirectory}/.config/gws/credentials.json";
       mode = "0600";
     };
+
+    # Bitwarden Secrets Manager access token (bootstrap secret for lark-cli token relay).
+    # Read by lark-sync scripts as BWS_ACCESS_TOKEN. Never expires; static.
+    sops.secrets."bitwarden/bws_access_token" = {
+      path = "${config.home.homeDirectory}/.config/lark-sync/bws-token";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (

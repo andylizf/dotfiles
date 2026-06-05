@@ -22,6 +22,7 @@
     direnv
     ripgrep
     python312Packages.huggingface-hub
+    bws  # Bitwarden Secrets Manager CLI (lark-cli token relay)
   ];
 
   # Ensure ~/.local/bin is in PATH for user-managed tools if needed
