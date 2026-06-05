@@ -60,6 +60,11 @@
         set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))
       end
 
+      # Google Workspace CLI (gws): point at sops-managed credentials
+      if test -f ~/.config/gws/credentials.json
+        set -gx GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE ~/.config/gws/credentials.json
+      end
+
       # Codex auth.json: seed from sops on Linux if not already present
       if test (uname) != Darwin; and test -f ~/.config/sops-nix/codex-auth.json; and not test -f ~/.codex/auth.json
         mkdir -p ~/.codex
@@ -442,6 +447,7 @@ PYPIRC
     done || echo "[dotfiles] claude install failed (network/region issue); skipping"
     "$NPM" i -g @openai/codex@latest --prefix ~/.local 2>&1 || true
     "$NPM" i -g --force @google/gemini-cli --prefix ~/.local 2>&1 || true
+    "$NPM" i -g @googleworkspace/cli@latest --prefix ~/.local 2>&1 || true
   '';
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;

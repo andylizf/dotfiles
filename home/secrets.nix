@@ -159,6 +159,13 @@ in
       path = "${config.home.homeDirectory}/.config/vercel/token";
       mode = "0600";
     };
+
+    # Google Workspace CLI credentials (authorized_user JSON: client_id/secret + refresh token)
+    # Consumed via GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE — no per-machine OAuth login needed.
+    sops.secrets."gws/credentials" = {
+      path = "${config.home.homeDirectory}/.config/gws/credentials.json";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (
