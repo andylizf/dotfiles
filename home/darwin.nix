@@ -8,7 +8,7 @@ let
   #   readers → pull agent + wrapper; NO refresh agent.
   # This matters: if the writer ran the pull/wrapper it would overwrite its real token with a
   # refresh-stripped copy and lose the chain.
-  writerHost = "Zhifeis-Mac-mini-8";
+  writerHost = "zhifei-clawhouse";
 in
 {
   # macOS-specific home-manager config.
