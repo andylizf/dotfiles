@@ -1,50 +1,36 @@
 { config, pkgs, lib, ... }:
+let
+  home = config.home.homeDirectory;
+  user = config.home.username;
+  # The always-on writer host (mac-mini): holds the sole lark-cli refresh chain.
+  # Everything is hostname-gated at activation time (scutil --get LocalHostName):
+  #   writer  → refresh+strip+upload agent; NO pull agent, NO pull-before-use wrapper.
+  #   readers → pull agent + wrapper; NO refresh agent.
+  # This matters: if the writer ran the pull/wrapper it would overwrite its real token with a
+  # refresh-stripped copy and lose the chain.
+  writerHost = "Zhifeis-Mac-mini-8";
+in
 {
   # macOS-specific home-manager config.
   # System-level settings (Finder, Dock, Homebrew) are in system/darwin.nix via nix-darwin.
 
-  # lark-cli token relay (reader side).
-  # The always-on writer (mac-mini) refreshes lark-cli tokens daily and uploads them to
-  # Bitwarden Secrets Manager. This machine pulls them on login/wake + every 6h, so a
-  # machine that was off for weeks gets valid tokens without a browser re-auth.
-  # Bootstrap secret (BWS_ACCESS_TOKEN) comes from sops → ~/.config/lark-sync/bws-token.
-
-  home.file.".local/bin/lark-sync-pull.sh" = {
-    source = ./scripts/lark-sync-pull.sh;
-    executable = true;
-  };
+  # ---- lark-cli multi-machine token relay (via Bitwarden Secrets Manager) ----
+  # Scripts deployed everywhere (harmless); the launchd agents + wrapper are hostname-gated below.
+  home.file.".local/bin/lark-sync-pull.sh"     = { source = ./scripts/lark-sync-pull.sh;     executable = true; };
+  home.file.".local/bin/lark-cli-wrapper.sh"   = { source = ./scripts/lark-cli-wrapper.sh;   executable = true; };
+  home.file.".local/bin/lark-refresh.sh"       = { source = ./scripts/lark-refresh.sh;       executable = true; };
+  home.file.".local/bin/lark-upload-tokens.sh" = { source = ./scripts/lark-upload-tokens.sh; executable = true; };
+  home.file.".local/bin/lark-strip-refresh.py" = { source = ./scripts/lark-strip-refresh.py; executable = true; };
 
   home.activation.ensureLarkSyncDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    run mkdir -p "${config.home.homeDirectory}/.config/lark-sync"
+    run mkdir -p "${home}/.config/lark-sync"
   '';
 
-  # lark-cli is installed imperatively via npm (~/.local/bin/lark-cli -> run.js). Wrap it with a
-  # pull-before-use shim so every invocation refreshes the token from Bitwarden first (keeps the
-  # access token fresh, avoids lark-cli's delete-on-failed-refresh). Idempotent + survives npm
-  # updates: a raw npm lark-cli (no wrapper marker) is moved aside to lark-cli.real, then the
-  # wrapper is (re)installed.
-  home.file.".local/bin/lark-cli-wrapper.sh" = {
-    source = ./scripts/lark-cli-wrapper.sh;
-    executable = true;
-  };
-  home.activation.installLarkCliWrapper = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    LARK="${config.home.homeDirectory}/.local/bin/lark-cli"
-    REAL="${config.home.homeDirectory}/.local/bin/lark-cli.real"
-    WRAP="${config.home.homeDirectory}/.local/bin/lark-cli-wrapper.sh"
-    if [ -e "$LARK" ] && ! grep -q "pull-before-use wrapper" "$LARK" 2>/dev/null; then
-      run mv -f "$LARK" "$REAL"
-    fi
-    if [ -e "$REAL" ] && [ -f "$WRAP" ]; then
-      run cp -f "$WRAP" "$LARK"
-      run chmod +x "$LARK"
-    fi
-  '';
-
-  # bws (Bitwarden Secrets Manager CLI): the nixpkgs package fails to build, so fetch the
-  # prebuilt binary to ~/.local/bin on first activation (idempotent).
+  # bws (Bitwarden Secrets Manager CLI): nixpkgs package fails to build, so fetch the prebuilt
+  # binary to ~/.local/bin on first activation (idempotent). Needed by both readers and writer.
   home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ ! -x "${config.home.homeDirectory}/.local/bin/bws" ]; then
-      run mkdir -p "${config.home.homeDirectory}/.local/bin"
+    if [ ! -x "${home}/.local/bin/bws" ]; then
+      run mkdir -p "${home}/.local/bin"
       arch="$(uname -m)"
       case "$arch" in
         arm64) triple="aarch64-apple-darwin" ;;
@@ -55,29 +41,88 @@
         url="https://github.com/bitwarden/sdk-sm/releases/download/bws-v2.1.0/bws-$triple-2.1.0.zip"
         tmp="$(mktemp -d)"
         if ${pkgs.curl}/bin/curl -sL -o "$tmp/bws.zip" "$url" && ${pkgs.unzip}/bin/unzip -o "$tmp/bws.zip" -d "$tmp" >/dev/null 2>&1; then
-          run mv -f "$tmp/bws" "${config.home.homeDirectory}/.local/bin/bws"
-          run chmod +x "${config.home.homeDirectory}/.local/bin/bws"
-          run xattr -d com.apple.quarantine "${config.home.homeDirectory}/.local/bin/bws" 2>/dev/null || true
+          run mv -f "$tmp/bws" "${home}/.local/bin/bws"
+          run chmod +x "${home}/.local/bin/bws"
+          run xattr -d com.apple.quarantine "${home}/.local/bin/bws" 2>/dev/null || true
         fi
         rm -rf "$tmp"
       fi
     fi
   '';
 
-  launchd.agents.lark-sync-pull = {
-    enable = true;
-    config = {
-      ProgramArguments = [
-        "/bin/bash"
-        "${config.home.homeDirectory}/.local/bin/lark-sync-pull.sh"
-      ];
-      RunAtLoad = true;
-      StartInterval = 21600; # every 6h; missed intervals fire on wake
-      StandardOutPath = "${config.home.homeDirectory}/.config/lark-sync/launchd-stdout.log";
-      StandardErrorPath = "${config.home.homeDirectory}/.config/lark-sync/launchd-stderr.log";
-      EnvironmentVariables = {
-        PATH = "/etc/profiles/per-user/${config.home.username}/bin:/run/current-system/sw/bin:/usr/bin:/bin:${config.home.homeDirectory}/.local/bin";
-      };
-    };
-  };
+  # Hostname-gated role setup: pick writer vs reader and install the right launchd agent + wrapper.
+  home.activation.larkSyncRole = lib.hm.dag.entryAfter [ "linkGeneration" "installBws" "ensureLarkSyncDir" ] ''
+    BIN="${home}/.local/bin"
+    LA="${home}/Library/LaunchAgents"
+    CFG="${home}/.config/lark-sync"
+    UIDNUM="$(/usr/bin/id -u)"
+    HOSTLOCAL="$(/usr/sbin/scutil --get LocalHostName 2>/dev/null || echo unknown)"
+    PULL_PLIST="$LA/local.lark-sync-pull.plist"
+    REFRESH_PLIST="$LA/local.lark-refresh.plist"
+    AGENT_PATH="/etc/profiles/per-user/${user}/bin:/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:$BIN"
+    run mkdir -p "$LA" "$CFG"
+
+    # Retire the old home-manager-managed pull agent if it lingers from a previous generation.
+    /bin/launchctl bootout "gui/$UIDNUM/org.nix-community.home.lark-sync-pull" 2>/dev/null || true
+
+    install_wrapper() {
+      if [ -e "$BIN/lark-cli" ] && ! grep -q "pull-before-use wrapper" "$BIN/lark-cli" 2>/dev/null; then
+        run mv -f "$BIN/lark-cli" "$BIN/lark-cli.real"
+      fi
+      if [ -e "$BIN/lark-cli.real" ] && [ -f "$BIN/lark-cli-wrapper.sh" ]; then
+        run cp -f "$BIN/lark-cli-wrapper.sh" "$BIN/lark-cli"
+        run chmod +x "$BIN/lark-cli"
+      fi
+    }
+    remove_wrapper() {
+      # Restore the real lark-cli binary (writer must use the unwrapped CLI to actually refresh).
+      if [ -e "$BIN/lark-cli" ] && grep -q "pull-before-use wrapper" "$BIN/lark-cli" 2>/dev/null \
+         && [ -e "$BIN/lark-cli.real" ]; then
+        run mv -f "$BIN/lark-cli.real" "$BIN/lark-cli"
+      fi
+    }
+
+    if [ "$HOSTLOCAL" = "${writerHost}" ]; then
+      # ---- WRITER (mac-mini) ----
+      /bin/launchctl bootout "gui/$UIDNUM/local.lark-sync-pull" 2>/dev/null || true
+      run rm -f "$PULL_PLIST"
+      remove_wrapper
+      cat > "$REFRESH_PLIST" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>local.lark-refresh</string>
+  <key>ProgramArguments</key><array><string>/bin/bash</string><string>$BIN/lark-refresh.sh</string></array>
+  <key>StartInterval</key><integer>1800</integer>
+  <key>StandardOutPath</key><string>$CFG/refresh-stdout.log</string>
+  <key>StandardErrorPath</key><string>$CFG/refresh-stderr.log</string>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>$AGENT_PATH</string></dict>
+</dict></plist>
+PLIST
+      /bin/launchctl bootout "gui/$UIDNUM/local.lark-refresh" 2>/dev/null || true
+      /bin/launchctl bootstrap "gui/$UIDNUM" "$REFRESH_PLIST" 2>/dev/null || true
+      echo "[lark-sync] role=writer ($HOSTLOCAL)"
+    else
+      # ---- READER ----
+      /bin/launchctl bootout "gui/$UIDNUM/local.lark-refresh" 2>/dev/null || true
+      run rm -f "$REFRESH_PLIST"
+      install_wrapper
+      cat > "$PULL_PLIST" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>local.lark-sync-pull</string>
+  <key>ProgramArguments</key><array><string>/bin/bash</string><string>$BIN/lark-sync-pull.sh</string></array>
+  <key>RunAtLoad</key><true/>
+  <key>StartInterval</key><integer>21600</integer>
+  <key>StandardOutPath</key><string>$CFG/launchd-stdout.log</string>
+  <key>StandardErrorPath</key><string>$CFG/launchd-stderr.log</string>
+  <key>EnvironmentVariables</key><dict><key>PATH</key><string>$AGENT_PATH</string></dict>
+</dict></plist>
+PLIST
+      /bin/launchctl bootout "gui/$UIDNUM/local.lark-sync-pull" 2>/dev/null || true
+      /bin/launchctl bootstrap "gui/$UIDNUM" "$PULL_PLIST" 2>/dev/null || true
+      echo "[lark-sync] role=reader ($HOSTLOCAL)"
+    fi
+  '';
 }

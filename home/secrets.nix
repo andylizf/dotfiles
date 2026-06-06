@@ -173,6 +173,12 @@ in
       path = "${config.home.homeDirectory}/.config/lark-sync/bws-token";
       mode = "0600";
     };
+
+    # Feishu bot webhook for lark token-refresh alerts (writer side / mac-mini only).
+    sops.secrets."feishu/alert_webhook" = {
+      path = "${config.home.homeDirectory}/.config/lark-sync/feishu-webhook";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (
