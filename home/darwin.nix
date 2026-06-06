@@ -18,6 +18,28 @@
     run mkdir -p "${config.home.homeDirectory}/.config/lark-sync"
   '';
 
+  # lark-cli is installed imperatively via npm (~/.local/bin/lark-cli -> run.js). Wrap it with a
+  # pull-before-use shim so every invocation refreshes the token from Bitwarden first (keeps the
+  # access token fresh, avoids lark-cli's delete-on-failed-refresh). Idempotent + survives npm
+  # updates: a raw npm lark-cli (no wrapper marker) is moved aside to lark-cli.real, then the
+  # wrapper is (re)installed.
+  home.file.".local/bin/lark-cli-wrapper.sh" = {
+    source = ./scripts/lark-cli-wrapper.sh;
+    executable = true;
+  };
+  home.activation.installLarkCliWrapper = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    LARK="${config.home.homeDirectory}/.local/bin/lark-cli"
+    REAL="${config.home.homeDirectory}/.local/bin/lark-cli.real"
+    WRAP="${config.home.homeDirectory}/.local/bin/lark-cli-wrapper.sh"
+    if [ -e "$LARK" ] && ! grep -q "pull-before-use wrapper" "$LARK" 2>/dev/null; then
+      run mv -f "$LARK" "$REAL"
+    fi
+    if [ -e "$REAL" ] && [ -f "$WRAP" ]; then
+      run cp -f "$WRAP" "$LARK"
+      run chmod +x "$LARK"
+    fi
+  '';
+
   # bws (Bitwarden Secrets Manager CLI): the nixpkgs package fails to build, so fetch the
   # prebuilt binary to ~/.local/bin on first activation (idempotent).
   home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
