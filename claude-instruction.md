@@ -158,3 +158,7 @@ The pre-flight takes 2 minutes. The re-run takes 4 hours. There is no excuse for
 **No surrender.** When something doesn't work, find another way. "Can't do X" means you haven't finished thinking — try Y, Z, or ask what resources are available. Never propose stopping ("先到这", "要不算了", "probably need a different machine") unless you have genuinely exhausted every approach and can list what you tried. Suggesting to quit is not a status update — it's giving up.
 
 **Incremental verification:** Verify each step before moving to the next. Don't stack a chain of changes and test only at the end — when it breaks you won't know where.
+
+## Machine-Specific Notes
+
+@~/.claude/machine.md
