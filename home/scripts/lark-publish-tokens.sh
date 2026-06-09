@@ -23,15 +23,27 @@ PROJECT_ID=$("$BWS" project list 2>/dev/null | python3 -c "import json,sys; prin
 [ -z "$PROJECT_ID" ] && { log "ERROR: project not found"; exit 1; }
 
 LIST=$("$BWS" secret list "$PROJECT_ID" 2>/dev/null)
+# Guard: a transient `secret list` failure must NOT fall through to "create" — that path produced
+# duplicate secrets (and a reader's first-match lookup can then pick a stale one). Only trust an
+# "absent" result when LIST actually parses as a JSON array; otherwise skip this cycle entirely.
+echo "$LIST" | python3 -c "import json,sys; sys.exit(0 if isinstance(json.load(sys.stdin), list) else 1)" 2>/dev/null \
+  || { log "ERROR: secret list invalid/unavailable — skipping publish to avoid duplicate secrets"; exit 1; }
 
 "$EXTRACT" "$MASTERKEY" "$SUPP" | while read -r appid at; do
   [ -z "$appid" ] && continue
   key="lark-at-$appid"
-  sid=$(echo "$LIST" | python3 -c "import json,sys; print(next((s['id'] for s in json.load(sys.stdin) if s['key']=='$key'), ''))" 2>/dev/null)
-  if [ -n "$sid" ]; then
-    "$BWS" secret edit "$sid" --value "$at" >/dev/null 2>&1 && log "updated $key" || log "FAIL edit $key"
-  else
+  # All ids for this key (normally 0 or 1; >1 means a prior bug left duplicates — self-heal them).
+  ids=$(echo "$LIST" | python3 -c "import json,sys; print(' '.join(s['id'] for s in json.load(sys.stdin) if s['key']=='$key'))" 2>/dev/null)
+  # shellcheck disable=SC2086
+  set -- $ids
+  if [ "$#" -eq 0 ]; then
     "$BWS" secret create "$key" "$at" "$PROJECT_ID" >/dev/null 2>&1 && log "created $key" || log "FAIL create $key"
+  else
+    "$BWS" secret edit "$1" --value "$at" >/dev/null 2>&1 && log "updated $key" || log "FAIL edit $key"
+    shift
+    for extra in "$@"; do
+      "$BWS" secret delete "$extra" >/dev/null 2>&1 && log "deleted duplicate $key ($extra)" || log "FAIL delete dup $key ($extra)"
+    done
   fi
 done
 log "publish done"
