@@ -2,12 +2,12 @@
 let
   home = config.home.homeDirectory;
   user = config.home.username;
-  # The always-on writer host (mac-mini): holds the sole lark-cli refresh chain.
-  # Everything is hostname-gated at activation time (scutil --get LocalHostName):
-  #   writer  → refresh+strip+upload agent; NO pull agent, NO pull-before-use wrapper.
-  #   readers → pull agent + wrapper; NO refresh agent.
-  # This matters: if the writer ran the pull/wrapper it would overwrite its real token with a
-  # refresh-stripped copy and lose the chain.
+  # The always-on writer host (mac-mini): holds the SOLE lark-cli refresh chain. Everything is
+  # hostname-gated at activation time (scutil --get LocalHostName):
+  #   writer  → refresh+publish agent; uses the unwrapped real CLI to actually refresh.
+  #   readers → env-injection wrapper only (NO agent): on use it fetches the published access-token
+  #             string from Bitwarden and injects it via LARKSUITE_CLI_USER_ACCESS_TOKEN, so a reader
+  #             never holds a refresh_token and can never break the writer's single-use refresh chain.
   writerHost = "zhifei-clawhouse";
 in
 {
@@ -15,12 +15,11 @@ in
   # System-level settings (Finder, Dock, Homebrew) are in system/darwin.nix via nix-darwin.
 
   # ---- lark-cli multi-machine token relay (via Bitwarden Secrets Manager) ----
-  # Scripts deployed everywhere (harmless); the launchd agents + wrapper are hostname-gated below.
-  home.file.".local/bin/lark-sync-pull.sh"     = { source = ./scripts/lark-sync-pull.sh;     executable = true; };
-  home.file.".local/bin/lark-cli-wrapper.sh"   = { source = ./scripts/lark-cli-wrapper.sh;   executable = true; };
-  home.file.".local/bin/lark-refresh.sh"       = { source = ./scripts/lark-refresh.sh;       executable = true; };
-  home.file.".local/bin/lark-upload-tokens.sh" = { source = ./scripts/lark-upload-tokens.sh; executable = true; };
-  home.file.".local/bin/lark-strip-refresh.py" = { source = ./scripts/lark-strip-refresh.py; executable = true; };
+  # Scripts deployed everywhere (harmless); the launchd agent + wrapper are hostname-gated below.
+  home.file.".local/bin/lark-cli-wrapper.sh"    = { source = ./scripts/lark-cli-wrapper.sh;    executable = true; };
+  home.file.".local/bin/lark-refresh.sh"        = { source = ./scripts/lark-refresh.sh;        executable = true; };
+  home.file.".local/bin/lark-publish-tokens.sh" = { source = ./scripts/lark-publish-tokens.sh; executable = true; };
+  home.file.".local/bin/lark-extract-ats.py"    = { source = ./scripts/lark-extract-ats.py;    executable = true; };
 
   home.activation.ensureLarkSyncDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run mkdir -p "${home}/.config/lark-sync"
@@ -62,11 +61,17 @@ in
     AGENT_PATH="/etc/profiles/per-user/${user}/bin:/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:$BIN"
     run mkdir -p "$LA" "$CFG"
 
-    # Retire the old home-manager-managed pull agent if it lingers from a previous generation.
+    # Retire any lingering pull agent from the old (file-relay) design — readers no longer poll.
     /bin/launchctl bootout "gui/$UIDNUM/org.nix-community.home.lark-sync-pull" 2>/dev/null || true
+    /bin/launchctl bootout "gui/$UIDNUM/local.lark-sync-pull" 2>/dev/null || true
+    run rm -f "$PULL_PLIST"
 
     install_wrapper() {
-      if [ -e "$BIN/lark-cli" ] && ! grep -q "pull-before-use wrapper" "$BIN/lark-cli" 2>/dev/null; then
+      # Preserve the real npm binary as lark-cli.real, then install the env-injection wrapper over
+      # lark-cli. Any wrapper (old or new) is a bash script referencing "lark-cli.real"; the real
+      # node binary never does — so this safely upgrades the old wrapper without clobbering the real
+      # binary, and also re-wraps after an npm reinstall replaces lark-cli with the node binary.
+      if [ -e "$BIN/lark-cli" ] && ! grep -q 'lark-cli\.real' "$BIN/lark-cli" 2>/dev/null; then
         run mv -f "$BIN/lark-cli" "$BIN/lark-cli.real"
       fi
       if [ -e "$BIN/lark-cli.real" ] && [ -f "$BIN/lark-cli-wrapper.sh" ]; then
@@ -76,7 +81,7 @@ in
     }
     remove_wrapper() {
       # Restore the real lark-cli binary (writer must use the unwrapped CLI to actually refresh).
-      if [ -e "$BIN/lark-cli" ] && grep -q "pull-before-use wrapper" "$BIN/lark-cli" 2>/dev/null \
+      if [ -e "$BIN/lark-cli" ] && grep -q 'lark-cli\.real' "$BIN/lark-cli" 2>/dev/null \
          && [ -e "$BIN/lark-cli.real" ]; then
         run mv -f "$BIN/lark-cli.real" "$BIN/lark-cli"
       fi
@@ -84,8 +89,6 @@ in
 
     if [ "$HOSTLOCAL" = "${writerHost}" ]; then
       # ---- WRITER (mac-mini) ----
-      /bin/launchctl bootout "gui/$UIDNUM/local.lark-sync-pull" 2>/dev/null || true
-      run rm -f "$PULL_PLIST"
       remove_wrapper
       cat > "$REFRESH_PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -107,21 +110,6 @@ PLIST
       /bin/launchctl bootout "gui/$UIDNUM/local.lark-refresh" 2>/dev/null || true
       run rm -f "$REFRESH_PLIST"
       install_wrapper
-      cat > "$PULL_PLIST" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>Label</key><string>local.lark-sync-pull</string>
-  <key>ProgramArguments</key><array><string>/bin/bash</string><string>$BIN/lark-sync-pull.sh</string></array>
-  <key>RunAtLoad</key><true/>
-  <key>StartInterval</key><integer>21600</integer>
-  <key>StandardOutPath</key><string>$CFG/launchd-stdout.log</string>
-  <key>StandardErrorPath</key><string>$CFG/launchd-stderr.log</string>
-  <key>EnvironmentVariables</key><dict><key>PATH</key><string>$AGENT_PATH</string></dict>
-</dict></plist>
-PLIST
-      /bin/launchctl bootout "gui/$UIDNUM/local.lark-sync-pull" 2>/dev/null || true
-      /bin/launchctl bootstrap "gui/$UIDNUM" "$PULL_PLIST" 2>/dev/null || true
       echo "[lark-sync] role=reader ($HOSTLOCAL)"
     fi
   '';

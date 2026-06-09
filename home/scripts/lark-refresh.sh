@@ -39,8 +39,9 @@ if [ -n "$failures" ]; then
     log "ALERT sent for:$failures"
 fi
 
-# Publish freshly-refreshed (refresh-stripped) tokens to Bitwarden for readers to pull.
-if [ -x "$HOME/.local/bin/lark-upload-tokens.sh" ]; then
-    log "uploading tokens to Bitwarden..."
-    PATH="/usr/bin:/bin:$HOME/.local/bin:$PATH" "$HOME/.local/bin/lark-upload-tokens.sh" >> "$LOG_FILE" 2>&1 || log "WARN: upload failed"
+# Publish freshly-refreshed ACCESS TOKEN strings to Bitwarden (keyed by app_id). Readers inject these
+# via LARKSUITE_CLI_USER_ACCESS_TOKEN — no refresh_token ever leaves this machine.
+if [ -x "$HOME/.local/bin/lark-publish-tokens.sh" ]; then
+    log "publishing access tokens to Bitwarden..."
+    PATH="/usr/bin:/bin:$HOME/.local/bin:$PATH" "$HOME/.local/bin/lark-publish-tokens.sh" >> "$LOG_FILE" 2>&1 || log "WARN: publish failed"
 fi
