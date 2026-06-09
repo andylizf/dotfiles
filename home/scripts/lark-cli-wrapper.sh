@@ -22,11 +22,21 @@ CACHE_TTL=300   # seconds; perf knob only — correctness comes from the auth-er
 
 [ -x "$REAL" ] || { echo "lark-cli.real not found at $REAL" >&2; exit 127; }
 
-# Interactive / meta commands: never inject, never capture — run the real CLI straight through.
-# `auth login` in particular drives an interactive browser/QR flow that must keep the live TTY.
+# Meta commands that involve no credentials: run the real CLI straight through.
 case "${1:-}" in
-  auth|login|completion|update|help|--version|-v|--help|-h|"") exec "$REAL" "$@" ;;
+  completion|update|help|--version|-v|--help|-h|"") exec "$REAL" "$@" ;;
 esac
+
+# `auth ...` (status/list/check/scopes/login/logout): set the token env var so lark-cli reports the
+# TRUTH — "credentials are provided externally" — instead of the misleading local `no_token`. Without
+# this, a consumer that checks `auth list`/`auth status` before using the CLI sees no_token and wrongly
+# concludes there is no access, even though every `--profile` data call works via injection below.
+# It also makes lark-cli REFUSE interactive login/logout on a reader (which must never re-auth: that
+# would fork the writer's single-use refresh chain). A placeholder value is enough to trigger this
+# mode, so this needs no Bitwarden round-trip and works offline.
+if [ "${1:-}" = "auth" ]; then
+  exec env LARKSUITE_CLI_USER_ACCESS_TOKEN="${LARKSUITE_CLI_USER_ACCESS_TOKEN:-managed-by-bitwarden-relay}" "$REAL" "$@"
+fi
 
 # profile name -> app_id. Same app_id is shared by the mac-mini name and the MacBook name.
 profile_to_appid() {
