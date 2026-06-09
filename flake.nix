@@ -64,6 +64,10 @@
               nixpkgs.config.allowUnfree = true;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
+              # Back up (instead of erroring on) any pre-existing unmanaged file at a managed path,
+              # so `switch` never aborts with "Existing file would be clobbered" — e.g. manual bridge
+              # edits in ~/.local/bin or a stray ~/.codex/config.toml.
+              home-manager.backupFileExtension = "hmbak";
               users.users.${darwinUser}.home = darwinHome;
               home-manager.users.${darwinUser} = {
                 imports = baseModules ++ [ ./home/darwin.nix ];
