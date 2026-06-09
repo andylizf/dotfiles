@@ -22,9 +22,9 @@ CACHE_TTL=300   # seconds; perf knob only — correctness comes from the auth-er
 
 [ -x "$REAL" ] || { echo "lark-cli.real not found at $REAL" >&2; exit 127; }
 
-# Meta commands that involve no credentials: run the real CLI straight through.
+# Meta commands that involve no credentials (schema lookup is offline): run the real CLI as-is.
 case "${1:-}" in
-  completion|update|help|--version|-v|--help|-h|"") exec "$REAL" "$@" ;;
+  schema|completion|update|help|--version|-v|--help|-h|"") exec "$REAL" "$@" ;;
 esac
 
 # `auth ...` (status/list/check/scopes/login/logout): set the token env var so lark-cli reports the
@@ -59,10 +59,18 @@ for a in "$@"; do
   prev="$a"
 done
 
-# No profile to resolve → run the real CLI as-is (its own local credentials, if any).
+# No resolvable --profile → can't pick a token to inject. This reader holds NO local credentials
+# (tokens are injected per --profile from Bitwarden), so a user-auth call will fail with token_missing.
+# Emit a hint to STDERR (never stdout, so JSON consumers are unaffected) so the failure isn't misread
+# as "no access exists" — that mistake has bitten consumers who then try to re-login.
 appid=""
 [ -n "$profile" ] && appid="$(profile_to_appid "$profile")"
 if [ -z "$appid" ]; then
+  if [ -n "$profile" ]; then
+    echo "lark-cli relay: unknown --profile '$profile' (known: personal, bytedance, cheese)" >&2
+  else
+    echo "lark-cli relay: no --profile given — this machine injects a Bitwarden token per profile; add --profile <personal|bytedance|cheese> for user-auth calls" >&2
+  fi
   exec "$REAL" "$@"
 fi
 
