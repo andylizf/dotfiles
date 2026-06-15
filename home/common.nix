@@ -162,10 +162,6 @@
 
       # First-time plugin download. Check installed_plugins.json (not just the
       # cache dir) so orphaned/incomplete installs get retried.
-      if command -q claude; and not grep -q 'superpowers@claude-plugins-official' ~/.claude/plugins/installed_plugins.json 2>/dev/null
-        claude plugin marketplace add anthropics/claude-plugins-official &>/dev/null
-        claude plugin install superpowers@claude-plugins-official &>/dev/null
-      end
       if command -q claude; and not grep -q 'document-skills@anthropic-agent-skills' ~/.claude/plugins/installed_plugins.json 2>/dev/null
         claude plugin marketplace add anthropics/skills &>/dev/null
         claude plugin install document-skills@anthropic-agent-skills &>/dev/null
@@ -384,7 +380,6 @@ PYPIRC
           "defaultMode": "bypassPermissions"
         },
         "enabledPlugins": {
-          "superpowers@claude-plugins-official": true,
           "document-skills@anthropic-agent-skills": true
         },
         "alwaysThinkingEnabled": true,

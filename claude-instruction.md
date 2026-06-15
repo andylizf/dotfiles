@@ -125,8 +125,6 @@ Approval is scoped, not blanket. If I approve action X, that does not authorize 
 
 ## Software Engineering
 
-For large, complex, or error-prone tasks, use superpowers skills — don't wing it.
-
 Three non-negotiable properties for any non-trivial work:
 
 **Resumable.** Assume processes die. Checkpoint intermediate results so a crash doesn't lose everything. Checkpoints should be independent (no overwriting), and it should be possible to resume from any one of them.
