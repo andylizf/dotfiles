@@ -63,6 +63,11 @@
         set -gx CF_ACCESS_CLIENT_SECRET (string trim (cat ~/.config/cloudflare/client-secret))
       end
 
+      # Cloudflare API token (scoped, for wrangler/terraform/CLI)
+      if test -f ~/.config/cloudflare/api-token
+        set -gx CLOUDFLARE_API_TOKEN (string trim (cat ~/.config/cloudflare/api-token))
+      end
+
       # Vercel: export VERCEL_TOKEN if present
       if test -f ~/.config/vercel/token
         set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))

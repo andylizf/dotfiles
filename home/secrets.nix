@@ -176,6 +176,10 @@ in
       path = "${config.home.homeDirectory}/.config/cloudflare/client-secret";
       mode = "0600";
     };
+    sops.secrets."cloudflare/api_token" = {
+      path = "${config.home.homeDirectory}/.config/cloudflare/api-token";
+      mode = "0600";
+    };
 
     # Bitwarden Secrets Manager access token (bootstrap secret for lark-cli token relay).
     # Read by lark-sync scripts as BWS_ACCESS_TOKEN. Never expires; static.
