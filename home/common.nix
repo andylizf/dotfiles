@@ -55,6 +55,14 @@
         set -gx OPENAI_API_KEY (string trim (cat ~/.config/openai/token))
       end
 
+      # Cloudflare Access service token (CF-Access-Client-Id / Secret)
+      if test -f ~/.config/cloudflare/client-id
+        set -gx CF_ACCESS_CLIENT_ID (string trim (cat ~/.config/cloudflare/client-id))
+      end
+      if test -f ~/.config/cloudflare/client-secret
+        set -gx CF_ACCESS_CLIENT_SECRET (string trim (cat ~/.config/cloudflare/client-secret))
+      end
+
       # Vercel: export VERCEL_TOKEN if present
       if test -f ~/.config/vercel/token
         set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))

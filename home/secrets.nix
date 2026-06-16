@@ -167,6 +167,16 @@ in
       mode = "0600";
     };
 
+    # Cloudflare Access service token (CF-Access-Client-Id / Secret)
+    sops.secrets."cloudflare/client_id" = {
+      path = "${config.home.homeDirectory}/.config/cloudflare/client-id";
+      mode = "0600";
+    };
+    sops.secrets."cloudflare/client_secret" = {
+      path = "${config.home.homeDirectory}/.config/cloudflare/client-secret";
+      mode = "0600";
+    };
+
     # Bitwarden Secrets Manager access token (bootstrap secret for lark-cli token relay).
     # Read by lark-sync scripts as BWS_ACCESS_TOKEN. Never expires; static.
     sops.secrets."bitwarden/bws_access_token" = {
