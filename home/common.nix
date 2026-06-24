@@ -18,6 +18,7 @@
     rsync
     gh
     uv
+    python313
     nodejs_22
     direnv
     ripgrep
