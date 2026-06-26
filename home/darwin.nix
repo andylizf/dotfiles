@@ -3,7 +3,7 @@ let
   home = config.home.homeDirectory;
   user = config.home.username;
   # The always-on writer host (mac-mini): holds the SOLE lark-cli refresh chain. Everything is
-  # hostname-gated at activation time (scutil --get LocalHostName):
+  # hostname-gated at activation time (scutil --get ComputerName — NOT LocalHostName, see below):
   #   writer  → refresh+publish agent; uses the unwrapped real CLI to actually refresh.
   #   readers → env-injection wrapper only (NO agent): on use it fetches the published access-token
   #             string from Bitwarden and injects it via LARKSUITE_CLI_USER_ACCESS_TOKEN, so a reader
@@ -50,12 +50,17 @@ in
   '';
 
   # Hostname-gated role setup: pick writer vs reader and install the right launchd agent + wrapper.
+  # Keyed on ComputerName, NOT LocalHostName: Bonjour silently appends "-2"/"-3" to LocalHostName on
+  # name collisions (incl. phantom self-collisions across network transitions). That bit the writer once
+  # (mac-mini LocalHostName drifted to "zhifei-clawhouse-3") → it was misdetected as a reader, so the
+  # deploy booted out + deleted the refresh agent, killing the sole token-refresh chain until manual
+  # repair. ComputerName is user-set, never auto-suffixed, and distinct across the macs → stable key.
   home.activation.larkSyncRole = lib.hm.dag.entryAfter [ "linkGeneration" "installBws" "ensureLarkSyncDir" ] ''
     BIN="${home}/.local/bin"
     LA="${home}/Library/LaunchAgents"
     CFG="${home}/.config/lark-sync"
     UIDNUM="$(/usr/bin/id -u)"
-    HOSTLOCAL="$(/usr/sbin/scutil --get LocalHostName 2>/dev/null || echo unknown)"
+    HOSTLOCAL="$(/usr/sbin/scutil --get ComputerName 2>/dev/null || echo unknown)"
     PULL_PLIST="$LA/local.lark-sync-pull.plist"
     REFRESH_PLIST="$LA/local.lark-refresh.plist"
     AGENT_PATH="/etc/profiles/per-user/${user}/bin:/run/current-system/sw/bin:/usr/bin:/bin:/usr/sbin:$BIN"
