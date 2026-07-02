@@ -160,6 +160,13 @@ in
       mode = "0600";
     };
 
+    # Notion "agents" integration token (used for NOTION_TOKEN → Notion MCP server).
+    # This is the integration with access to the Agents workspace page.
+    sops.secrets."tokens/notion" = {
+      path = "${config.home.homeDirectory}/.config/notion/token";
+      mode = "0600";
+    };
+
     # Google Workspace CLI credentials (authorized_user JSON: client_id/secret + refresh token)
     # Consumed via GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE — no per-machine OAuth login needed.
     sops.secrets."gws/credentials" = {

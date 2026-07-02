@@ -74,6 +74,11 @@
         set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))
       end
 
+      # Notion: export NOTION_TOKEN (consumed by the Notion MCP server via ''${NOTION_TOKEN})
+      if test -f ~/.config/notion/token
+        set -gx NOTION_TOKEN (string trim (cat ~/.config/notion/token))
+      end
+
       # Google Workspace CLI (gws): point at sops-managed credentials
       if test -f ~/.config/gws/credentials.json
         set -gx GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE ~/.config/gws/credentials.json
@@ -168,10 +173,15 @@
 
       # Sync Hugging Face token into default cache for CLI detection
 
-      # Register Claude Code MCP servers at user scope (auto-trusted, no approval prompt)
-      if command -q claude; and not test -f ~/.claude/.mcp-registered
+      # Register Claude Code MCP servers at user scope (auto-trusted, no approval prompt).
+      # Sentinel is versioned: bump the suffix when adding a server so machines that
+      # already ran an earlier version re-run and pick up the new server(s).
+      if command -q claude; and not test -f ~/.claude/.mcp-registered-v2
         claude mcp add --scope user -t stdio context7 -- npx -y @upstash/context7-mcp 2>/dev/null
-        and touch ~/.claude/.mcp-registered
+        # Notion: token is expanded at launch from the NOTION_TOKEN env var (sops-managed),
+        # so the literal ''${NOTION_TOKEN} is stored in config, never the secret itself.
+        claude mcp add --scope user -t stdio notion -e NOTION_TOKEN=''\'''${NOTION_TOKEN}' -- npx -y @notionhq/notion-mcp-server 2>/dev/null
+        touch ~/.claude/.mcp-registered-v2
       end
 
       # First-time plugin download. Check installed_plugins.json (not just the
