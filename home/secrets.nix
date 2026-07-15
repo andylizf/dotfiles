@@ -200,6 +200,18 @@ in
       path = "${config.home.homeDirectory}/.config/lark-sync/feishu-webhook";
       mode = "0600";
     };
+
+    # Tailscale OAuth client (full-scope; used by MyClaw/scripts/tailscale-api.sh for
+    # tailnet device management). Non-expiring client secret; exchanged for a
+    # short-lived access token per call.
+    sops.secrets."tailscale/oauth_client_id" = {
+      path = "${config.home.homeDirectory}/.config/tailscale/oauth-client-id";
+      mode = "0600";
+    };
+    sops.secrets."tailscale/oauth_client_secret" = {
+      path = "${config.home.homeDirectory}/.config/tailscale/oauth-client-secret";
+      mode = "0600";
+    };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
       (lib.hm.dag.entryAfter [ "sops-nix" ] ''
         if ! (
