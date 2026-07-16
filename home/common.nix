@@ -471,12 +471,21 @@ PYPIRC
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
 
-  home.file.".codex/config.toml".text = ''
-    # Managed by Home Manager — local changes will be overwritten.
-    model = "gpt-5.5"
-    reasoning_effort = "extra_high"
+  # Codex/Claude config.toml MUST stay writable: codex persists runtime state
+  # into it (per-project `trust_level`, hook `trusted_hash`). A `home.file`
+  # symlink points into the read-only /nix/store, so those writes fail with
+  # "failed to persist config.toml". Instead we ship the declarative template
+  # to a side path and, on activation, seed a real writable copy that codex
+  # then owns. To re-seed after editing the template below, delete
+  # ~/.codex/config.toml and re-run the switch.
+  home.file.".codex/config.toml.hm-template".text = ''
+    # Seeded from Home Manager template; codex owns this file at runtime.
+    # model: gpt-5.6 family — sol (frontier) / terra (balanced) / luna (efficient); gpt-5.6 aliases to sol.
+    model = "gpt-5.6-sol"
+    # model_reasoning_effort: none | low | medium | high | xhigh | max (+ ultra for parallel subagents).
+    model_reasoning_effort = "xhigh"
+    # web_search: cached (default, pre-indexed, safer) | live (fetches live pages).
     web_search = "live"
-    check_for_update_on_startup = false
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
 
     [features]
@@ -517,6 +526,21 @@ PYPIRC
     args = ["-y", "@upstash/context7-mcp"]
 
   '';
+
+  # Seed a writable ~/.codex/config.toml from the template above, but only when
+  # it is absent or is a stale Home-Manager symlink into /nix/store. Once codex
+  # owns a real file, leave it alone so runtime trust/hook writes persist.
+  home.activation.seedCodexConfig =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      cfg="${config.home.homeDirectory}/.codex/config.toml"
+      tpl="${config.home.homeDirectory}/.codex/config.toml.hm-template"
+      if [ ! -e "$cfg" ] || [ -L "$cfg" ]; then
+        $DRY_RUN_CMD rm -f "$cfg"
+        $DRY_RUN_CMD cp -f "$tpl" "$cfg"
+        $DRY_RUN_CMD chmod 0644 "$cfg"
+        echo "[dotfiles] seeded writable ~/.codex/config.toml from template"
+      fi
+    '';
 
   # Ensure Cursor remote terminals default to Nix-provided fish shell.
   home.file.".cursor-server/data/Machine/settings.json".text =
