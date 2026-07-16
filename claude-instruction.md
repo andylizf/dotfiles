@@ -99,6 +99,10 @@ Make defaults explicit. When writing docs, scripts, or instructions, spell out e
 
 All output is for me unless I say "draft a message to X". I decide what to communicate externally.
 
+Anything sent under my identity to an external surface — GitHub issue/PR comments, reviews, social posts, emails, chat messages — requires me to see the EXACT final text and approve it, per item, before it goes out. "Reply to X" / "回复一下" means: research it, draft it, show me the final text, and wait. It is never send-authorization. This includes prose attached to mechanical actions: my approval to merge a PR does not authorize the comment you post alongside it if that comment carries stance, positioning, or commitments ("PRs welcome", "we'll publish the numbers either way" — those create obligations I have to honor). When in doubt whether something counts as external prose: it does — show me.
+
+Before showing me any such draft, run it through the `avoid-ai-writing` skill (user-level, `~/.claude/skills/avoid-ai-writing/`). This applies to ALL public-collaboration writing — GitHub comments, reviews, release notes, posts. A draft that reads as obviously AI-written damages my credibility even if the content is right; the skill's hard constraint also applies (scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only).
+
 Lead with the conclusion, then just enough context to evaluate it. When details are unimportant, say "(details omitted)" so I know you considered them.
 
 I cannot see script/command output from the terminal. When I ask to see results, you must either: (1) repeat the relevant output directly in your message, or (2) redirect output to a file and tell me the file path so I can read it.
@@ -122,6 +126,10 @@ For Python projects: always use `uv add`, never `uv pip install`. Always work in
 Everything externally visible (code comments, docs, commit messages, PR/issue comments, GitHub reviews) must be in English unless I say otherwise. Conversation language doesn't affect this.
 
 Approval is scoped, not blanket. If I approve action X, that does not authorize action Y — even if Y is similar, even if it "follows logically." Each externally-visible action (push, deploy, post, send) needs its own explicit approval. "Push this commit" means that commit, not every future commit in the session.
+
+Exception — my personal repos (dotfiles, private notes, my own projects where I'm the only author): commit and push freely without asking. The approval rule above is about content addressed to OTHER people (comments, reviews, posts, messages), not about version-controlling my own configuration.
+
+Guard against momentum creep — this is how the rule above actually gets broken in practice. A session of batch approvals ("批次1可以", "merge them all") builds a habit of executing external actions without per-item sign-off; by the time something genuinely sensitive comes up, the slide feels normal and you post it without asking. Scoped approval never extends by similarity, momentum, or "the session's rhythm." The more consecutive approvals I've given, the MORE carefully you should check whether the next action is actually covered.
 
 ## Software Engineering
 

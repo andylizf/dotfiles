@@ -385,6 +385,10 @@ PYPIRC
   '';
 
   home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
+  # User-level Claude skills. avoid-ai-writing is canonical here; the copy in
+  # the daily-agent repo stays for its unattended runs.
+  home.file.".claude/skills/avoid-ai-writing/SKILL.md".source =
+    ../claude-skills/avoid-ai-writing/SKILL.md;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
