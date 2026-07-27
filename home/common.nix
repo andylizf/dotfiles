@@ -404,15 +404,6 @@ PYPIRC
   home.file.".claude/skills/avoid-ai-writing/SKILL.md".source =
     ../claude-skills/avoid-ai-writing/SKILL.md;
 
-  # Starting a Claude Code session from inside another one (Bash tool, subagent,
-  # hook) inherits harness variables that silently break the child: no transcript
-  # is saved, and a leaked API key disables Remote Control. Use `claude-fresh`
-  # instead of `claude` for those launches; see the script header for details.
-  home.file.".local/bin/claude-fresh" = {
-    source = ../scripts/claude-fresh.sh;
-    executable = true;
-  };
-
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
   # We seed it from the nix-derived template on first setup, and also migrate
