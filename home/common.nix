@@ -32,9 +32,23 @@
     enable = true;
     shellInit = ''
       # Anthropic API key (for Claude CLI, etc.)
-      if test -f ~/.config/anthropic/token
-        set -gx ANTHROPIC_API_KEY (string trim (cat ~/.config/anthropic/token))
-      end
+      #
+      # Disabled 2026-07-27. Exporting this globally has two costs:
+      #  * Claude Code prefers the key over the Max subscription, so interactive
+      #    use is billed pay-as-you-go (and dies with "Credit balance too low").
+      #  * Remote Control requires claude.ai subscription auth and refuses to
+      #    start when the key is set — for `claude remote-control` it errors out,
+      #    for `claude --remote-control` it fails SILENTLY (session runs, RC never
+      #    registers, nothing on the phone, nothing in the logs).
+      # Upstream has no opt-out flag yet (anthropics/claude-code#9880, #12861).
+      #
+      # The sops-managed token file stays in place. Export it per-command when
+      # API billing is actually wanted:
+      #   env ANTHROPIC_API_KEY=(string trim (cat ~/.config/anthropic/token)) <cmd>
+      #
+      # if test -f ~/.config/anthropic/token
+      #   set -gx ANTHROPIC_API_KEY (string trim (cat ~/.config/anthropic/token))
+      # end
 
       # Claude Code OAuth token (for Linux headless — macOS uses Keychain which auto-refreshes)
       if test (uname) != Darwin; and test -f ~/.config/anthropic/claude-oauth-token
