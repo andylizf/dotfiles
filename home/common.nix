@@ -88,10 +88,8 @@
         set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))
       end
 
-      # Notion: export NOTION_TOKEN (consumed by the Notion MCP server via ''${NOTION_TOKEN})
-      if test -f ~/.config/notion/token
-        set -gx NOTION_TOKEN (string trim (cat ~/.config/notion/token))
-      end
+      # Notion MCP reads ~/.config/notion/token through notion-mcp-wrapper.
+      # Do not depend on an interactive shell exporting NOTION_TOKEN.
 
       # Google Workspace CLI (gws): point at sops-managed credentials
       if test -f ~/.config/gws/credentials.json
@@ -186,17 +184,6 @@
       fish_add_path /run/current-system/sw/bin
 
       # Sync Hugging Face token into default cache for CLI detection
-
-      # Register Claude Code MCP servers at user scope (auto-trusted, no approval prompt).
-      # Sentinel is versioned: bump the suffix when adding a server so machines that
-      # already ran an earlier version re-run and pick up the new server(s).
-      if command -q claude; and not test -f ~/.claude/.mcp-registered-v2
-        claude mcp add --scope user -t stdio context7 -- npx -y @upstash/context7-mcp 2>/dev/null
-        # Notion: token is expanded at launch from the NOTION_TOKEN env var (sops-managed),
-        # so the literal ''${NOTION_TOKEN} is stored in config, never the secret itself.
-        claude mcp add --scope user -t stdio notion -e NOTION_TOKEN=''\'''${NOTION_TOKEN}' -- npx -y @notionhq/notion-mcp-server 2>/dev/null
-        touch ~/.claude/.mcp-registered-v2
-      end
 
       # First-time plugin download. Check installed_plugins.json (not just the
       # cache dir) so orphaned/incomplete installs get retried.
@@ -399,6 +386,10 @@ PYPIRC
   '';
 
   home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
+  home.file.".local/bin/notion-mcp-wrapper" = {
+    source = ./scripts/notion-mcp-wrapper.sh;
+    executable = true;
+  };
   # User-level Claude skills. avoid-ai-writing is canonical here; the copy in
   # the daily-agent repo stays for its unattended runs.
   home.file.".claude/skills/avoid-ai-writing/SKILL.md".source =
@@ -487,6 +478,29 @@ PYPIRC
     "$NPM" i -g @googleworkspace/cli@latest --prefix ~/.local 2>&1 || true
   '';
 
+  # Claude user-scoped MCP setup. Notion is launched through a wrapper that
+  # reads the sops-managed token file itself, so zsh, fish, GUI, and tmux
+  # sessions all get identical behavior without storing the secret in config.
+  home.activation.configureClaudeMcp =
+    lib.hm.dag.entryAfter [ "installDevCLIs" "linkGeneration" ] ''
+      marker="$HOME/.claude/.mcp-registered-v3"
+      claude_bin="$HOME/.local/bin/claude"
+      if [ -x "$claude_bin" ] && [ ! -f "$marker" ]; then
+        mkdir -p "$HOME/.claude"
+        if ! "$claude_bin" mcp get context7 >/dev/null 2>&1; then
+          "$claude_bin" mcp add --scope user -t stdio context7 -- npx -y @upstash/context7-mcp
+        fi
+
+        "$claude_bin" mcp remove --scope user notion >/dev/null 2>&1 || true
+        if "$claude_bin" mcp add --scope user -t stdio notion -- "$HOME/.local/bin/notion-mcp-wrapper"; then
+          touch "$marker"
+          echo "[dotfiles] configured Notion MCP through notion-mcp-wrapper"
+        else
+          echo "[dotfiles] failed to configure Notion MCP; will retry next switch" >&2
+        fi
+      fi
+    '';
+
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
 
   # Codex/Claude config.toml MUST stay writable: codex persists runtime state
@@ -511,33 +525,27 @@ PYPIRC
     plugins = true
     plugin_hooks = true
 
-    [marketplaces.codex-memory-repro]
+    [marketplaces.omem-local]
     source_type = "local"
-    source = "${config.home.homeDirectory}/Projects/codex-memory-reproduce"
+    source = "${config.home.homeDirectory}/Projects/omem"
 
-    [plugins."codex-memory-reproduction@codex-memory-repro"]
+    [plugins."omem@omem-local"]
     enabled = true
 
-    [projects."/Users/andyl/Projects/codex-memory-reproduce"]
+    [plugins."omem@omem-local".mcp_servers.omem.tools.search_memory]
+    approval_mode = "approve"
+
+    [projects."${config.home.homeDirectory}/Projects/omem"]
     trust_level = "trusted"
 
-    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:pre_tool_use:0:0"]
-    trusted_hash = "sha256:9d8b745dc3d71b2ca62a865e51cbca24c5ff57c824c713201866a85626e9b111"
+    [hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]
+    trusted_hash = "sha256:11cea5f7f1b6c1154740804a55051a550dfe5f14e41052189a06f8d18e30ed00"
 
-    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:post_tool_use:0:0"]
-    trusted_hash = "sha256:202aca64974ccdd59e36c6eaba5c21001aa54a8799134f34773207cc5cd20b0d"
+    [hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]
+    trusted_hash = "sha256:307de87243292e1cc4085f64fd4306c660f45697f906a9842b99f6a0265970d2"
 
-    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:post_compact:0:0"]
-    trusted_hash = "sha256:84b3a9c9cd1aff87de8d2ed3e111d69e8fd0770266a4fef6a6af74f179cb91a1"
-
-    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:user_prompt_submit:0:0"]
-    trusted_hash = "sha256:a7d5c001fcbf7c9a85c3ebab31894bd559e28e2802f7cb854c74d5c5aeaf2668"
-
-    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:subagent_start:0:0"]
-    trusted_hash = "sha256:0bcd1d7351843dfdfd41339bdd366953a0a71767256d893a5df83b7392d898ed"
-
-    [hooks.state."codex-memory-reproduction@codex-memory-repro:hooks/hooks.json:subagent_stop:0:0"]
-    trusted_hash = "sha256:72943dde20be870dd6b1e654b100a6fdbf4ea2b2337e99804bd6c7e6eaa089d7"
+    [hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]
+    trusted_hash = "sha256:3d44ec56d25fc43c02627cd88de237dedd2939cdc186cf1e77fc11202577abc7"
 
     [mcp_servers.context7]
     command = "npx"
@@ -557,6 +565,76 @@ PYPIRC
         $DRY_RUN_CMD cp -f "$tpl" "$cfg"
         $DRY_RUN_CMD chmod 0644 "$cfg"
         echo "[dotfiles] seeded writable ~/.codex/config.toml from template"
+      fi
+    '';
+
+  # Keep the real omem CLI and Codex plugin installed from the local omem
+  # repository. Existing writable Codex configs are migrated in place: the
+  # experimental reproduction plugin is disabled, while verified hook trust
+  # and read-only MCP approval are added if absent.
+  home.activation.configureCodexOmem =
+    lib.hm.dag.entryAfter [ "installDevCLIs" "seedCodexConfig" ] ''
+      omem_repo="$HOME/Projects/omem"
+      codex_bin="$HOME/.local/bin/codex"
+      cfg="$HOME/.codex/config.toml"
+
+      if [ -d "$omem_repo" ] && [ -x "$codex_bin" ]; then
+        echo "[dotfiles] installing real omem and Codex integration"
+        "${pkgs.uv}/bin/uv" tool install --reinstall "$omem_repo"
+        "$codex_bin" plugin marketplace add "$omem_repo" >/dev/null 2>&1 || true
+        "$codex_bin" plugin add omem@omem-local
+
+        if [ -f "$cfg" ]; then
+          cfg_tmp="$cfg.omem-migration"
+          "${pkgs.gawk}/bin/awk" '
+            BEGIN { old_plugin = 0 }
+            /^\[plugins\."codex-memory-reproduction@codex-memory-repro"\]$/ {
+              old_plugin = 1
+              print
+              next
+            }
+            /^\[/ { old_plugin = 0 }
+            old_plugin && /^enabled[[:space:]]*=[[:space:]]*true$/ {
+              print "enabled = false"
+              next
+            }
+            { print }
+          ' "$cfg" > "$cfg_tmp"
+          chmod 0644 "$cfg_tmp"
+          mv "$cfg_tmp" "$cfg"
+
+          if ! grep -Fqx '[plugins."omem@omem-local".mcp_servers.omem.tools.search_memory]' "$cfg"; then
+            cat >> "$cfg" <<'TOML'
+
+[plugins."omem@omem-local".mcp_servers.omem.tools.search_memory]
+approval_mode = "approve"
+TOML
+          fi
+
+          if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]' "$cfg"; then
+            cat >> "$cfg" <<'TOML'
+
+[hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]
+trusted_hash = "sha256:11cea5f7f1b6c1154740804a55051a550dfe5f14e41052189a06f8d18e30ed00"
+TOML
+          fi
+          if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]' "$cfg"; then
+            cat >> "$cfg" <<'TOML'
+
+[hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]
+trusted_hash = "sha256:307de87243292e1cc4085f64fd4306c660f45697f906a9842b99f6a0265970d2"
+TOML
+          fi
+          if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]' "$cfg"; then
+            cat >> "$cfg" <<'TOML'
+
+[hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:3d44ec56d25fc43c02627cd88de237dedd2939cdc186cf1e77fc11202577abc7"
+TOML
+          fi
+        fi
+      else
+        echo "[dotfiles] $omem_repo or codex missing; skipping omem integration" >&2
       fi
     '';
 
