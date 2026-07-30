@@ -539,13 +539,13 @@ PYPIRC
     trust_level = "trusted"
 
     [hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]
-    trusted_hash = "sha256:11cea5f7f1b6c1154740804a55051a550dfe5f14e41052189a06f8d18e30ed00"
+    trusted_hash = "sha256:e4fe6262eb9eeebee079324973b46106e9f80198fd1105009721535ede366b06"
 
     [hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]
-    trusted_hash = "sha256:307de87243292e1cc4085f64fd4306c660f45697f906a9842b99f6a0265970d2"
+    trusted_hash = "sha256:66289e8265caa0b3529fbd42796a5c1aeff4e2f4eb51889290a7b19ddee9b439"
 
     [hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]
-    trusted_hash = "sha256:3d44ec56d25fc43c02627cd88de237dedd2939cdc186cf1e77fc11202577abc7"
+    trusted_hash = "sha256:ad2a301a66494eafa155d4b8279a2e634c91ca8abae2a8d073bb5110788dc21a"
 
     [mcp_servers.context7]
     command = "npx"
@@ -587,15 +587,39 @@ PYPIRC
         if [ -f "$cfg" ]; then
           cfg_tmp="$cfg.omem-migration"
           "${pkgs.gawk}/bin/awk" '
-            BEGIN { old_plugin = 0 }
+            BEGIN { old_plugin = 0; hook_hash = "" }
             /^\[plugins\."codex-memory-reproduction@codex-memory-repro"\]$/ {
               old_plugin = 1
+              hook_hash = ""
               print
               next
             }
-            /^\[/ { old_plugin = 0 }
+            /^\[hooks\.state\."omem@omem-local:hooks\/hooks\.json:post_tool_use:0:0"\]$/ {
+              old_plugin = 0
+              hook_hash = "sha256:e4fe6262eb9eeebee079324973b46106e9f80198fd1105009721535ede366b06"
+              print
+              next
+            }
+            /^\[hooks\.state\."omem@omem-local:hooks\/hooks\.json:session_start:0:0"\]$/ {
+              old_plugin = 0
+              hook_hash = "sha256:66289e8265caa0b3529fbd42796a5c1aeff4e2f4eb51889290a7b19ddee9b439"
+              print
+              next
+            }
+            /^\[hooks\.state\."omem@omem-local:hooks\/hooks\.json:user_prompt_submit:0:0"\]$/ {
+              old_plugin = 0
+              hook_hash = "sha256:ad2a301a66494eafa155d4b8279a2e634c91ca8abae2a8d073bb5110788dc21a"
+              print
+              next
+            }
+            /^\[/ { old_plugin = 0; hook_hash = "" }
             old_plugin && /^enabled[[:space:]]*=[[:space:]]*true$/ {
               print "enabled = false"
+              next
+            }
+            hook_hash != "" && /^trusted_hash[[:space:]]*=/ {
+              print "trusted_hash = \"" hook_hash "\""
+              hook_hash = ""
               next
             }
             { print }
@@ -615,21 +639,21 @@ TOML
             cat >> "$cfg" <<'TOML'
 
 [hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]
-trusted_hash = "sha256:11cea5f7f1b6c1154740804a55051a550dfe5f14e41052189a06f8d18e30ed00"
+trusted_hash = "sha256:e4fe6262eb9eeebee079324973b46106e9f80198fd1105009721535ede366b06"
 TOML
           fi
           if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]' "$cfg"; then
             cat >> "$cfg" <<'TOML'
 
 [hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:307de87243292e1cc4085f64fd4306c660f45697f906a9842b99f6a0265970d2"
+trusted_hash = "sha256:66289e8265caa0b3529fbd42796a5c1aeff4e2f4eb51889290a7b19ddee9b439"
 TOML
           fi
           if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]' "$cfg"; then
             cat >> "$cfg" <<'TOML'
 
 [hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]
-trusted_hash = "sha256:3d44ec56d25fc43c02627cd88de237dedd2939cdc186cf1e77fc11202577abc7"
+trusted_hash = "sha256:ad2a301a66494eafa155d4b8279a2e634c91ca8abae2a8d073bb5110788dc21a"
 TOML
           fi
         fi
