@@ -456,26 +456,50 @@ PYPIRC
 
   # Global MCP servers for Claude Code (user scope → auto-trusted, no approval prompt)
 
-  # Install/update CLI tools from npm to ~/.local on each switch.
-  # Keep tracking npm latest while remaining user-scoped.
+  # Install user-scoped development CLIs only when missing. Claude Code's native
+  # installation updates itself; repeatedly downloading every CLI made an otherwise
+  # idempotent Home Manager switch slow and fragile. Set DOTFILES_FORCE_CLI_UPDATE=1
+  # for an explicit refresh.
   home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] ''
     set -e
+    force_update="''${DOTFILES_FORCE_CLI_UPDATE:-0}"
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
     export PATH="${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH:/usr/bin"
     export TAR="${pkgs.gnutar}/bin/tar"
     NPM="${pkgs.nodejs_22}/bin/npm"
-    # Claude Code: install via official script (downloads ~60MB binary, may take a minute)
-    echo "[dotfiles] installing Claude Code (this may take a minute)..."
-    for _attempt in 1 2 3; do
-      if curl -fsSL https://claude.ai/install.sh | bash -s --; then
-        break
+    if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/claude" ]; then
+      echo "[dotfiles] installing Claude Code (this may take a minute)..."
+      claude_installed=0
+      for _attempt in 1 2 3; do
+        if curl -fsSL https://claude.ai/install.sh | bash -s --; then
+          claude_installed=1
+          break
+        fi
+        sleep 2
+      done
+      if [ "$claude_installed" -ne 1 ]; then
+        echo "[dotfiles] claude install failed (network/region issue); skipping" >&2
       fi
-      sleep 2
-    done || echo "[dotfiles] claude install failed (network/region issue); skipping"
-    "$NPM" i -g @openai/codex@latest --prefix ~/.local 2>&1 || true
-    "$NPM" i -g --force @google/gemini-cli --prefix ~/.local 2>&1 || true
-    "$NPM" i -g @googleworkspace/cli@latest --prefix ~/.local 2>&1 || true
+    else
+      echo "[dotfiles] Claude Code already present; skipping install"
+    fi
+
+    if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/codex" ]; then
+      "$NPM" i -g @openai/codex@latest --prefix "$HOME/.local" 2>&1 || true
+    else
+      echo "[dotfiles] Codex already present; skipping install"
+    fi
+    if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/gemini" ]; then
+      "$NPM" i -g --force @google/gemini-cli --prefix "$HOME/.local" 2>&1 || true
+    else
+      echo "[dotfiles] Gemini already present; skipping install"
+    fi
+    if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/gws" ]; then
+      "$NPM" i -g @googleworkspace/cli@latest --prefix "$HOME/.local" 2>&1 || true
+    else
+      echo "[dotfiles] Google Workspace CLI already present; skipping install"
+    fi
   '';
 
   # Claude user-scoped MCP setup. Notion is launched through a wrapper that
@@ -503,8 +527,8 @@ PYPIRC
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
 
-  # Codex/Claude config.toml MUST stay writable: codex persists runtime state
-  # into it (per-project `trust_level`, hook `trusted_hash`). A `home.file`
+  # Codex config.toml MUST stay writable: codex persists runtime state
+  # into it (for example per-project `trust_level`). A `home.file`
   # symlink points into the read-only /nix/store, so those writes fail with
   # "failed to persist config.toml". Instead we ship the declarative template
   # to a side path and, on activation, seed a real writable copy that codex
@@ -560,20 +584,43 @@ PYPIRC
     '';
 
   # Keep the real omem CLI and Codex plugin installed from the local omem
-  # repository. Existing writable Codex configs are migrated in place: the
-  # experimental reproduction plugin is disabled and read-only MCP approval is
-  # added if absent. Machine-local hook trust is deliberately left untouched.
+  # repository. Reinstall only when the repository revision changes, the binary/plugin
+  # is missing, or DOTFILES_FORCE_CLI_UPDATE=1. Lifecycle hooks are machine-managed in
+  # system/darwin.nix, so the plugin itself remains the MCP delivery bundle.
   home.activation.configureCodexOmem =
     lib.hm.dag.entryAfter [ "installDevCLIs" "seedCodexConfig" ] ''
       omem_repo="$HOME/Projects/omem"
       codex_bin="$HOME/.local/bin/codex"
       cfg="$HOME/.codex/config.toml"
+      marker="$HOME/.local/state/dotfiles/omem-installed-rev"
+      force_update="''${DOTFILES_FORCE_CLI_UPDATE:-0}"
 
       if [ -d "$omem_repo" ] && [ -x "$codex_bin" ]; then
-        echo "[dotfiles] installing real omem and Codex integration"
-        "${pkgs.uv}/bin/uv" tool install --reinstall "$omem_repo"
-        "$codex_bin" plugin marketplace add "$omem_repo" >/dev/null 2>&1 || true
-        "$codex_bin" plugin add omem@omem-local
+        revision="$("${pkgs.git}/bin/git" -C "$omem_repo" rev-parse HEAD 2>/dev/null || printf unknown)"
+        installed_revision="$(cat "$marker" 2>/dev/null || true)"
+        needs_install=0
+        if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/omem" ] || [ "$installed_revision" != "$revision" ]; then
+          needs_install=1
+        elif ! "$codex_bin" plugin list --json 2>/dev/null | grep -Fq '"pluginId": "omem@omem-local"'; then
+          needs_install=1
+        fi
+
+        if [ "$needs_install" -eq 1 ]; then
+          echo "[dotfiles] installing real omem and Codex integration at $revision"
+          if "${pkgs.uv}/bin/uv" tool install --reinstall "$omem_repo"; then
+            "$codex_bin" plugin marketplace add "$omem_repo" >/dev/null 2>&1 || true
+            if "$codex_bin" plugin add omem@omem-local; then
+              mkdir -p "$(dirname "$marker")"
+              printf '%s\n' "$revision" > "$marker"
+            else
+              echo "[dotfiles] failed to install omem Codex plugin; will retry next switch" >&2
+            fi
+          else
+            echo "[dotfiles] failed to install omem CLI; will retry next switch" >&2
+          fi
+        else
+          echo "[dotfiles] omem $revision already installed; skipping reinstall"
+        fi
 
         if [ -f "$cfg" ]; then
           cfg_tmp="$cfg.omem-migration"
