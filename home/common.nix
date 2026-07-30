@@ -598,11 +598,15 @@ PYPIRC
       if [ -d "$omem_repo" ] && [ -x "$codex_bin" ]; then
         revision="$("${pkgs.git}/bin/git" -C "$omem_repo" rev-parse HEAD 2>/dev/null || printf unknown)"
         installed_revision="$(cat "$marker" 2>/dev/null || true)"
+        plugin_list="$("$codex_bin" plugin list --json 2>/dev/null || true)"
         needs_install=0
         if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/omem" ] || [ "$installed_revision" != "$revision" ]; then
           needs_install=1
-        elif ! "$codex_bin" plugin list --json 2>/dev/null | grep -Fq '"pluginId": "omem@omem-local"'; then
-          needs_install=1
+        else
+          case "$plugin_list" in
+            *'"pluginId": "omem@omem-local"'*) ;;
+            *) needs_install=1 ;;
+          esac
         fi
 
         if [ "$needs_install" -eq 1 ]; then
