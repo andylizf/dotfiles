@@ -538,15 +538,6 @@ PYPIRC
     [projects."${config.home.homeDirectory}/Projects/omem"]
     trust_level = "trusted"
 
-    [hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]
-    trusted_hash = "sha256:e4fe6262eb9eeebee079324973b46106e9f80198fd1105009721535ede366b06"
-
-    [hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]
-    trusted_hash = "sha256:66289e8265caa0b3529fbd42796a5c1aeff4e2f4eb51889290a7b19ddee9b439"
-
-    [hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]
-    trusted_hash = "sha256:ad2a301a66494eafa155d4b8279a2e634c91ca8abae2a8d073bb5110788dc21a"
-
     [mcp_servers.context7]
     command = "npx"
     args = ["-y", "@upstash/context7-mcp"]
@@ -570,8 +561,8 @@ PYPIRC
 
   # Keep the real omem CLI and Codex plugin installed from the local omem
   # repository. Existing writable Codex configs are migrated in place: the
-  # experimental reproduction plugin is disabled, while verified hook trust
-  # and read-only MCP approval are added if absent.
+  # experimental reproduction plugin is disabled and read-only MCP approval is
+  # added if absent. Machine-local hook trust is deliberately left untouched.
   home.activation.configureCodexOmem =
     lib.hm.dag.entryAfter [ "installDevCLIs" "seedCodexConfig" ] ''
       omem_repo="$HOME/Projects/omem"
@@ -587,39 +578,15 @@ PYPIRC
         if [ -f "$cfg" ]; then
           cfg_tmp="$cfg.omem-migration"
           "${pkgs.gawk}/bin/awk" '
-            BEGIN { old_plugin = 0; hook_hash = "" }
+            BEGIN { old_plugin = 0 }
             /^\[plugins\."codex-memory-reproduction@codex-memory-repro"\]$/ {
               old_plugin = 1
-              hook_hash = ""
               print
               next
             }
-            /^\[hooks\.state\."omem@omem-local:hooks\/hooks\.json:post_tool_use:0:0"\]$/ {
-              old_plugin = 0
-              hook_hash = "sha256:e4fe6262eb9eeebee079324973b46106e9f80198fd1105009721535ede366b06"
-              print
-              next
-            }
-            /^\[hooks\.state\."omem@omem-local:hooks\/hooks\.json:session_start:0:0"\]$/ {
-              old_plugin = 0
-              hook_hash = "sha256:66289e8265caa0b3529fbd42796a5c1aeff4e2f4eb51889290a7b19ddee9b439"
-              print
-              next
-            }
-            /^\[hooks\.state\."omem@omem-local:hooks\/hooks\.json:user_prompt_submit:0:0"\]$/ {
-              old_plugin = 0
-              hook_hash = "sha256:ad2a301a66494eafa155d4b8279a2e634c91ca8abae2a8d073bb5110788dc21a"
-              print
-              next
-            }
-            /^\[/ { old_plugin = 0; hook_hash = "" }
+            /^\[/ { old_plugin = 0 }
             old_plugin && /^enabled[[:space:]]*=[[:space:]]*true$/ {
               print "enabled = false"
-              next
-            }
-            hook_hash != "" && /^trusted_hash[[:space:]]*=/ {
-              print "trusted_hash = \"" hook_hash "\""
-              hook_hash = ""
               next
             }
             { print }
@@ -635,27 +602,6 @@ approval_mode = "approve"
 TOML
           fi
 
-          if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]' "$cfg"; then
-            cat >> "$cfg" <<'TOML'
-
-[hooks.state."omem@omem-local:hooks/hooks.json:post_tool_use:0:0"]
-trusted_hash = "sha256:e4fe6262eb9eeebee079324973b46106e9f80198fd1105009721535ede366b06"
-TOML
-          fi
-          if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]' "$cfg"; then
-            cat >> "$cfg" <<'TOML'
-
-[hooks.state."omem@omem-local:hooks/hooks.json:session_start:0:0"]
-trusted_hash = "sha256:66289e8265caa0b3529fbd42796a5c1aeff4e2f4eb51889290a7b19ddee9b439"
-TOML
-          fi
-          if ! grep -Fqx '[hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]' "$cfg"; then
-            cat >> "$cfg" <<'TOML'
-
-[hooks.state."omem@omem-local:hooks/hooks.json:user_prompt_submit:0:0"]
-trusted_hash = "sha256:ad2a301a66494eafa155d4b8279a2e634c91ca8abae2a8d073bb5110788dc21a"
-TOML
-          fi
         fi
       else
         echo "[dotfiles] $omem_repo or codex missing; skipping omem integration" >&2
