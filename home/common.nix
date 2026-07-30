@@ -596,17 +596,18 @@ PYPIRC
       force_update="''${DOTFILES_FORCE_CLI_UPDATE:-0}"
 
       if [ -d "$omem_repo" ] && [ -x "$codex_bin" ]; then
+        # The retired reproduction checkout is no longer a valid marketplace root and
+        # makes every `codex plugin list` fail. Remove only that obsolete source.
+        "$codex_bin" plugin marketplace remove codex-memory-repro >/dev/null 2>&1 || true
+
         revision="$("${pkgs.git}/bin/git" -C "$omem_repo" rev-parse HEAD 2>/dev/null || printf unknown)"
         installed_revision="$(cat "$marker" 2>/dev/null || true)"
-        plugin_list="$("$codex_bin" plugin list --json 2>/dev/null || true)"
+        plugin_manifest="$("${pkgs.findutils}/bin/find" "$HOME/.codex/plugins/cache/omem-local/omem" \
+          -mindepth 3 -maxdepth 3 -path '*/.codex-plugin/plugin.json' -print -quit 2>/dev/null || true)"
         needs_install=0
-        if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/omem" ] || [ "$installed_revision" != "$revision" ]; then
+        if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/omem" ] \
+          || [ "$installed_revision" != "$revision" ] || [ -z "$plugin_manifest" ]; then
           needs_install=1
-        else
-          case "$plugin_list" in
-            *'"pluginId": "omem@omem-local"'*) ;;
-            *) needs_install=1 ;;
-          esac
         fi
 
         if [ "$needs_install" -eq 1 ]; then
