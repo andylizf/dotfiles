@@ -55,6 +55,28 @@ classify_failure() {
         && echo terminal || echo transient
 }
 
+# Say WHY a terminal verdict is terminal, in the log, in plain words.
+#
+# Without this the log only carries lark-cli's raw error, and the most common one reads
+#   "bot identity cannot get current user info, specify --user-id"
+# which looks exactly like a caller bug — as if the probe passed the wrong identity and
+# just needs a --user-id or --as user. It doesn't. The probe passes NO identity on purpose:
+# lark-cli falling back to bot is precisely the evidence that the user credential is gone.
+# That misreading cost a debugging session on 2026-07-31, so the explanation now ships with
+# the verdict instead of living only in the comment above classify_failure().
+explain_terminal() {
+    case "$1" in
+        *"bot identity"*|*'"identity": "bot"'*|*'"identity":"bot"'*)
+            echo "lark-cli fell back to BOT identity, which means the USER credential for this profile is gone. This is NOT a wrong-flag bug: the probe passes no identity on purpose, so a fallback to bot IS the failure signal. Adding --as user or --user-id will not fix it." ;;
+        *"invalid access token"*|*token_invalid*|*"token.*expired"*)
+            echo "Feishu rejected the access token and it could not be refreshed from the stored refresh_token." ;;
+        *invalid_grant*|*refresh*token*)
+            echo "the refresh_token is expired or was invalidated, so the single-use refresh chain is broken." ;;
+        *)
+            echo "authentication failed in a way that retrying will not fix." ;;
+    esac
+}
+
 read_state()  { cat "$STATE_DIR/$1.state" 2>/dev/null || echo unknown; }
 write_state() { echo "$2" > "$STATE_DIR/$1.state"; }
 
@@ -89,9 +111,14 @@ for profile in $PROFILES; do
         fi
         write_state "$profile" ok
     elif [ "$verdict" = "terminal" ]; then
-        log "TERMINAL: $profile needs re-login: $out"
+        # Three lines, in this order: what it means, how to fix it, then the raw output.
+        # Whoever reads this next (human or agent) should not have to open this script to
+        # find out that "bot identity" means "the credential is gone".
+        log "TERMINAL: $profile needs re-login -- $(explain_terminal "$out")"
+        log "TERMINAL: $profile fix -- on the WRITER host run: lark-cli.real auth login --profile $profile   (readers cannot re-auth; doing so would fork the single-use refresh chain)"
+        log "TERMINAL: $profile raw -- $out"
         if [ "$prev" != "terminal" ]; then
-            send_feishu "[lark-cli] token issue: $profile -- needs re-login (auth chain broken)"
+            send_feishu "[lark-cli] token issue: $profile -- needs re-login (auth chain broken). $(explain_terminal "$out") Fix on the writer host: lark-cli.real auth login --profile $profile"
             log "ALERT sent for: $profile (OK->terminal transition)"
         else
             log "ALERT suppressed for: $profile (already terminal)"
