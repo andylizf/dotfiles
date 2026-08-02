@@ -544,6 +544,12 @@ PYPIRC
     web_search = "live"
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
 
+    [tui]
+    # Ring after every completed agent turn, including while the terminal is focused.
+    notifications = ["agent-turn-complete"]
+    notification_method = "bel"
+    notification_condition = "always"
+
     [features]
     hooks = true
     plugins = true
@@ -580,6 +586,91 @@ PYPIRC
         $DRY_RUN_CMD cp -f "$tpl" "$cfg"
         $DRY_RUN_CMD chmod 0644 "$cfg"
         echo "[dotfiles] seeded writable ~/.codex/config.toml from template"
+      fi
+    '';
+
+  # The writable runtime config is intentionally not replaced after its first
+  # seed, because Codex persists trust and hook state there. Keep just the TUI
+  # notification keys in sync with the declarative template instead.
+  home.activation.configureCodexTuiNotifications =
+    lib.hm.dag.entryAfter [ "seedCodexConfig" ] ''
+      cfg="${config.home.homeDirectory}/.codex/config.toml"
+      if [ -f "$cfg" ]; then
+        cfg_tmp="$cfg.tui-notifications"
+        "${pkgs.gawk}/bin/awk" '
+          function emit_missing_tui_settings() {
+            if (!seen_notifications)
+              print "notifications = [\"agent-turn-complete\"]"
+            if (!seen_notification_method)
+              print "notification_method = \"bel\""
+            if (!seen_notification_condition)
+              print "notification_condition = \"always\""
+          }
+
+          BEGIN {
+            in_tui = 0
+            saw_tui = 0
+          }
+
+          /^\[tui\]$/ {
+            saw_tui = 1
+            in_tui = 1
+            seen_notifications = 0
+            seen_notification_method = 0
+            seen_notification_condition = 0
+            print
+            next
+          }
+
+          /^\[/ {
+            if (in_tui) {
+              emit_missing_tui_settings()
+              in_tui = 0
+            }
+            if (!saw_tui && /^\[tui\./) {
+              print "[tui]"
+              print "notifications = [\"agent-turn-complete\"]"
+              print "notification_method = \"bel\""
+              print "notification_condition = \"always\""
+              print ""
+              saw_tui = 1
+            }
+            print
+            next
+          }
+
+          in_tui && /^[[:space:]]*notifications[[:space:]]*=/ {
+            print "notifications = [\"agent-turn-complete\"]"
+            seen_notifications = 1
+            next
+          }
+          in_tui && /^[[:space:]]*notification_method[[:space:]]*=/ {
+            print "notification_method = \"bel\""
+            seen_notification_method = 1
+            next
+          }
+          in_tui && /^[[:space:]]*notification_condition[[:space:]]*=/ {
+            print "notification_condition = \"always\""
+            seen_notification_condition = 1
+            next
+          }
+
+          { print }
+
+          END {
+            if (in_tui) {
+              emit_missing_tui_settings()
+            } else if (!saw_tui) {
+              print ""
+              print "[tui]"
+              print "notifications = [\"agent-turn-complete\"]"
+              print "notification_method = \"bel\""
+              print "notification_condition = \"always\""
+            }
+          }
+        ' "$cfg" > "$cfg_tmp"
+        chmod 0644 "$cfg_tmp"
+        mv "$cfg_tmp" "$cfg"
       fi
     '';
 
