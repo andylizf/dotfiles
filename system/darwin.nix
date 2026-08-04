@@ -15,15 +15,31 @@ let
     omem_bin="$HOME/.local/bin/omem"
     if [ ! -x "$omem_bin" ]; then
       case "$event" in
+        pre-tool-use)
+          printf '%s\n' "omem runtime is unavailable; blocking possible Pool write" >&2
+          exit 2
+          ;;
         stash|extract) printf '{}\n' ;;
       esac
       exit 0
     fi
 
     case "$event" in
+      pre-tool-use)
+        output=$("$omem_bin" hook pre-tool-use)
+        status=$?
+        if [ -n "$output" ]; then
+          printf '%s\n' "$output"
+        fi
+        if [ "$status" -ne 0 ]; then
+          printf '%s\n' "omem PreToolUse guard failed; blocking possible Pool write" >&2
+          exit 2
+        fi
+        ;;
       session-start) exec "$omem_bin" hook session-start ;;
       recall) exec "$omem_bin" hook recall ;;
       inject) exec "$omem_bin" hook inject ;;
+      release-write-lease) exec "$omem_bin" hook release-write-lease ;;
       stash|extract)
         "$omem_bin" hook "$event"
         printf '{}\n'
@@ -69,6 +85,14 @@ in
     [hooks]
     managed_dir = "${omemManagedHook}/bin"
 
+    [[hooks.PreToolUse]]
+    matcher = "Write|Edit|file_write|apply_patch|Bash|exec_command"
+    [[hooks.PreToolUse.hooks]]
+    type = "command"
+    command = "${omemManagedHook}/bin/omem-managed-hook pre-tool-use"
+    timeout = 5
+    statusMessage = "Protecting omem Pool writes"
+
     [[hooks.SessionStart]]
     [[hooks.SessionStart.hooks]]
     type = "command"
@@ -90,6 +114,13 @@ in
     command = "${omemManagedHook}/bin/omem-managed-hook inject"
     additionalContextLimit = 5000
     statusMessage = "Injecting shared omem recall"
+
+    [[hooks.SessionEnd]]
+    [[hooks.SessionEnd.hooks]]
+    type = "command"
+    command = "${omemManagedHook}/bin/omem-managed-hook release-write-lease"
+    timeout = 3
+    statusMessage = "Settling pending omem write"
 
     [[hooks.Stop]]
     [[hooks.Stop.hooks]]
