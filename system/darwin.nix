@@ -8,6 +8,7 @@ let
     event="''${1:-}"
     export PATH="$HOME/.local/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     export OMEM_MODE="''${OMEM_MODE:-full}"
+    export OMEM_MEMORY_MODE="''${OMEM_MEMORY_MODE:-index}"
     export OMEM_RUNNER=codex
     export OMEM_ROOT="''${OMEM_ROOT:-$HOME/omem-data}"
     export OMEM_TRANSCRIPTS="''${OMEM_TRANSCRIPTS:-$HOME/omem-transcripts}"
@@ -105,15 +106,18 @@ in
     type = "command"
     command = "${omemManagedHook}/bin/omem-managed-hook recall"
     additionalContextLimit = 5000
-    statusMessage = "Checking shared omem"
 
+    # This is the shared PostToolUse transaction/read boundary, not an assertion that
+    # recall ran. In the default index mode its selector-consume branch is disabled;
+    # the same handler still owns Pool write landing, lease settlement, access
+    # accounting, and freshness notes. Keep it registered for those responsibilities
+    # and for per-session recall/hybrid opt-in, but do not publish a false recall status.
     [[hooks.PostToolUse]]
     matcher = ".*"
     [[hooks.PostToolUse.hooks]]
     type = "command"
     command = "${omemManagedHook}/bin/omem-managed-hook inject"
     additionalContextLimit = 5000
-    statusMessage = "Injecting shared omem recall"
 
     [[hooks.SessionEnd]]
     [[hooks.SessionEnd.hooks]]
