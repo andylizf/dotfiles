@@ -386,6 +386,7 @@ PYPIRC
   '';
 
   home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
+  home.file.".codex/AGENTS.md".source = ../claude-instruction.md;
   home.file.".local/bin/notion-mcp-wrapper" = {
     source = ./scripts/notion-mcp-wrapper.sh;
     executable = true;
@@ -540,6 +541,9 @@ PYPIRC
     model = "gpt-5.6-sol"
     # model_reasoning_effort: none | low | medium | high | xhigh | max (+ ultra for parallel subagents).
     model_reasoning_effort = "xhigh"
+    # Run trusted local sessions without approval prompts or Codex's inner sandbox.
+    approval_policy = "never"
+    sandbox_mode = "danger-full-access"
     # web_search: cached (default, pre-indexed, safer) | live (fetches live pages).
     web_search = "live"
     notify = ["/usr/bin/env", "bash", "${config.home.homeDirectory}/.codex/notify_bell.sh"]
@@ -549,6 +553,7 @@ PYPIRC
     notifications = ["agent-turn-complete"]
     notification_method = "bel"
     notification_condition = "always"
+    terminal_title = ["spinner", "thread-title"]
 
     [features]
     hooks = true
