@@ -399,11 +399,11 @@ PYPIRC
     source = ../claude-skills/avoid-ai-writing/scripts/cjk-punct.py;
     executable = true;
   };
-  # teach: how explanations should read. The tracked copy is de-identified —
-  # this repo is public, so keep names, personal details, and verbatim user
-  # quotes out of it when editing.
-  home.file.".claude/skills/teach/SKILL.md".source =
-    ../claude-skills/teach/SKILL.md;
+  # teach: how explanations should read. Linked as a whole directory so new
+  # files under references/ need no change here. The tracked copy is
+  # de-identified — this repo is public, so keep names, personal details, and
+  # verbatim user quotes out of it when editing.
+  home.file.".claude/skills/teach".source = ../claude-skills/teach;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
