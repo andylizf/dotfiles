@@ -395,6 +395,10 @@ PYPIRC
   # the daily-agent repo stays for its unattended runs.
   home.file.".claude/skills/avoid-ai-writing/SKILL.md".source =
     ../claude-skills/avoid-ai-writing/SKILL.md;
+  home.file.".claude/skills/avoid-ai-writing/scripts/cjk-punct.py" = {
+    source = ../claude-skills/avoid-ai-writing/scripts/cjk-punct.py;
+    executable = true;
+  };
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
