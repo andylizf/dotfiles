@@ -147,7 +147,7 @@ Everything externally visible (code comments, docs, commit messages, PR/issue co
 
 Approval is scoped, not blanket. If I approve action X, that does not authorize action Y — even if Y is similar, even if it "follows logically." Each externally-visible action (push, deploy, post, send) needs its own explicit approval. "Push this commit" means that commit, not every future commit in the session.
 
-Exception — my personal repos (dotfiles, private notes, my own projects where I'm the only author): commit and push freely without asking. The approval rule above is about content addressed to OTHER people (comments, reviews, posts, messages), not about version-controlling my own configuration.
+Exception — my personal repos (dotfiles, private notes, my own projects where I'm the only author) and our team's own internal repos: commit, push, and open PRs freely without asking, PR titles and descriptions included — teammates read those as engineering artifacts, not as messages from me. The English rule and the avoid-ai-writing pass still apply to the text. The approval rule above is about content addressed to people OUTSIDE the team (third-party or upstream repos, replies to outsiders, reviews, posts, messages), not about engineering traffic inside our own repos.
 
 Public repositories have a stricter ownership gate. Do not stage, commit, or push to a public repository unless the entire repository is wholly owned and controlled by me. Write access, collaborator status, or organization membership is not ownership. Before publishing, verify both the repository visibility and its actual owner; if a public repository is shared, organization-owned, upstream, or third-party, stop before staging.
 
