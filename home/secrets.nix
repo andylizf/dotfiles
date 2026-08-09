@@ -195,9 +195,23 @@ in
       mode = "0600";
     };
 
-    # Feishu bot webhook for lark token-refresh alerts (writer side / mac-mini only).
+    # Feishu bot webhook for lark token-refresh alerts (writer side only).
     sops.secrets."feishu/alert_webhook" = {
       path = "${config.home.homeDirectory}/.config/lark-sync/feishu-webhook";
+      mode = "0600";
+    };
+
+    # Site config for the lark-cli relay wrapper. Not secret in the cryptographic sense — these are
+    # client-side app ids and a hostname, not credentials — but they identify which organizations
+    # this account belongs to, and this repository is public. Encrypting them keeps the wrapper
+    # itself free of identifiers while still shipping the values to every machine automatically.
+    # profile_map: "<profile> <app_id>" per line. writer_host: the machine that refreshes tokens.
+    sops.secrets."lark/profile_map" = {
+      path = "${config.home.homeDirectory}/.config/lark-sync/profiles";
+      mode = "0600";
+    };
+    sops.secrets."lark/writer_host" = {
+      path = "${config.home.homeDirectory}/.config/lark-sync/writer-host";
       mode = "0600";
     };
 

@@ -1,16 +1,29 @@
 #!/bin/bash
 # lark-cli env-injection wrapper (reader side). Replaces ~/.local/bin/lark-cli; the real npm binary
 # is preserved as ~/.local/bin/lark-cli.real. For each invocation it resolves the requested --profile
-# to an app_id, fetches that profile's CURRENT user access-token string from Bitwarden (cached, see
+# to an app id, fetches that profile's CURRENT user access-token string from Bitwarden (cached, see
 # CACHE_TTL), and injects it via LARKSUITE_CLI_USER_ACCESS_TOKEN + LARKSUITE_CLI_APP_ID. lark-cli then
 # uses the env token directly: it never reads the keychain, never sees a refresh_token, never refreshes,
 # and never deletes a credential file. Readers therefore cannot break the writer's single-use refresh
-# chain (defect A) and cannot trigger lark-cli's delete-on-failed-refresh (defect C). No .enc /
-# master.key / keychain is needed on a reader — only this wrapper + bws + the bws-token (sops).
+# chain and cannot trigger lark-cli's delete-on-failed-refresh. No keychain material is needed on a
+# reader — only this wrapper + bws + the bws token (sops-managed).
 #
-# Feishu invalidates the OLD user access-token the moment the writer refreshes (every ~30min). A
-# cached token can therefore go dead mid-cache-life. So when lark-cli reports an auth/token error and
-# the token we used came from cache, we force-refetch the current token from Bitwarden and retry once.
+# Feishu invalidates the OLD user access token the moment the writer refreshes. A cached token can
+# therefore go dead mid-cache-life, so when lark-cli reports an auth/token error and the token came
+# from cache, force-refetch the current token and retry once.
+#
+# The wrapper is SELF-DESCRIBING — machine docs stay minimal because the CLI explains itself:
+#   - `auth status|list|check` run a LIVE health check (real API call per profile) and describe the
+#     relay, instead of the real CLI's blanket "auth is not supported" (which consumers misread as
+#     "Feishu is blocked").
+#   - `auth login|logout|...` are refused with a pointer to the writer (re-login on a reader would
+#     fork the writer's single-use refresh chain).
+#   - `update` is refused: an npm reinstall would clobber this wrapper.
+#
+# SITE CONFIG LIVES OUTSIDE THIS FILE. Profile names, app ids and the writer hostname identify which
+# organizations this account belongs to, and this repository is public — so they are read at runtime
+# from $PROFILES_FILE / $WRITER_HOST_FILE, both delivered by sops (see home/secrets.nix). Without
+# those files the wrapper still runs and degrades to a clear "configure me" error.
 set -uo pipefail
 
 REAL="$HOME/.local/bin/lark-cli.real"
@@ -18,62 +31,93 @@ BWS="$HOME/.local/bin/bws"
 CFG="$HOME/.config/lark-sync"
 TOKEN_FILE="$CFG/bws-token"
 CACHE_DIR="$CFG/at-cache"
+PROFILES_FILE="$CFG/profiles"       # "<profile> <app_id>" per line; '#' comments ignored
+WRITER_HOST_FILE="$CFG/writer-host" # single line: host that refreshes tokens
 CACHE_TTL=300   # seconds; perf knob only — correctness comes from the auth-error retry below
 
 [ -x "$REAL" ] || { echo "lark-cli.real not found at $REAL" >&2; exit 127; }
 
-# Meta commands that involve no credentials (schema lookup is offline): run the real CLI as-is.
-case "${1:-}" in
-  schema|completion|update|help|--version|-v|--help|-h|"") exec "$REAL" "$@" ;;
-esac
-
-# `auth ...` (status/list/check/scopes/login/logout): set the token env var so lark-cli reports the
-# TRUTH — "credentials are provided externally" — instead of the misleading local `no_token`. Without
-# this, a consumer that checks `auth list`/`auth status` before using the CLI sees no_token and wrongly
-# concludes there is no access, even though every `--profile` data call works via injection below.
-# It also makes lark-cli REFUSE interactive login/logout on a reader (which must never re-auth: that
-# would fork the writer's single-use refresh chain). A placeholder value is enough to trigger this
-# mode, so this needs no Bitwarden round-trip and works offline.
-if [ "${1:-}" = "auth" ]; then
-  exec env LARKSUITE_CLI_USER_ACCESS_TOKEN="${LARKSUITE_CLI_USER_ACCESS_TOKEN:-managed-by-bitwarden-relay}" "$REAL" "$@"
-fi
-
-# profile name -> app_id. Same app_id is shared by the mac-mini name and the MacBook name.
+# ---- site config lookups ---------------------------------------------------------------------
 profile_to_appid() {
-  case "$1" in
-    personal)          echo "cli_a970941717385cee" ;;
-    byte|bytedance)    echo "cli_a9667d0236b95cb5" ;;
-    cheese)            echo "cli_a97ca79454785bd5" ;;
-    *)                 echo "" ;;
-  esac
+  [ -f "$PROFILES_FILE" ] || return 0
+  awk -v want="$1" '!/^[[:space:]]*#/ && NF >= 2 && $1 == want { print $2; exit }' "$PROFILES_FILE"
 }
 
-# Extract the --profile value (supports "--profile x" and "--profile=x"); empty if absent.
+# Canonical profile list: one name per distinct app id, so aliases aren't health-checked twice.
+known_profiles() {
+  [ -f "$PROFILES_FILE" ] || return 0
+  awk '!/^[[:space:]]*#/ && NF >= 2 && !seen[$2]++ { print $1 }' "$PROFILES_FILE"
+}
+
+# Every accepted name (aliases included), pipe-joined, for error hints.
+known_profiles_hint() {
+  [ -f "$PROFILES_FILE" ] || { printf '<none configured>'; return; }
+  awk '!/^[[:space:]]*#/ && NF >= 2 { printf "%s%s", sep, $1; sep = "|" }' "$PROFILES_FILE"
+}
+
+writer_host() {
+  if [ -f "$WRITER_HOST_FILE" ]; then
+    head -n1 "$WRITER_HOST_FILE" | tr -d '[:space:]'
+  else
+    printf 'the writer machine'
+  fi
+}
+
+no_profiles_configured() {
+  cat >&2 <<EOF
+lark-cli relay: no profile map at $PROFILES_FILE
+It is delivered by sops (secret lark/profile_map) — redeploy dotfiles to restore it.
+Format is one "<profile> <app_id>" per line.
+EOF
+}
+
+# ---- argument parsing ------------------------------------------------------------------------
+# Parse POSITION-INDEPENDENTLY. --profile is a global flag, so it naturally gets written BEFORE the
+# subcommand: `lark-cli --profile foo auth status`. Keying command detection off $1 (as this wrapper
+# used to) then sees "--profile", NOT "auth", so every interception below is bypassed and `auth
+# status` is handed straight to the real CLI — whose blanket "auth is not supported" message is the
+# exact confusing output this wrapper exists to replace. So resolve --profile AND the real subcommand
+# (the first two non-flag args) up front, and drive all detection off those instead of off $1.
 profile=""
-prev=""
+subcmd=""
+subsub=""
+want_profile=0
 for a in "$@"; do
+  if [ "$want_profile" = 1 ]; then profile="$a"; want_profile=0; continue; fi
   case "$a" in
     --profile=*) profile="${a#--profile=}" ;;
-    *) [ "$prev" = "--profile" ] && profile="$a" ;;
+    --profile)   want_profile=1 ;;
+    -*)          : ;;   # any other flag (or a flag's value) — never the subcommand
+    *)
+      if   [ -z "$subcmd" ]; then subcmd="$a"
+      elif [ -z "$subsub" ]; then subsub="$a"
+      fi
+      ;;
   esac
-  prev="$a"
 done
 
-# No resolvable --profile → can't pick a token to inject. This reader holds NO local credentials
-# (tokens are injected per --profile from Bitwarden), so a user-auth call will fail with token_missing.
-# Emit a hint to STDERR (never stdout, so JSON consumers are unaffected) so the failure isn't misread
-# as "no access exists" — that mistake has bitten consumers who then try to re-login.
-appid=""
-[ -n "$profile" ] && appid="$(profile_to_appid "$profile")"
-if [ -z "$appid" ]; then
-  if [ -n "$profile" ]; then
-    echo "lark-cli relay: unknown --profile '$profile' (known: personal, bytedance, cheese)" >&2
-  else
-    echo "lark-cli relay: no --profile given — this machine injects a Bitwarden token per profile; add --profile <personal|bytedance|cheese> for user-auth calls" >&2
-  fi
-  exec "$REAL" "$@"
+# Meta commands that involve no credentials (schema lookup is offline): run the real CLI as-is.
+# Bare flags like --version / --help leave subcmd empty and fall in here too. `update` is handled
+# separately just below.
+case "$subcmd" in
+  schema|completion|help|"") exec "$REAL" "$@" ;;
+esac
+
+if [ "$subcmd" = "update" ]; then
+  cat <<'EOF'
+{
+  "ok": false,
+  "error": {
+    "type": "unsupported",
+    "message": "`lark-cli update` is disabled on this machine: the npm reinstall would overwrite the reader-side relay wrapper at ~/.local/bin/lark-cli.",
+    "hint": "Update the npm package behind ~/.local/bin/lark-cli.real manually (npm install -g --prefix ~/.local @larksuite/cli@latest), then redeploy dotfiles to restore the wrapper."
+  }
+}
+EOF
+  exit 1
 fi
 
+# ---- token fetch -----------------------------------------------------------------------------
 # fetch_token <appid> [force]
 #   Prints the access token to stdout. force=1 ignores + deletes the cache and pulls fresh from
 #   Bitwarden. Exit code signals the source so the caller knows whether a forced retry could help:
@@ -107,6 +151,101 @@ fetch_token() {
   return 1
 }
 
+# ---- auth: self-describing relay behaviour ---------------------------------------------------
+# status|list|check → LIVE health check, so the answer reflects the truth; the real CLI in env-token
+# mode refuses ALL auth commands with a generic message that consumers misread as "no access".
+# Everything else under `auth` is interactive credential management, which must never run on a
+# reader — refuse with an explanation of where credentials actually come from.
+if [ "$subcmd" = "auth" ]; then
+  case "${subsub:-status}" in
+    status|list|check)
+      targets="$(known_profiles)"
+      [ -n "$profile" ] && targets="$profile"
+      if [ -z "$targets" ]; then no_profiles_configured; exit 1; fi
+      results=""
+      overall=0
+      for p in $targets; do
+        id="$(profile_to_appid "$p")"
+        if [ -z "$id" ]; then results="$results $p=unknown-profile"; overall=1; continue; fi
+        t="$(fetch_token "$id")" || true
+        if [ -z "$t" ]; then results="$results $p=no-token-in-bitwarden"; overall=1; continue; fi
+        if env LARKSUITE_CLI_APP_ID="$id" LARKSUITE_CLI_USER_ACCESS_TOKEN="$t" LARKSUITE_CLI_DEFAULT_AS=user \
+             "$REAL" contact +get-user >/dev/null 2>&1; then
+          results="$results $p=ok"
+          continue
+        fi
+        # token may have been invalidated by the writer's refresh mid-cache-life — refetch and retry
+        t="$(fetch_token "$id" 1)" || true
+        if [ -n "$t" ] && env LARKSUITE_CLI_APP_ID="$id" LARKSUITE_CLI_USER_ACCESS_TOKEN="$t" LARKSUITE_CLI_DEFAULT_AS=user \
+             "$REAL" contact +get-user >/dev/null 2>&1; then
+          results="$results $p=ok"
+        else
+          results="$results $p=token-rejected"; overall=1
+        fi
+      done
+      python3 - "$overall" "$results" "$(writer_host)" "$(known_profiles_hint)" <<'PY'
+import json, sys
+ok = sys.argv[1] == "0"
+profiles = dict(kv.split("=", 1) for kv in sys.argv[2].split())
+writer, known = sys.argv[3], sys.argv[4]
+hint = f"All data commands work normally with --profile <{known}>. "
+if not ok:
+    hint += (f"For failing profiles check the writer: "
+             f"ssh {writer} 'tail ~/.config/lark-sync/lark-refresh.log'. ")
+hint += "Never run `auth login` here — it would fork the writer's single-use refresh chain."
+print(json.dumps({
+    "ok": ok,
+    "mode": "external-relay",
+    "profiles": profiles,
+    "message": (f"This machine is a token READER: user access tokens are refreshed on {writer} "
+                "(launchd job local.lark-refresh) and injected per --profile from Bitwarden. "
+                "This status was verified with live API calls just now."),
+    "hint": hint,
+}, indent=2, ensure_ascii=False))
+PY
+      exit "$overall"
+      ;;
+    *)
+      python3 - "$(writer_host)" <<'PY'
+import json, sys
+writer = sys.argv[1]
+print(json.dumps({
+    "ok": False,
+    "error": {
+        "type": "unsupported",
+        "message": ("Interactive auth management is disabled BY DESIGN on this machine: it is a "
+                    f"token READER (tokens auto-refreshed on {writer}, injected from Bitwarden per "
+                    "--profile). Re-authenticating here would fork the writer's single-use refresh "
+                    "chain."),
+        "hint": ("Feishu access is most likely fine — verify with `lark-cli auth status` (live "
+                 "health check) or any data call with --profile. If tokens are genuinely dead, fix "
+                 f"it on the writer: ssh {writer} 'tail ~/.config/lark-sync/lark-refresh.log'."),
+    },
+}, indent=2, ensure_ascii=False))
+PY
+      exit 1
+      ;;
+  esac
+fi
+
+# ---- data commands ---------------------------------------------------------------------------
+# No resolvable --profile → can't pick a token to inject. This reader holds NO local credentials
+# (tokens are injected per --profile from Bitwarden), so a user-auth call will fail with token_missing.
+# Emit a hint to STDERR (never stdout, so JSON consumers are unaffected) so the failure isn't misread
+# as "no access exists" — that mistake has bitten consumers who then try to re-login.
+appid=""
+[ -n "$profile" ] && appid="$(profile_to_appid "$profile")"
+if [ -z "$appid" ]; then
+  if [ ! -f "$PROFILES_FILE" ]; then
+    no_profiles_configured
+  elif [ -n "$profile" ]; then
+    echo "lark-cli relay: unknown --profile '$profile' (known: $(known_profiles_hint))" >&2
+  else
+    echo "lark-cli relay: no --profile given — this machine injects a Bitwarden token per profile; add --profile <$(known_profiles_hint)> for user-auth calls" >&2
+  fi
+  exec "$REAL" "$@"
+fi
+
 TOKEN="$(fetch_token "$appid")"; from_cache=$?
 if [ -z "$TOKEN" ]; then
   exec "$REAL" "$@"   # nothing usable from Bitwarden; let the real CLI try its own credentials
@@ -126,8 +265,8 @@ run_cli "$TOKEN"; rc=$?
 # Retry once with a force-refetched token if the call FAILED (rc!=0) with an invalidated/expired/empty
 # access-token error AND the token we used came from cache (from_cache=0). lark-cli writes errors to
 # stderr, so we match $ERR only — never stdout — so success data can never trigger a (possibly
-# write-duplicating) retry. Scope errors (99991672) and other failures are left untouched: a fresh
-# token would not help them.
+# write-duplicating) retry. Scope errors and other failures are left untouched: a fresh token would
+# not help them.
 if [ "$from_cache" = 0 ] && [ "$rc" -ne 0 ] \
    && grep -qiE 'invalid access token|token expir|user_access_token is empty|"code": ?(20005|99991677|99991668)' "$ERR"; then
   TOKEN="$(fetch_token "$appid" 1)"
