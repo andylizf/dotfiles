@@ -404,6 +404,12 @@ PYPIRC
   # de-identified — this repo is public, so keep names, personal details, and
   # verbatim user quotes out of it when editing.
   home.file.".claude/skills/teach".source = ../claude-skills/teach;
+  # external-send: the full approval rules for anything that reaches another
+  # human. Same de-identification rule as above. (personal-matters is
+  # deliberately NOT here — it lives in a private repo, since health and
+  # personal-life material does not belong in a public one.)
+  home.file.".claude/skills/external-send".source =
+    ../claude-skills/external-send;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.

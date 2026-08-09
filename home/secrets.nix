@@ -48,7 +48,7 @@ in
       mode = "0600";
     };
 
-    # GCP ADC for personal account (andylizf@gmail.com)
+    # GCP ADC for the personal Google account
     sops.secrets."gcloud/adc_personal" = {
       path = "${config.home.homeDirectory}/.config/gcloud/adc_personal.json";
       mode = "0600";
