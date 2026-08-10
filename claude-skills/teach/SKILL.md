@@ -105,6 +105,8 @@ Then scan for the specific failures:
 - Does every "went from X to Y" say what the starting configuration was? → describe the baseline first.
 - Invented a plain-sounding compound noun and left it undefined? → one sentence on what it measures.
 - Does the worked example give a value for every quantity the arithmetic touches? → fill the gaps.
+- Introduced an abstract structure (schema, dataset, format, directory layout) by describing it
+  instead of showing one real instance? → walk one actual sample first.
 - Ordered the way they'll learn it, or the way you discovered it? → introduce each thing before using it.
 - Still has a throughline, or is it disconnected labels? → keep the sequence that carries the logic.
 - They handed you structure — did you mirror it or flatten it? → mirror their shape.

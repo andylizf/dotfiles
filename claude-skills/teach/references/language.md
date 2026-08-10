@@ -52,6 +52,21 @@ working memory.
 
 (For what makes a worked example complete, see `evidence.md`.)
 
+## The same shape for an artifact
+
+A schema, dataset, file format, directory layout, or config is learned the same way a mechanism is —
+and description-only prose fails the same way a bare formula does. The shape:
+
+1. One sentence of what the thing is for
+2. **One real instance, shown** — an actual row with its values, an actual directory listing, an
+   actual file abridged. Real, not invented: when real samples are on disk, fabricating one trades
+   truth for convenience and teaches the wrong details.
+3. The general schema / column list, demoted to after the instance
+
+Column names and layout descriptions only land after the reader has seen one concrete thing they
+describe. "13 columns matching X plus a five-file directory per task" is a summary; one task's
+eight files and its parquet row, printed, is teaching.
+
 ## Analogies: bridge from what they know
 
 The good kind connects the new thing to a **real technical system they already understand** — they
