@@ -70,6 +70,12 @@ change the picture"). Go deeper **only when asked**. The discipline is leaving t
 Read the reference that matches what you're about to write. Each is self-contained; you don't need
 all four.
 
+**Pick by what the finished piece will contain, never by whether you feel you already know the
+rule.** You will almost always feel that you do — that feeling is the curse of knowledge pointed at
+this skill instead of at the subject, and it is how these rules get broken while sitting unread in
+context. The trigger is a property of the artifact, not a judgement about yourself: **if the piece
+will contain even one number, `evidence.md` is mandatory.**
+
 | Read this | When |
 |---|---|
 | `references/structure.md` | Laying out any explanation — deciding prose vs. pyramid, scoping what to cut, ordering the pieces, mirroring an outline they gave you |
@@ -101,7 +107,11 @@ Then scan for the specific failures:
 - Does the analogy use a term they haven't used themselves recently? → define it, or change the analogy.
 - Said where the analogy stops being true? → same shape ≠ same cause.
 - Decided the scope before writing, or tried to fit everything in? → cut, and name what's excluded.
-- Does every number carry its arithmetic? → derive inline; don't just tag where it came from.
+- Every number, one at a time: can the reader compute it from what is already on the page? → each one
+  is either an input (say what was measured and how) or a derivation (write the arithmetic inline).
+  "I measured it" is provenance, not derivation. **Hardest to catch: a measured number that
+  contradicts what the reader would compute from the formula you just gave them** — that one needs
+  the arithmetic *and* a sentence on why the expected route fails.
 - Does every "went from X to Y" say what the starting configuration was? → describe the baseline first.
 - Invented a plain-sounding compound noun and left it undefined? → one sentence on what it measures.
 - Does the worked example give a value for every quantity the arithmetic touches? → fill the gaps.
