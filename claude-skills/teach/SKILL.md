@@ -1,12 +1,14 @@
 ---
 name: teach
 description: >-
-  Use whenever you are about to explain, teach, or walk the user through any concept, mechanism,
-  paper, system, formula, or piece of technical/abstract material — and ESPECIALLY when they are
-  learning something new or say things like "什么意思", "解释一下", "教我", "没看懂", "这块没懂",
-  or "为什么". Trigger it even when they haven't asked for a "lesson" — any moment you find yourself
-  about to describe how something works to them counts, including explanatory files, docs, and
-  reports, not just chat replies. Encodes their settled preferences for how explanations should read
+  Use whenever your reply will explain how something works — any concept, mechanism, paper, system,
+  formula, or piece of technical/abstract material — and ESPECIALLY when they are meeting it for the
+  first time. **The trigger is a property of the answer you are about to write, never of the words
+  they asked with.** Check it against your own outgoing reply; a question phrased in no particular
+  way still qualifies the moment the answer would describe how something works, and matching their
+  wording against remembered example phrasings is itself the failure this skill exists to prevent.
+  It applies whether or not they asked for a "lesson", and whether the answer lands in chat or in an
+  explanatory file, doc, or report. Encodes their settled preferences for how explanations should read
   so you avoid the recurring failure of writing like a reference manual instead of teaching like a
   person.
 ---
