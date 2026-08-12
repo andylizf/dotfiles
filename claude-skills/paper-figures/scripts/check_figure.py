@@ -57,23 +57,43 @@ def intersect(a, b):
     return (max(a[0], b[0]), max(a[1], b[1]), min(a[2], b[2]), min(a[3], b[3]))
 
 
+FONT_FILE_KEYS = ("/FontFile2", "/FontFile3", "/FontFile")
+
+
+def _has_font_file(doc, obj):
+    """Follow /FontDescriptor from a font dict and report whether a file hangs off it."""
+    m = re.search(r"/FontDescriptor\s+(\d+)\s+\d+\s+R", obj)
+    if not m:
+        return None                                    # no descriptor at this level
+    fd = doc.xref_object(int(m.group(1)), compressed=False) or ""
+    return any(k in fd for k in FONT_FILE_KEYS)
+
+
 def embed_state(doc, xref):
     """Classify a font as embedded / self-contained / missing.
 
-    Two traps here. `extract_font` returns an empty buffer for Type 3 and that is
-    *not* a missing font — Type 3 glyphs are CharProcs living inside the PDF, so they
-    are always self-contained and there is no font file to extract. And embedding for
-    every other type is decided by the FontDescriptor carrying a FontFile* key, not by
-    anything in the font dictionary itself.
+    Three traps, each of which produces a confident wrong answer:
+
+    - `extract_font` returns an empty buffer for Type 3, which is *not* a missing
+      font: Type 3 glyphs are CharProcs inside the PDF, so there is no font file to
+      extract and never can be.
+    - Embedding is decided by the FontDescriptor carrying a FontFile* key, not by
+      anything in the font dictionary itself.
+    - **A Type 0 (CID) font has no FontDescriptor at the top level** — it sits on the
+      descendant CIDFont. Since `pdf.fonttype=42` produces exactly this, checking only
+      the top level marks every correctly-embedded figure as missing.
     """
     obj = doc.xref_object(xref, compressed=False) or ""
     if "/Type3" in obj:
         return "type3"
-    m = re.search(r"/FontDescriptor\s+(\d+)\s+\d+\s+R", obj)
-    if not m:
-        return "missing"
-    fd = doc.xref_object(int(m.group(1)), compressed=False) or ""
-    return "embedded" if any(k in fd for k in ("/FontFile2", "/FontFile3", "/FontFile")) else "missing"
+
+    found = _has_font_file(doc, obj)
+    if found is None:
+        m = re.search(r"/DescendantFonts\s*\[?\s*(\d+)\s+\d+\s+R", obj)
+        if m:
+            desc = doc.xref_object(int(m.group(1)), compressed=False) or ""
+            found = _has_font_file(doc, desc)
+    return "embedded" if found else "missing"
 
 
 def check_fonts(doc, pages):

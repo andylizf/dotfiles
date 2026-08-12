@@ -89,7 +89,7 @@ def harden(font: str | None = None, font_dir: str | Path | None = None):
         family = font
 
     rc = {
-        # Type 3 is matplotlib's default and is rejected by ACM/USENIX/IEEE/AAAI.
+        # Type 3 is matplotlib's default; systems venues forbid it at camera-ready.
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
         "svg.fonttype": "none",
@@ -97,6 +97,21 @@ def harden(font: str | None = None, font_dir: str | Path | None = None):
     if family:
         rc["font.family"] = "sans-serif"
         rc["font.sans-serif"] = [family] + list(KNOWN_FONTS) + ["DejaVu Sans"]
+        # Math text defaults to DejaVu regardless of the text font, so a single
+        # `$\times$` in a label silently mixes a second typeface into the figure.
+        # Point mathtext at the same family. Symbols the font lacks (≤, ×, ∈) still
+        # fall back — for those, writing the Unicode character directly instead of
+        # `$\leq$` keeps everything in one face.
+        #
+        # A "findfont: Failed to find font weight/style" warning here is real
+        # information, not noise: it means only some weights of the family are
+        # installed. Install the missing static files rather than silencing it.
+        rc.update({
+            "mathtext.fontset": "custom",
+            "mathtext.rm": family,
+            "mathtext.it": f"{family}:italic",
+            "mathtext.bf": f"{family}:bold",
+        })
     mpl.rcParams.update(rc)
     return family
 
@@ -124,9 +139,6 @@ def apply(font: str | None = None, base_size: float = 9.0, font_dir: str | Path 
         "xtick.labelsize": base_size,
         "ytick.labelsize": base_size,
         "legend.fontsize": base_size - 1,
-
-        # mathtext must match the text font or formulas look pasted in
-        "mathtext.fontset": "dejavusans",
 
         "axes.spines.top": False,
         "axes.spines.right": False,
