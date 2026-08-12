@@ -56,6 +56,33 @@ Working memory holds a few things at once and a beginner has no schema to offloa
 opening, a two-mechanism diagram, a wall of labeled fragments — each spends their scarce working
 memory on *decoding your format* instead of on *the idea*.
 
+## Define the load-bearing noun before explaining the logic that stands on it
+
+An explanation of a mechanism rests on primitives — the nouns it manipulates ("dead", "a turn",
+"the signal it waits for"). If you explain how the system *detects* / *handles* / *decides about* X
+without ever saying what X **is**, the explanation floats: every sentence is logic operating on a
+term the reader was never handed. They can follow each step and still hold nothing, because the thing
+all the steps refer to was never placed on the table.
+
+The diagnostic that makes this unmistakable: **the reader rejects your "too abstract" version and
+then your "too detailed" version in turn.** The instinct is to hear that as an altitude complaint and
+slide along the abstraction axis — swap the metaphor for code, or code for a metaphor. That is
+thrashing on the wrong axis. A metaphor and a code-dump fail *identically* when both skip the
+definition; altitude was never the problem, a missing primitive was. When you catch yourself sliding
+up and down hunting for the right level, stop — the fix is orthogonal. Name the noun the whole
+explanation depends on and define it, concretely, in one or two sentences, *before* any mechanism
+that uses it.
+
+Concretely means what it **is**, not what happens to it. "Dead" is not "we stop hearing from it"
+(that is a symptom the logic reads); "dead" is "the process that was going to send the completion
+signal no longer exists, so that signal will never arrive." Define the state, and its detection is
+finally explicable.
+
+This is the curse of knowledge in its purest form: the noun is so automated for you that it never
+registers as a thing needing definition. It is the single most common way a "just explain it
+concretely" request keeps failing across several tries — and the tell is that you were sliding on
+altitude while the reader kept pointing at a word you never defined.
+
 ## The #1 rule: don't introduce a concept they didn't ask for
 
 Answer using **only the concepts already on the table**. Every unrequested concept is a fresh thing
@@ -124,6 +151,8 @@ Then scan for the specific failures:
 - They handed you structure — did you mirror it or flatten it? → mirror their shape.
 - Pulled in any concept they didn't ask about? → cut it, or defer it as a clean gap.
 - Skipped a step because it's obvious *to you*? → put it back.
+- Explaining logic that acts on a noun ("detect if it's dead") without defining the noun first? → define the primitive (what it *is*) before the mechanism.
+- Been rejected as "too abstract" then "too detailed"? → stop sliding on altitude; you skipped a definition — name and define the load-bearing term.
 - Opened with a term, formula, or name before giving a reason to care? → move it to a trailing aside.
 - Teaching two mechanisms in one breath? → split them.
 - Plain words AND clear layout — both axes? → 说人话 sentences in a scannable structure.
