@@ -34,30 +34,25 @@ tradeoff behind it, not the number restated. But by then it has already cost a r
 Write the derivation the first time, inline: `8 × (1 − (7/8)^8) = 5.25`, not a bare `5.25`.
 
 **Provenance is not derivation.** Tagging a number 〔measured〕 or 〔from the paper〕 establishes that
-it's *trustworthy* — a different property from being *understandable*. Don't let the tag stand in for
-the arithmetic.
+it's *trustworthy* — a different property from being *understandable*. The expression itself still
+has to appear, in symbols. Assume the reader does no arithmetic in their head and — the part that
+actually bites — does not know *which* operation you had in mind. They can't redo a step they were
+never told you took.
 
-**The check is mechanical, so run it mechanically:** go through the finished piece one number at a
-time and ask *can the reader produce this from what is already on the page?* Each number has to land
-in one of two buckets, and there is no third:
+**Unit conversions are the ones you'll drop**, because performing them is trivial: inches to points,
+a fraction of a total, bytes to MB. Trivial to do, invisible to reconstruct. Write them anyway.
 
-- an **input** — then say what was measured and how ("the left and right edges of the body text in
-  the compiled PDF, 107.53 and 505.66"), not just that it was measured;
-- a **derivation** — then write the arithmetic inline, and check that every term in it is itself in
-  one of these two buckets.
+**Measured numbers are not exempt** when they sit in a computable relation to a figure you already
+gave. If your own earlier numbers invite the reader to compute a different value, they will, they'll
+land somewhere else, and they'll stop — so show the arithmetic *and* name the step that makes the two
+routes diverge.
 
-**The ones you will miss are the numbers that contradict the reader's own arithmetic.** A number is
-most dangerous exactly when your earlier figures invite them to compute a *different* one: they do
-the multiplication, get another answer, and the chain snaps. These feel the safest to leave bare,
-because to you they are simply measured facts.
-
-> Worked failure. A doc explained that `figsize=(5.4, 3.4)` in matplotlib produced a PDF **364.2pt**
-> wide, and moved on — the number was read straight off the file, so it felt like solid ground.
-> But the reader has just been told 1 inch = 72pt, so they compute 5.4 × 72 = **388.8**, hit 364.2,
-> and stop. The missing step was never the provenance; it was that `savefig.bbox="tight"` crops the
-> blank margin, and `pad_inches=0.05` adds 0.05 × 2 × 72 = 7.2pt back — so 388.8 becomes 364.2, with
-> 24.6pt trimmed. Same shape recurs everywhere: a measured constant that quietly disagrees with the
-> formula you just taught. **Give it the arithmetic *and* say why the expected route fails.**
+> Worked failure. A doc stated a conversion rule and a starting size, then reported the result the
+> tool actually produced — a figure read straight off the file, which is why it felt like bedrock and
+> got no arithmetic. But the reader applies the rule just given, gets a different number, and stalls.
+> Provenance was never the gap; three lines of arithmetic were — the conversion itself, the value it
+> yields, and why the tool's output departs from it. All three were known at writing time and cut for
+> feeling obvious.
 
 Any count you assert must be exact and match the diagram. Ban vague collectives like "那几块" — say how
 many.
