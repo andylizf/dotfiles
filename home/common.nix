@@ -410,6 +410,11 @@ PYPIRC
   # personal-life material does not belong in a public one.)
   home.file.".claude/skills/external-send".source =
     ../claude-skills/external-send;
+  # paper-figures: making and auditing figures that get printed in a paper.
+  # Whole-directory link, same as teach, so new references/ or scripts/ files
+  # need no change here. Nothing venue- or project-specific belongs in it.
+  home.file.".claude/skills/paper-figures".source =
+    ../claude-skills/paper-figures;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
