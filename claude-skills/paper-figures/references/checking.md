@@ -72,6 +72,20 @@ In increasing order of effort:
   `ax.annotate(..., xytext=offset, textcoords="offset points")`. More work, but deterministic and
   reviewable, which matters for a figure that will be regenerated many times. Budget for the
   maintenance cost: adding one data point means re-tuning its neighbours' offsets too.
+
+  **Assert that every label is nearest to its own point.** This is the failure mode an offset table
+  creates and no overlap check can see: you push a label clear of a collision, it lands beside the
+  *neighbouring* point, and now the figure asserts something false while looking perfectly clean.
+  A published figure was found stating the wrong ordering of two model sizes exactly this way.
+
+  ```python
+  for (key, (dx, dy)), (x, y) in zip(offsets.items(), points):
+      lx, ly = ax.transData.transform((x, y)) + (dx, dy)
+      nearest = min(points, key=lambda p: dist(ax.transData.transform(p), (lx, ly)))
+      assert nearest == (x, y), f"label {key} sits closer to {nearest}"
+  ```
+
+  Run it in the plotting script so a regenerated figure cannot silently reintroduce it.
 - **Label fewer things** — often the real fix. If twenty points need labels, the figure is asking the
   reader to do lookup work that a table does better.
 - **Give the labels room** — a wider aspect, or moving the legend outside the axes.
