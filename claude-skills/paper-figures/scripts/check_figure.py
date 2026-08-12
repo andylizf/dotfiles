@@ -2,10 +2,11 @@
 """Audit a figure PDF (or a page of one) for the defects a visual skim misses.
 
 Checks, in order of how often they bite:
-  1. Text-on-text overlap — labels colliding, the classic "looks fine at 100%" bug
+  1. Colliding text     — labels close enough to read as one blob at print size
   2. Ink outside a stated box — a figure bleeding past the text column
   3. Printed font size    — what the reader actually sees, after LaTeX scaling
-  4. Type 3 fonts        — only matters for ACM/IEEE camera-ready and accessibility
+  4. Missing /ToUnicode  — draws fine, but cannot be selected, copied or searched
+  5. Type 3 fonts        — a font-type question; matters at ACM/IEEE, not at ML venues
 
 Usage:
   python check_figure.py fig.pdf                       # figure file, no scaling assumed
@@ -27,8 +28,14 @@ MIN_PRINTED_PT = 5.0      # below this, body-text readers will squint
 
 # A span's bbox spans the full line box — ascender to descender — while the ink
 # occupies roughly the middle. Comparing raw bboxes therefore flags every pair of
-# tightly-spaced legend rows as "overlapping" when nothing visibly touches. Shrink
+# tightly-spaced legend rows as colliding when nothing visibly touches. Shrink
 # vertically to the ink band before testing.
+#
+# 0.62 is calibrated against measured output: rendering real labels at 12x and
+# taking their non-white pixel bounds puts the ink at 57–85% of the line box,
+# depending on whether the string has ascenders and descenders. A hit therefore
+# means "these two are close enough to read as one blob at print size", which at
+# 7pt is just as damaging as literal glyph-on-glyph overlap and much more common.
 INK_BAND = 0.62
 
 
@@ -97,8 +104,15 @@ def embed_state(doc, xref):
 
 
 def check_fonts(doc, pages):
-    """Returns (unembedded, type3) — two different problems of very different weight."""
-    unembedded, type3 = {}, {}
+    """Returns (unembedded, no_tounicode, type3) — three problems, in weight order.
+
+    A font without a /ToUnicode map draws correctly but has no mapping back to
+    characters, so selection, copy, search and screen readers all fail on it. This is
+    invisible in every visual check and is what venues asking for a "searchable PDF"
+    are actually asking for — a far more consequential defect than the font's type,
+    and independent of it.
+    """
+    unembedded, no_tounicode, type3 = {}, {}, {}
     for p in pages:
         for f in doc[p].get_fonts(full=True):
             xref, base = f[0], f[3]
@@ -107,7 +121,10 @@ def check_fonts(doc, pages):
                 unembedded.setdefault(base, set()).add(p + 1)
             elif state == "type3":
                 type3.setdefault(base, set()).add(p + 1)
-    return unembedded, type3
+            obj = doc.xref_object(xref, compressed=False) or ""
+            if "/ToUnicode" not in obj:
+                no_tounicode.setdefault(base, set()).add(p + 1)
+    return unembedded, no_tounicode, type3
 
 
 def ink_box(span):
@@ -188,7 +205,7 @@ def main():
 
     print(f"── {args.pdf}" + (f"  page {args.page}" if args.page else ""))
 
-    unembedded, t3 = check_fonts(doc, pages)
+    unembedded, no_tounicode, t3 = check_fonts(doc, pages)
     if unembedded:
         failures += 1
         print(f"\n  [FAIL] {len(unembedded)} font(s) not embedded — every venue rejects this")
@@ -198,11 +215,22 @@ def main():
     else:
         print("\n  [ok]   every font is embedded")
 
+    if no_tounicode:
+        failures += 1
+        print(f"  [FAIL] {len(no_tounicode)} font(s) have no /ToUnicode map")
+        for base, pp in sorted(no_tounicode.items()):
+            print(f"         {base}  (pages {sorted(pp)[:5]})")
+        print("         text draws correctly but cannot be selected, copied, searched or read")
+        print("         aloud — this is what 'searchable PDF' requirements are about, and it is")
+        print("         invisible to any visual check. Verify with: pdftotext <file> -")
+    else:
+        print("  [ok]   every font maps back to characters (/ToUnicode present)")
+
     if t3:
         print(f"  [note] {len(t3)} Type 3 font(s): {', '.join(sorted(t3))}")
-        print("         self-contained and searchable, so this is a venue-policy issue, not a defect")
-        print("         matters at: systems camera-ready (USENIX, ACM SOSP/SIGCOMM), ACM TAPS,")
-        print("                     PDF/UA accessibility   |   ignored by NeurIPS / ICML / ICLR")
+        print("         a font-type question, independent of the two checks above; Type 3 with a")
+        print("         ToUnicode map searches fine. Relevant to ACM TAPS / IEEE PDF eXpress and")
+        print("         PDF/UA; NeurIPS / ICML / ICLR do not check it.")
         print("         fix: mpl.rcParams['pdf.fonttype'] = 42  (and ps.fonttype)")
 
     for p in pages:
@@ -216,9 +244,9 @@ def main():
         ov = check_overlaps(page, scale)
         if ov:
             failures += 1
-            print(f"\n  [FAIL] {len(ov)} overlapping text pair(s) on page {p+1}")
+            print(f"\n  [FAIL] {len(ov)} colliding text pair(s) on page {p+1}")
             for frac, ta, tb, x, y in ov[:12]:
-                print(f'         {frac:5.0%} overlap: "{ta}" ×= "{tb}"   at ({x}, {y})')
+                print(f'         {frac:5.0%} too close: "{ta}" ×= "{tb}"   at ({x}, {y})')
         else:
             print(f"  [ok]   no text overlaps on page {p+1}")
 
