@@ -16,31 +16,15 @@ let
     omem_bin="$HOME/.local/bin/omem"
     if [ ! -x "$omem_bin" ]; then
       case "$event" in
-        pre-tool-use)
-          printf '%s\n' "omem runtime is unavailable; blocking possible Pool write" >&2
-          exit 2
-          ;;
         stash|extract) printf '{}\n' ;;
       esac
       exit 0
     fi
 
     case "$event" in
-      pre-tool-use)
-        output=$("$omem_bin" hook pre-tool-use)
-        status=$?
-        if [ -n "$output" ]; then
-          printf '%s\n' "$output"
-        fi
-        if [ "$status" -ne 0 ]; then
-          printf '%s\n' "omem PreToolUse guard failed; blocking possible Pool write" >&2
-          exit 2
-        fi
-        ;;
+      observe-write|publish-write) exec "$omem_bin" hook "$event" ;;
       session-start) exec "$omem_bin" hook session-start ;;
       recall) exec "$omem_bin" hook recall ;;
-      inject) exec "$omem_bin" hook inject ;;
-      release-write-lease) exec "$omem_bin" hook release-write-lease ;;
       stash|extract)
         "$omem_bin" hook "$event"
         printf '{}\n'
@@ -87,12 +71,10 @@ in
     managed_dir = "${omemManagedHook}/bin"
 
     [[hooks.PreToolUse]]
-    matcher = "Write|Edit|file_write|apply_patch|Bash|exec_command"
+    matcher = "apply_patch"
     [[hooks.PreToolUse.hooks]]
     type = "command"
-    command = "${omemManagedHook}/bin/omem-managed-hook pre-tool-use"
-    timeout = 5
-    statusMessage = "Protecting omem Pool writes"
+    command = "${omemManagedHook}/bin/omem-managed-hook observe-write"
 
     [[hooks.SessionStart]]
     [[hooks.SessionStart.hooks]]
@@ -107,24 +89,15 @@ in
     command = "${omemManagedHook}/bin/omem-managed-hook recall"
     additionalContextLimit = 5000
 
-    # This is the shared PostToolUse transaction/read boundary, not an assertion that
-    # recall ran. In the default index mode its selector-consume branch is disabled;
-    # the same handler still owns Pool write landing, lease settlement, access
-    # accounting, and freshness notes. Keep it registered for those responsibilities
-    # and for per-session recall/hybrid opt-in, but do not publish a false recall status.
+    # The publication sidecar is deliberately write-only and fail-open. It receives
+    # the exact apply_patch path set, never injects context, and never changes the host
+    # tool result. Recall/hybrid adds a separate explicit delivery profile; index mode
+    # has no all-tools PostToolUse callback.
     [[hooks.PostToolUse]]
-    matcher = ".*"
+    matcher = "apply_patch"
     [[hooks.PostToolUse.hooks]]
     type = "command"
-    command = "${omemManagedHook}/bin/omem-managed-hook inject"
-    additionalContextLimit = 5000
-
-    [[hooks.SessionEnd]]
-    [[hooks.SessionEnd.hooks]]
-    type = "command"
-    command = "${omemManagedHook}/bin/omem-managed-hook release-write-lease"
-    timeout = 3
-    statusMessage = "Settling pending omem write"
+    command = "${omemManagedHook}/bin/omem-managed-hook publish-write"
 
     [[hooks.Stop]]
     [[hooks.Stop.hooks]]
