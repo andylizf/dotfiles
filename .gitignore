@@ -18,3 +18,6 @@ secrets/*.env
 *.agekey
 .sops.yaml.local
 __pycache__/
+
+# Local deploy logs and scratch output
+tmp/
