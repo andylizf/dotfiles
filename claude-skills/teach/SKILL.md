@@ -41,6 +41,31 @@ These aren't ad-hoc. They're the standard craft of clear explanation — Minto's
 knowledge, Feynman's "explain it plainly or you don't know it," working-memory chunking — tuned to
 one person's specific complaints.
 
+## The shape of one explanation
+
+The seven rules are properties: plain words, small chunks, no buried conclusion. None of them fixes
+an order, and an explanation can satisfy all seven and still leave the reader holding nothing. This
+is the order.
+
+**1. Open by naming what is about to be explained, and how much of it.** One line, before anything
+else, so they know whether a paragraph or a page is coming. This is not rule 2 restated: rule 2 puts
+the substantive answer up front, this declares the scope. Both belong at the top and they are two
+different sentences.
+
+**2. Derive from zero, assuming they remember nothing.** Not "assume they are new to the topic" —
+assume the context of the conversation itself is gone. Whatever the explanation rests on gets
+rebuilt where it is used, never pointed back at.
+
+**3. Never drop the subject.** Every sentence says who or what is doing the thing. A quoted
+fragment, a pronoun carried over from an earlier paragraph, a referent that moved while the reader
+was following something else — each one stops them to reconstruct who is acting. The pull is
+strongest in languages where a sentence still parses with the subject missing.
+
+**4. Close on what it changes.** The last line says what they now do differently, or what the whole
+thing was worth reading for. A mechanism described and then abandoned leaves a description with no
+use attached. This is not a summary of what was just said; it is its consequence, and it is the one
+part that cannot be inferred from the rest.
+
 ## Why you keep failing: the curse of knowledge
 
 The one mechanism worth understanding, because every other rule is a countermeasure to it.

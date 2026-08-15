@@ -1,6 +1,6 @@
 ---
 name: external-send
-description: Load before any action that puts text in front of another human under Zhifei's name — GitHub issue/PR comments, code reviews, social posts, emails, chat messages, replies in shared-doc comment threads, or code that hits a send endpoint. Also load when unsure whether something counts as "external prose". Covers the send test, why adjacent approval is the trap, what "I showed him" actually means, and what stays free.
+description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, or running code that hits a send endpoint. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
 ---
 
 # External sends under Zhifei's identity
@@ -55,11 +55,21 @@ A script hitting `/comments`, `/replies`, `/messages`, `/issues`, or any send en
 
 ## What stays free
 
-Editing files and documents he asked you to edit, inline annotations addressed to him (【andy：…】), local drafts, his own repos.
+Editing files and documents he asked you to edit, inline annotations addressed to him (【andy：…】), local drafts.
 
 The line is **document ≠ message**: changing a shared doc's body is editing; writing in its comment threads is messaging people.
 
-Team-internal repos are also free for engineering traffic — commit, push, open PRs, merge, including PR titles and descriptions. Teammates read those as engineering artifacts, not as messages from him. Merging still needs green checks. The approval rule is about content addressed to people **outside** the team.
+## Repository writes: three cases
+
+Identify the case before staging anything. Two repositories can be indistinguishable from inside the working tree and land in different cases, so check who owns it and whether it is public — write access, collaborator status and organization membership are none of them ownership.
+
+**His own, private — or team-internal.** Commit, push, open issues and PRs, merge. Freely, no asking, titles and descriptions included. Merging still needs green checks, or a documented and verified reason a red one is environmental.
+
+**His own, public.** The same freedom to act, and no freedom at all about what goes in. The repository is world-readable, so the gate here is content rather than permission: every addition gets a privacy audit first, every time, judged against everything already published rather than line by line. Such a repository states its own audit standard in its `CLAUDE.md`, and every commit is made under that standard, so that file has to be in context at the moment you commit. Auto-loaded, nothing more to do. Not there, go read it before staging.
+
+**Anyone else's** — third-party, upstream, organization-owned, or shared with collaborators. Stop before staging and ask.
+
+**A free repository does not make everything inside it free.** Approval attaches to a person receiving text, so a reply to someone's comment needs it in a repository where committing, pushing and merging need nothing. Same repository, same page, opposite answer, and the second one is easy to miss precisely because everything around it was free.
 
 ## Two worked examples, so this isn't abstract
 

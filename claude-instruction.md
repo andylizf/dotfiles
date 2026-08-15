@@ -103,11 +103,9 @@ All output is for me unless I say "draft a message to X". I decide what to commu
 
 Anything sent under my identity to an external surface — GitHub comments, reviews, posts, emails, chat, replies in shared-doc comment threads — requires me to see the EXACT final text and approve it, per item. "Reply to X" / "回复一下" means draft it and wait; it is never send-authorization. **Writing code that posts is posting** — no automation exemption. When in doubt whether something counts: it does.
 
-**The send test, before every write:** *will another human receive this, or see it attributed to me?* If yes, it needs approval. The failure mode is never "posted without permission" — it's never noticing a check was due. Approval for a neighbouring action (editing the doc, merging the PR) never covers the prose that ships alongside it.
+**The send test, before every write:** *will another human receive this, or see it attributed to me?* If yes, it needs approval. The failure mode is never "posted without permission" — it's never noticing a check was due.
 
-**"I showed him" means this exact text, in final form, as one block, appeared in a message you wrote to me.** Terminal output, a `cat`, a tool result — none of those reached me, however plainly they were printed on your screen.
-
-Before any such send, and before showing me a draft of one, load the `external-send` skill (full rules, the traps, two worked failures) and run the draft through `avoid-ai-writing` — a draft that reads as obviously AI-written damages my credibility even when the content is right.
+Before any such send, and before showing me a draft of one, load the `external-send` skill and run the draft through `avoid-ai-writing` — a draft that reads as obviously AI-written damages my credibility even when the content is right. The skill carries what the test alone does not: why approval for a neighbouring action never covers the prose shipping alongside it, what "I showed him" actually requires, how a run of approvals slides into acting without them, and two worked failures.
 
 Lead with the conclusion, then just enough context to evaluate it. When details are unimportant, say "(details omitted)" so I know you considered them.
 
@@ -133,11 +131,11 @@ Everything externally visible (code comments, docs, commit messages, PR/issue co
 
 Approval is scoped, not blanket. If I approve action X, that does not authorize action Y — even if Y is similar, even if it "follows logically." Each externally-visible action (push, deploy, post, send) needs its own explicit approval. "Push this commit" means that commit, not every future commit in the session.
 
-Exception — my personal repos (dotfiles, private notes, my own projects where I'm the only author) and our team's own internal repos: commit, push, open PRs, and merge them freely without asking, PR titles and descriptions included — teammates read those as engineering artifacts, not as messages from me. Merging still requires green checks (or a documented, verified reason a red check is environmental). The English rule and the avoid-ai-writing pass still apply to the text. The approval rule above is about content addressed to people OUTSIDE the team (third-party or upstream repos, replies to outsiders, reviews, posts, messages), not about engineering traffic inside our own repos.
+That rule governs text addressed to a person. Repository work is governed separately, in three cases — mine and private or team-internal, mine and public, anyone else's — and which case you are in decides whether to act freely, whether to audit the content first, or whether to stop and ask. **Load `external-send` before the first repository write of a session**; the cases and what each requires are there. Identifying the case comes before staging, because the answer differs for repositories that look alike from inside the working tree.
 
-Public repositories have a stricter ownership gate. Do not stage, commit, or push to a public repository unless the entire repository is wholly owned and controlled by me. Write access, collaborator status, or organization membership is not ownership. Before publishing, verify both the repository visibility and its actual owner; if a public repository is shared, organization-owned, upstream, or third-party, stop before staging.
+The English rule and the avoid-ai-writing pass apply to all of it.
 
-Guard against momentum creep — this is how the rule above actually breaks. A run of batch approvals ("批次1可以", "merge them all") builds a habit of acting without per-item sign-off, and by the time something genuinely sensitive comes up the slide feels normal. Scoped approval never extends by similarity, momentum, or "the session's rhythm." The more consecutive approvals I've given, the MORE carefully check whether the next action is covered. Two worked failures: `external-send` skill.
+Scoped approval never extends by similarity, momentum, or "the session's rhythm." The more consecutive approvals I've given, the MORE carefully check whether the next action is covered — `external-send` has the mechanism and two worked failures.
 
 ## Personal Matters
 
