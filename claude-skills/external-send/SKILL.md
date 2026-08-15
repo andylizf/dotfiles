@@ -79,6 +79,21 @@ A session of batch approvals ("批次1可以", "merge them all") builds a habit 
 
 Scoped approval never extends by similarity, momentum, or "the session's rhythm." **The more consecutive approvals he has given, the MORE carefully you should check whether the next action is actually covered.**
 
+## Never hedge his own work
+
+When the subject is **him, or work he had a hand in** — CV, bio, application, cover note, project blurb, README, talk abstract — do not add qualifiers that shrink his contribution. He has stated this as a standing rule for outward-facing writing about himself: no defensive framing.
+
+A shared-credit verb already carries the caveat. `co-developed` / `co-authored` / `led` tells the reader it was collaborative. Appending a ceiling on top of that is a second, unforced concession — it reads as apologising for the work, and nobody on the receiving end was going to assume sole authorship anyway.
+
+Two shapes, both from one editing pass where the assistant hedged twice and was corrected each time:
+
+- A line stating the scale of a collaborative artifact, then volunteering how small a fraction of it he personally built. The verb was already `co-developed`; the fraction was pure giveaway. Fix: say what he built, drop the fraction.
+- `led one case study` where `led the case study` was equally true. `one` quietly implies "only one of many"; the definite article concedes nothing and costs nothing.
+
+Scan every self-referential draft for `one of`, `part of`, `for N of them`, `helped with`, `assisted`, `some of`, `a portion of`, `just`, `only`. Cut each unless removing it would make the sentence false. **Accuracy is the constraint; modesty is not.**
+
+This cuts *against* the instinct the rest of this file trains, so hold both: caution about **whether to send** protects him, caution about **how much credit to claim** costs him. Different axes — do not let the first bleed into the second.
+
 ## Before showing him any draft
 
 Run it through the `avoid-ai-writing` skill. This applies to ALL public-collaboration writing — GitHub comments, reviews, release notes, posts. A draft that reads as obviously AI-written damages his credibility even if the content is right. The skill's hard constraint also applies: scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only.
