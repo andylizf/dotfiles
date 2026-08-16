@@ -1,6 +1,6 @@
 ---
 name: avoid-ai-writing
-description: 扫掉 AI 写作痕迹(AI-isms)，让内容自己说话——中英文都适用。写或改会被人读到的文字时用：评论、code review、回复、帖子、邮件、文章、个人陈述、发言稿。本 skill 只管**怎么改**；某一次写作该不该过这一遍，由 `external-send` 按它的三类判定，本 skill 对此不作主张。Use when writing or editing text a person will read. This skill is the how — whether a given write needs it at all is external-send's call.
+description: 扫掉 AI 写作痕迹(AI-isms)，让内容自己说话——中英文都适用。写或改会被人读到的文字时用：评论、code review、回复、帖子、邮件、文章、个人陈述、发言稿。Use when writing or editing text a person will read — comments, reviews, replies, posts, emails, essays, personal statements.
 ---
 
 # 去除 AI 写作痕迹
