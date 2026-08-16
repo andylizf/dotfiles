@@ -103,7 +103,7 @@ All output is for me unless I say "draft a message to X". I decide what to commu
 
 Anything sent under my identity to an external surface — GitHub comments, reviews, posts, emails, chat, replies in shared-doc comment threads — requires me to see the EXACT final text and approve it, per item. "Reply to X" / "回复一下" means draft it and wait; it is never send-authorization. **Writing code that posts is posting** — no automation exemption. When in doubt whether something counts: it does.
 
-**The send test, before every write:** *will another human receive this, or see it attributed to me?* If yes, it needs approval. The failure mode is never "posted without permission" — it's never noticing a check was due.
+**The send test, before every write:** *is there a person on the other end?* Someone who receives it, gets notified of it, or is being addressed by it. If yes, it needs approval. World-readable is not the same as addressed — a commit or push in a repository of mine has nobody on the other end, and the repository cases below govern it, not this test. The failure mode is never "posted without permission" — it's never noticing a check was due.
 
 Before any such send, and before showing me a draft of one, load the `external-send` skill and run the draft through `avoid-ai-writing` — a draft that reads as obviously AI-written damages my credibility even when the content is right. The skill carries what the test alone does not: why approval for a neighbouring action never covers the prose shipping alongside it, what "I showed him" actually requires, how a run of approvals slides into acting without them, and two worked failures.
 
@@ -129,11 +129,11 @@ For Python projects: always use `uv add`, never `uv pip install`. Always work in
 
 Everything externally visible (code comments, docs, commit messages, PR/issue comments, GitHub reviews) must be in English unless I say otherwise. Conversation language doesn't affect this.
 
-Approval is scoped, not blanket. If I approve action X, that does not authorize action Y — even if Y is similar, even if it "follows logically." Each externally-visible action (push, deploy, post, send) needs its own explicit approval. "Push this commit" means that commit, not every future commit in the session.
+Approval is scoped, not blanket. If I approve action X, that does not authorize action Y — even if Y is similar, even if it "follows logically." Each action that puts text in front of a person — post, send, comment, reply, review — needs its own explicit approval. "Reply to this thread" means that one reply, not every message in the session.
 
-That rule governs text addressed to a person. Repository work is governed separately, in three cases — mine and private or team-internal, mine and public, anyone else's — and which case you are in decides whether to act freely, whether to audit the content first, or whether to stop and ask. **Load `external-send` before the first repository write of a session**; the cases and what each requires are there. Identifying the case comes before staging, because the answer differs for repositories that look alike from inside the working tree.
+That rule governs text addressed to a person. Repository work is governed separately, in three cases — mine and private or team-internal, mine and public, and anyone else's or anything another person will read. **Only the third needs me.** The first two are yours to finish end to end: commit, push, open PRs, merge, write the descriptions, no approval and no draft shown. A public repository of mine still gets a privacy audit on every addition, but you run that audit — it is a content check, not a request for sign-off, and it is never a reason to stop and ask. **Load `external-send` before the first repository write of a session**; identifying the case comes before staging, because the answer differs for repositories that look alike from inside the working tree.
 
-The English rule and the avoid-ai-writing pass apply to all of it.
+The English rule applies to all of it. The avoid-ai-writing pass applies to prose a person will read — the third case, plus README and docs text in a public repository of mine. Commit messages and code comments in my own repositories don't need it.
 
 Scoped approval never extends by similarity, momentum, or "the session's rhythm." The more consecutive approvals I've given, the MORE carefully check whether the next action is covered — `external-send` has the mechanism and two worked failures.
 

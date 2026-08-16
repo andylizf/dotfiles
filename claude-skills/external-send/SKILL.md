@@ -1,11 +1,11 @@
 ---
 name: external-send
-description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, or running code that hits a send endpoint. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
+description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, or running code that hits a send endpoint. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases — two of which need no approval at all — the send test and what it deliberately does not reach, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
 ---
 
 # External sends under Zhifei's identity
 
-The one-line rule lives in the Code of Conduct: anything a person will receive, or see attributed to him, needs his per-item approval of the **exact final text**. This file is why that rule exists and how it actually gets broken.
+The one-line rule lives in the Code of Conduct: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**. This file is why that rule exists, how it actually gets broken, and where it deliberately does not reach.
 
 ## Why this is not pedantry — the cost lands on him, not you
 
@@ -17,9 +17,11 @@ So the accounting is not "helpful vs. cautious." It's "no gain for the task vs. 
 
 ## The send test — run it before every write
 
-One mechanical question: **will another human receive this, or see it attributed to me?**
+One mechanical question: **is there a person on the other end?** Someone who receives this, gets notified of it, or is being addressed by it.
 
 If yes, it needs his per-item approval of the exact text — however small, however factual, however mid-task you are. Run it on every write action, not only on the ones that trigger doubt.
+
+Public is not the same as addressed. A commit landing in a world-readable repository of his has nobody on the other end — no inbox, no notification, nobody being spoken to — and the repository cases below govern it, not this test. Read the question as "could anyone ever see this" and every commit becomes a checkpoint, which is how a rule stops being usable at the moment it matters.
 
 **The failure mode is never "posted without permission". It's never noticing a check was due.**
 
@@ -55,19 +57,21 @@ A script hitting `/comments`, `/replies`, `/messages`, `/issues`, or any send en
 
 ## What stays free
 
-Editing files and documents he asked you to edit, inline annotations addressed to him (【andy：…】), local drafts.
+Editing files and documents he asked you to edit, inline annotations addressed to him (【andy：…】), local drafts. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
 
 The line is **document ≠ message**: changing a shared doc's body is editing; writing in its comment threads is messaging people.
 
 ## Repository writes: three cases
 
-Identify the case before staging anything. Two repositories can be indistinguishable from inside the working tree and land in different cases, so check who owns it and whether it is public — write access, collaborator status and organization membership are none of them ownership.
+Identify the case before staging anything. Two repositories can be indistinguishable from inside the working tree and land in different cases, so check who owns it, whether it is public, and whether this particular write lands in front of a person — write access, collaborator status and organization membership are none of them ownership.
+
+**Only the third case waits on him.** The first two are yours to finish: no approval, no draft shown, no pause to check. Stopping to ask inside them is its own failure — it hands him work he already delegated, and a rule that fires everywhere is one he can't rely on anywhere.
 
 **His own, private — or team-internal.** Commit, push, open issues and PRs, merge. Freely, no asking, titles and descriptions included. Merging still needs green checks, or a documented and verified reason a red one is environmental.
 
-**His own, public.** The same freedom to act, and no freedom at all about what goes in. The repository is world-readable, so the gate here is content rather than permission: every addition gets a privacy audit first, every time, judged against everything already published rather than line by line. Such a repository states its own audit standard in its `CLAUDE.md`, and every commit is made under that standard, so that file has to be in context at the moment you commit. Auto-loaded, nothing more to do. Not there, go read it before staging.
+**His own, public.** The same freedom to act, and the same no-asking — world-readable is not the same as addressed to someone, and it does not turn the repository into an approval surface. What changes is content, not permission: every addition gets a privacy audit first, every time, judged against everything already published rather than line by line. **That audit is yours to run, not his to sign off** — needing it is never a reason to stop and ask. Such a repository states its own audit standard in its `CLAUDE.md`, and every commit is made under that standard, so that file has to be in context at the moment you commit. Auto-loaded, nothing more to do. Not there, go read it before staging.
 
-**Anyone else's** — third-party, upstream, organization-owned, or shared with collaborators. Stop before staging and ask.
+**Anyone else's, or anything another person will read.** Third-party, upstream, organization-owned, shared with collaborators — and, wherever it lives, any comment, review, reply or issue aimed at a human. Stop before staging and ask. The test is who is on the other end, not who owns the remote: a reply to a collaborator in his own public repository is this case, and a commit to a repository he shares with nobody is not.
 
 **A free repository does not make everything inside it free.** Approval attaches to a person receiving text, so a reply to someone's comment needs it in a repository where committing, pushing and merging need nothing. Same repository, same page, opposite answer, and the second one is easy to miss precisely because everything around it was free.
 
@@ -85,7 +89,7 @@ The chain: enumerated surfaces read as a boundary → document-editing approval 
 
 ## Momentum creep
 
-A session of batch approvals ("批次1可以", "merge them all") builds a habit of executing external actions without per-item sign-off; by the time something genuinely sensitive comes up, the slide feels normal and you post it without asking.
+A session of batch approvals ("批次1可以", "send all of those") builds a habit of executing external actions without per-item sign-off; by the time something genuinely sensitive comes up, the slide feels normal and you post it without asking.
 
 Scoped approval never extends by similarity, momentum, or "the session's rhythm." **The more consecutive approvals he has given, the MORE carefully you should check whether the next action is actually covered.**
 
@@ -107,3 +111,5 @@ This cuts *against* the instinct the rest of this file trains, so hold both: cau
 ## Before showing him any draft
 
 Run it through the `avoid-ai-writing` skill. This applies to ALL public-collaboration writing — GitHub comments, reviews, release notes, posts. A draft that reads as obviously AI-written damages his credibility even if the content is right. The skill's hard constraint also applies: scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only.
+
+What it binds to is prose someone will read, not the act of writing to a repository. Commit messages, code comments and PR descriptions in his own repositories are not drafts and are not waiting on him; a README or docs page in a public repository of his is prose, so scrub it — then commit it yourself.
