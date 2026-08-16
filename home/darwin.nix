@@ -14,6 +14,22 @@ in
   # macOS-specific home-manager config.
   # System-level settings (Finder, Dock, Homebrew) are in system/darwin.nix via nix-darwin.
 
+  # ---- container runtime ----
+  # macOS cannot run containers natively, so anything that needs one needs a
+  # Linux VM underneath. colima is the headless option: a plain CLI with no
+  # GUI app, no login item, and no licence terms — which is what a machine
+  # that is administered over ssh actually needs.
+  #
+  # Installing these only provides the commands. The VM is created on the
+  # first `colima start` (allocate CPU/memory/disk there, and mind that the
+  # disk is claimed up front on a machine that may not have much left).
+  # docker-client is the CLI alone — the daemon lives in colima's VM, and
+  # colima writes the docker context that points at it.
+  home.packages = with pkgs; [
+    colima
+    docker-client
+  ];
+
   # ---- lark-cli multi-machine token relay (via Bitwarden Secrets Manager) ----
   # Scripts deployed everywhere (harmless); the launchd agent + wrapper are hostname-gated below.
   home.file.".local/bin/lark-cli-wrapper.sh"    = { source = ./scripts/lark-cli-wrapper.sh;    executable = true; };
