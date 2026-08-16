@@ -22,6 +22,10 @@
     nodejs_22
     direnv
     ripgrep
+    # Toolchains for building and testing the projects checked out on these
+    # machines, so a suite that needs one is not blocked on a machine that
+    # happens to lack it.
+    go
     python312Packages.huggingface-hub
   ];
 
