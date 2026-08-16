@@ -1,6 +1,6 @@
 ---
 name: external-send
-description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, or running code that hits a send endpoint. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases — two of which need no approval at all — the send test and what it deliberately does not reach, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
+description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, or running code that hits a send endpoint. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
 ---
 
 # External sends under Zhifei's identity
