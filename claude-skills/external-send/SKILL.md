@@ -113,3 +113,5 @@ This cuts *against* the instinct the rest of this file trains, so hold both: cau
 Run it through the `avoid-ai-writing` skill. A draft that reads as obviously AI-written damages his credibility even if the content is right. The skill's hard constraint also applies: scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only.
 
 What decides this is the case, not the genre. Everything in the third case gets scrubbed, because a person is going to read it. Nothing in the first two does — a README, a release note, a commit message and a PR description in his own repositories all get the same answer, and it is no. Do not reintroduce a second judgement about which of them counts as prose; the case is the whole test.
+
+The two skills divide cleanly, and keeping them divided is what makes either one usable. **This file decides whether a write needs anything at all. `avoid-ai-writing` only says how to repair the prose once that answer is yes.** It holds no view about cases and must not be read as asserting one — if its wording ever seems to widen the gate, this file governs. The same goes the other way: nothing here overrides how it says to scrub.
