@@ -73,6 +73,10 @@ Identify the case before staging anything. Two repositories can be indistinguish
 
 **Anyone else's, or anything another person will read.** Third-party, upstream, organization-owned, shared with collaborators — and, wherever it lives, any comment, review, reply or issue aimed at a human. Stop before staging and ask. The test is who is on the other end, not who owns the remote: a reply to a collaborator in his own public repository is this case, and a commit to a repository he shares with nobody is not.
 
+The privacy audit applies here too, and harder — the text is going to a person rather than into a repository, and the reach is someone else's to control once it lands. Run it on the draft *before* he sees it, so what he is approving is already clean. His approval is for the message; it is not a second pass that catches what you left in.
+
+**Audit and approval are different questions with different triggers.** Who can see the result decides the audit; who is on the other end decides the approval. They come apart in both directions: a commit to a public repository of his is audited and needs no approval, while a reply to a collaborator is both. Only his own private and team-internal repositories are outside the audit entirely.
+
 **A free repository does not make everything inside it free.** Approval attaches to a person receiving text, so a reply to someone's comment needs it in a repository where committing, pushing and merging need nothing. Same repository, same page, opposite answer, and the second one is easy to miss precisely because everything around it was free.
 
 ## Two worked examples, so this isn't abstract
@@ -110,8 +114,6 @@ This cuts *against* the instinct the rest of this file trains, so hold both: cau
 
 ## Before showing him any draft
 
-Run it through the `avoid-ai-writing` skill. A draft that reads as obviously AI-written damages his credibility even if the content is right. The skill's hard constraint also applies: scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only.
+Run it through the `avoid-ai-writing` skill. A draft that reads as obviously AI-written damages his credibility even if the content is right.
 
-What decides this is the case, not the genre. Everything in the third case gets scrubbed, because a person is going to read it. Nothing in the first two does — a README, a release note, a commit message and a PR description in his own repositories all get the same answer, and it is no. Do not reintroduce a second judgement about which of them counts as prose; the case is the whole test.
-
-The two skills divide cleanly, and keeping them divided is what makes either one usable. **This file decides whether a write needs anything at all. `avoid-ai-writing` only says how to repair the prose once that answer is yes.** It holds no view about cases and must not be read as asserting one — if its wording ever seems to widen the gate, this file governs. The same goes the other way: nothing here overrides how it says to scrub.
+What decides this is the case, not what kind of text it is. Everything in the third case gets scrubbed, because a person is going to read it. Nothing in the first two does — a README, a release note, a commit message and a PR description in his own repositories all get the same answer, and it is no. Do not reintroduce a second judgement about which of them counts as prose; the case is the whole test.
