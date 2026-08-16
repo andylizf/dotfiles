@@ -110,6 +110,6 @@ This cuts *against* the instinct the rest of this file trains, so hold both: cau
 
 ## Before showing him any draft
 
-Run it through the `avoid-ai-writing` skill. This applies to ALL public-collaboration writing — GitHub comments, reviews, release notes, posts. A draft that reads as obviously AI-written damages his credibility even if the content is right. The skill's hard constraint also applies: scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only.
+Run it through the `avoid-ai-writing` skill. A draft that reads as obviously AI-written damages his credibility even if the content is right. The skill's hard constraint also applies: scrubbing AI味 ≠ making prose 散/口语/水 — narrow surgery only.
 
-What it binds to is prose someone will read, not the act of writing to a repository. Commit messages, code comments and PR descriptions in his own repositories are not drafts and are not waiting on him; a README or docs page in a public repository of his is prose, so scrub it — then commit it yourself.
+What decides this is the case, not the genre. Everything in the third case gets scrubbed, because a person is going to read it. Nothing in the first two does — a README, a release note, a commit message and a PR description in his own repositories all get the same answer, and it is no. Do not reintroduce a second judgement about which of them counts as prose; the case is the whole test.

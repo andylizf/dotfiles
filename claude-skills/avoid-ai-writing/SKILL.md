@@ -1,6 +1,6 @@
 ---
 name: avoid-ai-writing
-description: 写或改任何给人看的文字时用——GitHub issue/PR 评论、code review、release notes、HN/社交评论、帖子、文档、邮件、文章、个人陈述、发言稿、commit/PR 说明。凡是公开协作场景下以用户名义发出的文字，发出前必须先过一遍本 skill。扫掉 AI 写作痕迹(AI-isms)，让内容自己说话。中英文都适用。Use when writing or editing prose a human will read, especially anything posted publicly under the user identity (GitHub comments, reviews, social posts).
+description: 写或改任何另一头有人会读到的文字时用——GitHub issue/PR 评论、code review、回复评审、HN/社交评论、帖子、邮件、文章、个人陈述、发言稿。凡是以用户名义发给某个人的文字，发出前必须先过一遍本 skill。判据是 external-send 的第几类，不是文体：写进用户自己仓库的东西（commit 说明、README、release notes、文档）属于前两类，一律不用过。扫掉 AI 写作痕迹(AI-isms)，让内容自己说话。中英文都适用。Use when writing or editing text another person will read — external-send's third case. Not for writes to the user's own repositories.
 ---
 
 # 去除 AI 写作痕迹
