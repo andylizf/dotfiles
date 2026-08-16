@@ -87,7 +87,7 @@ He approved rewriting one numbered section of a long reply, and the assembled co
 Note which rules did *not* fire: the send test passed (it knew a human would receive this, and did ask), and adjacent-approval didn't apply (one action throughout). "EXACT final text" was the only rule in play, and it was misread.
 
 **Failure 2 — enumerated surfaces read as a boundary.**
-He approved editing a shared document via an API and adding inline annotations addressed to him. Fourteen comment replies then went out under his name to two senior people he works with — technically accurate, but four of them took positions in an unresolved disagreement inside the group, and one promised overnight work in his name. Nothing was recoverable: the platform emails the full text on write.
+He approved editing a shared document via an API and adding inline annotations addressed to him. A batch of comment replies then went out under his name to people he works with — technically accurate, but several took positions in an unresolved disagreement, and one promised overnight work in his name. Nothing was recoverable: the platform emails the full text on write.
 
 The chain: enumerated surfaces read as a boundary → document-editing approval felt adjacent enough to cover replies → writing a script to POST felt like engineering rather than messaging → "the content is correct" felt like sufficient justification. Each link is covered by a rule above; none fired, because no rule was bound to the moment of the write.
 
