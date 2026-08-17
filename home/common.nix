@@ -395,24 +395,32 @@ PYPIRC
     source = ./scripts/notion-mcp-wrapper.sh;
     executable = true;
   };
-  # User-level Claude skills. avoid-ai-writing is canonical here; the copy in
-  # the daily-agent repo stays for its unattended runs.
+  # Shared user-level skills for Claude Code and Codex. Codex discovers user
+  # skills under ~/.agents/skills and supports symlinked skill directories, so
+  # both agents read the same tracked sources instead of maintaining copies.
+  # avoid-ai-writing is canonical here; the copy in the daily-agent repo stays
+  # for its unattended runs.
   home.file.".claude/skills/avoid-ai-writing/SKILL.md".source =
     ../claude-skills/avoid-ai-writing/SKILL.md;
   home.file.".claude/skills/avoid-ai-writing/scripts/cjk-punct.py" = {
     source = ../claude-skills/avoid-ai-writing/scripts/cjk-punct.py;
     executable = true;
   };
+  home.file.".agents/skills/avoid-ai-writing".source =
+    ../claude-skills/avoid-ai-writing;
   # teach: how explanations should read. Linked as a whole directory so new
   # files under references/ need no change here. The tracked copy is
   # de-identified — this repo is public, so keep names, personal details, and
   # verbatim user quotes out of it when editing.
   home.file.".claude/skills/teach".source = ../claude-skills/teach;
+  home.file.".agents/skills/teach".source = ../claude-skills/teach;
   # external-send: the full approval rules for anything that reaches another
   # human. Same de-identification rule as above. (personal-matters is
   # deliberately NOT here — it lives in a private repo, since health and
   # personal-life material does not belong in a public one.)
   home.file.".claude/skills/external-send".source =
+    ../claude-skills/external-send;
+  home.file.".agents/skills/external-send".source =
     ../claude-skills/external-send;
 
   # Claude Code settings.json must be a writable real file (not a nix-store

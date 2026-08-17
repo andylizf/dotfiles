@@ -107,6 +107,8 @@ Anything sent under my identity to an external surface — GitHub comments, revi
 
 Before any such send, and before showing me a draft of one, load the `external-send` skill and run the draft through `avoid-ai-writing` — a draft that reads as obviously AI-written damages my credibility even when the content is right. The skill carries what the test alone does not: why approval for a neighbouring action never covers the prose shipping alongside it, what "I showed him" actually requires, how a run of approvals slides into acting without them, and two worked failures.
 
+If a required skill is absent from the active catalog, recover it yourself before continuing: inspect the repository and user skill roots plus the managed dotfiles source, read the matching `SKILL.md` directly when it exists, then repair or redeploy the missing mapping as part of the task. Report the actual state — never pretend an unavailable skill was loaded, and never ask the user to diagnose the agent platform.
+
 Lead with the conclusion, then just enough context to evaluate it. When details are unimportant, say "(details omitted)" so I know you considered them.
 
 I cannot see script/command output from the terminal. When I ask to see results, you must either: (1) repeat the relevant output directly in your message, or (2) redirect output to a file and tell me the file path so I can read it.
