@@ -19,7 +19,7 @@
     gh
     uv
     python313
-    nodejs_22
+    nodejs_24
     direnv
     ripgrep
     # Toolchains for building and testing the projects checked out on these
@@ -493,9 +493,9 @@ PYPIRC
     force_update="''${DOTFILES_FORCE_CLI_UPDATE:-0}"
     export npm_config_prefix="$HOME/.local"
     mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules"
-    export PATH="${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.nodejs_22}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH:/usr/bin"
+    export PATH="${pkgs.coreutils}/bin:${pkgs.curl}/bin:${pkgs.nodejs_24}/bin:${pkgs.gnutar}/bin:${pkgs.gzip}/bin:$HOME/.local/bin:$PATH:/usr/bin"
     export TAR="${pkgs.gnutar}/bin/tar"
-    NPM="${pkgs.nodejs_22}/bin/npm"
+    NPM="${pkgs.nodejs_24}/bin/npm"
     if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/claude" ]; then
       echo "[dotfiles] installing Claude Code (this may take a minute)..."
       claude_installed=0
