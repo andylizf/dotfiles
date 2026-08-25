@@ -25,6 +25,8 @@ They share a root: writing down your own path to the rule instead of the rule.
 
 **Explaining how you got there.** The most common one by far. A paragraph justifying why the rule is scoped this way, why an earlier framing was wrong, what the alternative would have cost — none of it changes what the reader does. <!-- check: ignore --> **Test: delete the sentence. Does anything change about what gets done?** If not, it was thinking out loud in a file meant for instructions.
 
+**Say what it is, never what it is not.** A scope carve-out, a note on what this file does not cover, a clarification that some reading would be wrong — each ends with the reader holding no action, and each occupies the space where the positive rule would have gone. Where a wrong reading is genuinely likely, state the right one more precisely instead. Where a concrete hazard exists, attach the warning to the line where that action happens, not to a paragraph about scope.
+
 **Edit history.** Phrasing that only parses against a previous draft. The reader never saw that draft. State what is true now, in present tense, as though it had always read that way.
 
 **Pointers.** Words that fill the subject slot so a grammar check passes them and resolve to nothing for someone reading only this file. **If a rule needs a pointer, it is in the wrong place** — carry the exception inline in the clause that states the rule, rather than writing a better pointer to it.
