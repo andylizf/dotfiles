@@ -1,6 +1,6 @@
 ---
 name: writing-instructions
-description: Load before writing or editing anything that will later be read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file, or a stored memory that a rule would rest on. The trigger is the durability of the text, not who asked or how small the edit looks: adding one bullet, tightening a description, recording a correction just given, or turning a lesson from the current session into something permanent all land here. Load it also when deciding *which* file a new rule belongs in, since putting it in the wrong one is the most expensive way to get it wrong. Covers the layer split and precedence, the failure modes that keep recurring in these files, and a checker to run before saving.
+description: Load before writing or editing anything that will later be read back as a rule — a skill, a global or per-repository CLAUDE.md or a machine-notes file. The trigger is the durability of the text, not who asked or how small the edit looks: adding one bullet, tightening a description, recording a correction just given, or turning a lesson from the current session into something permanent all land here. Load it also when deciding *which* file a new rule belongs in, since putting it in the wrong one is the most expensive way to get it wrong. Covers the layer split and precedence, the failure modes that keep recurring in these files, and a checker to run before saving.
 ---
 
 # Writing instructions
@@ -18,6 +18,8 @@ Rules are read months later by a reader with none of this context — sometimes 
 | A stored memory | **Evidence** — what happened, what was said, what a system actually does | Freely |
 
 **A rule that must always hold goes in a skill or the global file, never only in a memory.** Memory gives a rule the worst combination there is: present only sometimes, and authoritative whenever it is. When a memory contradicts an instruction the instruction wins, and the memory is what to fix — in the same turn.
+
+Memory appears here only as somewhere a rule must be routed away from; **writing one is outside this file.** Several checks below invert for it: a memory needs the date a fact was true, the history of how it changed, and the reasoning that produced it, and it quotes verbatim in whatever language was spoken. Run the checker on a memory and it will flag precisely what makes the memory good.
 
 ## What keeps going wrong
 
