@@ -422,6 +422,13 @@ PYPIRC
     ../claude-skills/external-send;
   home.file.".agents/skills/external-send".source =
     ../claude-skills/external-send;
+  # writing-instructions: which file a durable rule belongs in, the failures
+  # that keep recurring in these files, and scripts/check.py, which flags the
+  # mechanical ones. Whole-directory link so the script rides along.
+  home.file.".claude/skills/writing-instructions".source =
+    ../claude-skills/writing-instructions;
+  home.file.".agents/skills/writing-instructions".source =
+    ../claude-skills/writing-instructions;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
