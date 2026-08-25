@@ -19,6 +19,10 @@ Assume beginner on *this* topic. The user is technically strong, but strength in
 nothing about another — and the failure this skill exists to prevent is writing at the density of
 someone who already holds the model. When in doubt, define the term.
 
+**Load `avoid-ai-writing` too, and apply both to the same draft.** The two work on different axes:
+that skill decides how the sentences sound, this one decides whether the explanation lands. Neither
+substitutes for the other.
+
 ## The seven rules
 
 This list is itself the demo: apex first, detail underneath. If you internalize nothing else:
@@ -59,7 +63,9 @@ rebuilt where it is used, never pointed back at.
 **3. Never drop the subject.** Every sentence says who or what is doing the thing. A quoted
 fragment, a pronoun carried over from an earlier paragraph, a referent that moved while the reader
 was following something else — each one stops them to reconstruct who is acting. The pull is
-strongest in languages where a sentence still parses with the subject missing.
+strongest in languages where a sentence still parses with the subject missing. A subject that
+is *present but empty* fails the same way and is far harder to see — see *Hand over the thing,
+not a pointer to it*.
 
 **4. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
@@ -107,6 +113,39 @@ This is the curse of knowledge in its purest form: the noun is so automated for 
 registers as a thing needing definition. It is the single most common way a "just explain it
 concretely" request keeps failing across several tries — and the tell is that you were sliding on
 altitude while the reader kept pointing at a word you never defined.
+
+## Hand over the thing, not a pointer to it
+
+Two failures, one shape. Both leave the reader holding an address instead of the content, and both
+feel finished as you write them, because you resolve the address instantly and they cannot.
+
+**Failure one: a word that only resolves outside this message.** "That line", "those two", "the one
+mentioned above", "the earlier point" — grammatically these are complete subjects, so the
+never-drop-the-subject rule waves them through, and they feel like restating because you are naming
+the thing you were just discussing. They restate nothing; they point. A reader holding only this
+message cannot follow the pointer, and a reader who can follow it still pays for the trip.
+
+**The topic is where this leaks, and the reason is worth knowing.** You rebuild everything the
+explanation *rests on*, because that material is obviously new to them. You leave the thing the
+explanation is *about* as a pointer, because it is the one item that feels too established to
+restate. So an answer can open with "the exception in that rule", derive the exception faultlessly,
+and still leave a reader who never learns which rule was meant.
+
+The fix is not a longer pointer. Name the thing: quote the line, state the rule, give the file and
+what it says. If naming it costs two sentences, spend the two sentences.
+
+**Failure two: a class where an instance was asked for.** Asked to be concrete or specific, they
+want the real material — an actual example, the literal text, the exact values, the file with its
+real contents. Answering with a sharper description of the category repeats the pointer move, since
+a category is an address for its instances. Keep two requests apart here: writing a *rule* for
+general reuse means stripping an incident down to its mechanism, while answering a *question* means
+producing the incident itself. The first is abstraction doing its job; the second is abstraction
+dodging the question.
+
+**One test catches both.** Cut this message loose from everything around it and hand it to someone
+who saw none of the conversation. Can they name every noun in it, and point at every concrete thing
+it claims? A word that resolves only by looking elsewhere is a defect, and so is a claim that
+resolves only into another abstraction.
 
 ## The #1 rule: don't introduce a concept they didn't ask for
 
@@ -176,6 +215,10 @@ Then scan for the specific failures:
 - They handed you structure — did you mirror it or flatten it? → mirror their shape.
 - Pulled in any concept they didn't ask about? → cut it, or defer it as a clean gap.
 - Skipped a step because it's obvious *to you*? → put it back.
+- Any word that points outside this message — "that line", "those two", "the one above"? → name the
+  thing instead; a pointer is not a restatement, and the topic is where it leaks.
+- Asked to be concrete, and answered with a better description of the category? → give the instance:
+  the real text, the real values, a real example.
 - Explaining logic that acts on a noun ("detect if it's dead") without defining the noun first? → define the primitive (what it *is*) before the mechanism.
 - Been rejected as "too abstract" then "too detailed"? → stop sliding on altitude; you skipped a definition — name and define the load-bearing term.
 - Opened with a term, formula, or name before giving a reason to care? → move it to a trailing aside.
