@@ -19,8 +19,6 @@ Rules are read months later by a reader with none of this context — sometimes 
 
 **A rule that must always hold goes in a skill or the global file, never only in a memory.** Memory gives a rule the worst combination there is: present only sometimes, and authoritative whenever it is. When a memory contradicts an instruction the instruction wins, and the memory is what to fix — in the same turn.
 
-Memory appears here only as somewhere a rule must be routed away from; **writing one is outside this file.** Several checks below invert for it: a memory needs the date a fact was true, the history of how it changed, and the reasoning that produced it, and it quotes verbatim in whatever language was spoken. Run the checker on a memory and it will flag precisely what makes the memory good.
-
 ## What keeps going wrong
 
 They share a root: writing down your own path to the rule instead of the rule.
@@ -45,7 +43,7 @@ They share a root: writing down your own path to the rule instead of the rule.
 
 ## Before saving
 
-Run the checker on every file touched:
+Run the checker on every instruction file touched — the first four rows above, never a memory, which needs the dates and history these checks strip:
 
 ```
 python3 <skill dir>/scripts/check.py FILE [FILE...]
