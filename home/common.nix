@@ -452,6 +452,7 @@ PYPIRC
         },
         "alwaysThinkingEnabled": true,
         "skipDangerousModePermissionPrompt": true,
+        "cleanupPeriodDays": 365,
         "hooks": {
           "Stop": [
             {
