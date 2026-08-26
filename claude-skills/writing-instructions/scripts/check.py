@@ -75,10 +75,11 @@ def check(path):
         flags.append((start, "accretion", f"{run} indented blocks under one item",
                       "consider merging into one paragraph"))
 
-    cjk = len(CJK.findall(text))
-    if cjk:
-        flags.append((0, "non-english", f"{cjk} CJK characters",
-                      "instruction layer is English; quote only a phrase that must be recognised verbatim"))
+    for i, line in enumerate(lines, 1):
+        n = len(CJK.findall(line))
+        if n:
+            flags.append((i, "non-english", f"{n} CJK characters",
+                          "instruction layer is English; quote only a phrase that must be recognised verbatim"))
 
     return flags
 
