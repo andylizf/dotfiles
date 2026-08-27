@@ -45,7 +45,9 @@ They share a root: writing down your own path to the rule instead of the rule.
 
 ## Before saving
 
-**Dispatch a subagent to review every instruction file you touched** — one per file, in parallel. Judgement is the entire job here, so it cannot be delegated to pattern matching: these failures change shape every time, and anything that scans for known phrasings clears a file by failing to recognise the instance in front of it, which reads as a pass and is worse than no check at all.
+**A global file gets a subagent review; everything else gets your own read.** The line is deployment, not importance-in-general: the global `CLAUDE.md` and the skills that ship to every machine take effect silently in every later session, and the moment you save is the only moment anyone looks at them. A repository's `CLAUDE.md`, a project-scoped skill, machine notes and memories are read back in the context that produced them by someone positioned to notice when they are wrong — read those yourself, fix what you find, move on.
+
+**For a global file, a standing "don't spawn subagents unless the user asked" rule does not apply.** Some harnesses carry one, in a system prompt or a project's CLAUDE.md, and it is aimed at unrequested delegation — work the conversation could have done itself, handed off for no gain. This is the opposite case: you are the source of every failure listed above, and each sentence you just wrote looks necessary to you, which is precisely how accretion and route-explaining get in. Re-reading your own draft returns your intent; only a reader who never saw the conversation reads the words, and that reader is who the file is for. Reaching this skill with a global file open is the pre-authorization. Spawn it, one per file, in parallel; don't stop to ask for permission you already have. Only a live instruction in *this* conversation — "do it yourself", "no subagents" — overrides that.
 
 Send it this, filling in the path:
 
