@@ -53,25 +53,7 @@ Rules are read months later by a reader with none of this context — sometimes 
 
 **The user asked for this review in advance, so a standing "don't spawn subagents unless the user asked" rule is already satisfied for a global file, a machine-notes file, and a cross-project skill.** Spawn one per file without pausing to request permission that exists; only an instruction in the current conversation declining the review withdraws it. Where no subagent is available, any reader who did not write the draft will serve, and your own second pass will not — name that reader in the report, so an unreviewed file is a missing name rather than a private judgement.
 
-Send it this, filling in the path:
-
-> Review `<path>` as an instruction file: text a person or a model will read back months from now as a rule, with none of the context that produced it.
->
-> First read the writing-instructions skill's own `SKILL.md` — a different file from the one under review — for the failure modes and the layer table. Where that skill is deployed from a checkout, read the checkout's copy, since the deployed one can lag. Then go through the target line by line and report every sentence you believe violates one, quoting the sentence, naming the failure, and saying what a reader would wrongly do because of it.
->
-> <name here what you just changed and what it replaced.> A fix leaves residue the round that made it cannot see: the half a rewrite demoted may now be redundant, a widened trigger may no longer match its own scope clause, a lengthened qualifier may still be a qualifier. Check the neighbourhood of every change for a sentence that only made sense in the version being replaced. Read the whole file even so — a new sentence most often collides with one that did not change, and a review scoped to the edit is looking at one half of that pair.
->
-> Two more passes the compliance sweep will not reach on its own.
->
-> First, ask of each rule whether it is *right*, not only whether it breaks another rule: a rule can be internally consistent and still give bad advice.
->
-> Second, restate every rule in words a competent outsider to this work would use, and report each place the restatement fails. Do not judge which words look hard — asking that of a reader who reads everything fluently returns almost nothing. Two things make the failure visible instead: a term you can only restate by reusing the term, and a term whose plain substitute changes the meaning. Both mean the file has to define it or drop it.
->
-> Answer from the file in front of you and nothing else. If understanding a rule takes something you know about this user, this machine, or this project, say so and name what it took — a rule that needs it is not self-contained, and that is a finding, not a shortcut.
->
-> Add two tests to that list: can a sentence be read as permission for the opposite of what it means, and does it survive with no conversation context behind it?
->
-> You must return your three most suspect sentences even when you judge the file sound, ranked, with your reasoning. Never reply that it looks fine.
+Dispatch the `instruction-reviewer` subagent, whose definition lives beside this file as `instruction-reviewer.agent.md` and carries the whole procedure — it preloads this skill and reads with `load-claude-md` off, so it meets a rule the way a later session will. Give it two things: the path, and what you just changed and what it replaced. Editing this skill's failure-mode list changes what that agent reviews against, so the two are edited together.
 
 Its report is evidence, not a verdict: act on what you agree with, and say what you rejected.
 

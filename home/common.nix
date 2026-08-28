@@ -431,12 +431,20 @@ PYPIRC
   home.file.".agents/skills/external-send".source =
     ../claude-skills/external-send;
   # writing-instructions: which file a durable rule belongs in, the failures
-  # that keep recurring in these files, and scripts/check.py, which flags the
-  # mechanical ones. Whole-directory link so the script rides along.
+  # that keep recurring in these files, and the subagent review to run before
+  # saving one.
   home.file.".claude/skills/writing-instructions".source =
     ../claude-skills/writing-instructions;
   home.file.".agents/skills/writing-instructions".source =
     ../claude-skills/writing-instructions;
+  # instruction-reviewer: the subagent that review calls. Kept beside the skill
+  # because the two change together — the skill's failure-mode list is what the
+  # agent reviews against — but deployed to .claude/agents, the only place
+  # Claude Code looks for agent definitions. Its frontmatter preloads the skill
+  # and sets load-claude-md false, so it reads a rule the way a later session
+  # will: with nothing but the file.
+  home.file.".claude/agents/instruction-reviewer.md".source =
+    ../claude-skills/writing-instructions/instruction-reviewer.agent.md;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
