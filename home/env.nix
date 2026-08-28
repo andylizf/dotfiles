@@ -22,6 +22,13 @@ let
     ANTHROPIC_VERTEX_PROJECT_ID = "llm-retrieval-403823";
     ANTHROPIC_MODEL = "opus[1m]";
     ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-sonnet-4-6";
+
+    # gws encrypts its token cache with a key from either the OS keyring or a
+    # local file. The keyring cannot be unlocked without a GUI session, so over
+    # SSH or under launchd gws fails to read what it wrote -- and for the
+    # credential file it does not report that, it DELETES it. Pinning the file
+    # backend everywhere keeps one behaviour on every host and in every context.
+    GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND = "file";
   };
 
   # VAR -> path under ~/.config; the file's trimmed contents become the value.
@@ -38,6 +45,9 @@ let
 
   # VAR -> path under ~/.config; the PATH itself is the value, not the contents.
   pathVars = {
+    # Points gws at the sops-deployed credential instead of the copy it writes
+    # for itself. Without this a machine falls back to that private copy, which
+    # expires independently and then looks exactly like "the token was revoked".
     GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE = "gws/credentials.json";
   };
 

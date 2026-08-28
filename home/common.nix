@@ -23,9 +23,28 @@
       echo "[dotfiles] ACTIVATION STEP FAILED: ${name} (rc=''${_dotfilesRc})" >&2
       echo "[dotfiles] The remaining steps still run; this one did not." >&2
       echo "[dotfiles] ---------------------------------------------" >&2
-      mkdir -p "${config.home.homeDirectory}/.local/state/dotfiles" || true
+      dotfilesFailedSteps="''${dotfilesFailedSteps:-}${name} "
+      mkdir -p "$HOME/.local/state/dotfiles" || true
       echo "$(date -Iseconds) ${name} rc=''${_dotfilesRc}" \
-        >> "${config.home.homeDirectory}/.local/state/dotfiles/activation-failures.log" || true
+        >> "$HOME/.local/state/dotfiles/activation-failures.log" || true
+    fi
+  '';
+
+  # Runs last: activation steps at the same depth are ordered alphabetically, so the
+  # zz prefix places this after every wrapped step. It is what keeps the wrapper from
+  # being a downgrade — without it a failed step prints a banner and the deploy still
+  # exits 0, i.e. a failure nobody notices, which is worse than the abort-on-first-
+  # failure behaviour it replaced. home-manager already owns an EXIT trap, so this
+  # cannot be done with a trap.
+  home.activation.zzReportActivationFailures = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ -n "''${dotfilesFailedSteps:-}" ]; then
+      echo "[dotfiles] =============================================" >&2
+      echo "[dotfiles] ACTIVATION FINISHED WITH FAILED STEPS:" >&2
+      echo "[dotfiles]   ''${dotfilesFailedSteps}" >&2
+      echo "[dotfiles] Every other step was applied. Details:" >&2
+      echo "[dotfiles]   $HOME/.local/state/dotfiles/activation-failures.log" >&2
+      echo "[dotfiles] =============================================" >&2
+      exit 1
     fi
   '';
 
