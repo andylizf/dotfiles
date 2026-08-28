@@ -22,17 +22,64 @@ slack setup / slack refresh                credentials
 `<ws>` is a substring of the domain or the team name. `--json` on any read
 command gives machine-readable output.
 
+## Timestamps
+
+Every message carries how long ago it was, next to the absolute time that was
+measured from:
+
+```
+[  2h ago · 2026-08-28 09:52] Alice: ...
+```
+
+Both halves earn their place. A reader with no clock — an agent whose idea of
+"now" was fixed when its session started, and then went stale — cannot place an
+absolute timestamp, and a bare `MM-DD` silently reads as the current year. But a
+relative string on its own rots the moment the output is re-read, so it never
+travels alone, and each listing opens with the "now" its elapsed values were
+measured from.
+
+Absolute times use the machine's zone, named in that header
+(`# now 2026-08-28 11:52 EDT (UTC-04:00)`). `SLACK_CLI_TZ=America/New_York`
+overrides it — worth setting on a host whose clock is in a zone you do not think
+in. The elapsed half needs no such care: Slack timestamps are UTC epochs, so
+"2h ago" is the same string wherever it is rendered.
+
+`--json` carries `time` (ISO 8601 with offset), `ago` and `age_seconds` beside
+Slack's raw `ts`, which stays as-is because threads are addressed by it.
+
+## What `--json` keeps that the rendering destroys
+
+`text` is rendered for reading, so `<@U012AB3CD>` arrives as `@Real Name` — which
+looks exactly like someone typing that name as ordinary text. Three fields keep
+the distinction:
+
+- `raw_text` — what Slack actually stores, mention markup and all.
+- `mentions`, `mentions_you` — the user ids a message really pings.
+- `edited` — `{seconds_after_post, by}`, or null. Slack keeps an edit as separate
+  metadata, so a message rewritten after posting is otherwise indistinguishable
+  from one that was not.
+
+The human output marks the same facts on the line: `↳ @you, edited 2m later,
+3 replies`.
+
 ## Sending is gated
 
 `slack send` without `--yes` resolves the target, prints the exact text, and
-posts nothing. **An agent runs `--yes` only after the user has seen that exact
+posts nothing.
+
+`@name` in the text becomes a real mention. Slack deprecated `link_names` for
+individual users, so a ping fires only if the message goes out carrying
+`<@U012AB3CD>`; the tool rewrites each `@name` that matches exactly one person,
+leaves anything ambiguous or unknown as typed, and lists every substitution in
+the dry run before a thing is sent. `--literal` turns the rewriting off. **An agent runs `--yes` only after the user has seen that exact
 text and approved it** — the standing rule for anything sent under their
 identity, which Slack does not exempt. Draft, show, wait.
 
 ## How the credentials work
 
 The desktop app holds one session cookie, `d` (`xoxd-…`), shared across every
-workspace and valid for about a year. Everything else is derived from it at call
+workspace. Each issuance is good for 400 days, and the desktop app reissues it
+while it stays signed in, so the source does not lapse on a schedule. Everything else is derived from it at call
 time:
 
 - `https://app.slack.com/auth?app=client` with that cookie lists every workspace

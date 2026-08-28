@@ -17,14 +17,20 @@ dependency at runtime. Pure stdlib; runs anywhere the cookie is present.
   slack thread <ws> <target> <ts>            a thread's replies
   slack search <ws|--all> <query...>         search messages
   slack send <ws> <target> <text> [--yes]    post (dry-run without --yes)
+                                             @name becomes a real mention;
+                                             --literal keeps it as plain text
   slack whoami [<ws>]                        identity check
   slack refresh                              re-discover workspaces, re-mint tokens
 
 <ws> matches a workspace by domain or team-name substring ("dao", "sky").
 Add --json to any read command for machine-readable output.
+
+Every timestamp is printed as "how long ago" next to the absolute time it was
+measured from. Absolute times use this machine's zone unless SLACK_CLI_TZ names
+an IANA zone (e.g. SLACK_CLI_TZ=America/New_York).
 """
 import os, sys, json, time, re, html, sqlite3, shutil, hashlib, binascii
-import subprocess, tempfile, gzip, urllib.request, urllib.parse, urllib.error
+import subprocess, tempfile, gzip, datetime, urllib.request, urllib.parse, urllib.error
 from concurrent.futures import ThreadPoolExecutor
 
 HOME = os.path.expanduser("~")
@@ -218,6 +224,7 @@ class WS:
 
     domain = property(lambda s: s.m["domain"])
     team = property(lambda s: s.m.get("team", s.m["domain"]))
+    me = property(lambda s: s.m.get("user_id"))
 
     def api(self, method, _retried=False, **p):
         r = api_raw(method, self.m["xoxc"], self.cookie, **p)
@@ -333,12 +340,106 @@ class WS:
 
 # --------------------------------------------------------------- formatting
 
+# A reader of this output has no clock. A model's idea of "now" is fixed when its
+# session starts and then rots, so an absolute timestamp alone is not something it
+# can place. Every time is therefore rendered as elapsed-to-call-time. The pairing
+# runs both ways: "3h ago" on its own goes stale the moment the output is re-read,
+# so it always travels with the absolute time it was measured from, and each
+# listing states the "now" its elapsed values are relative to.
+#
+# Slack `ts` values are UTC epochs, so the elapsed part is immune to timezone
+# mistakes. Only the absolute rendering is local, and the zone is named next to it.
+
+def _tz():
+    name = os.environ.get("SLACK_CLI_TZ")
+    if name:
+        try:
+            from zoneinfo import ZoneInfo
+            return ZoneInfo(name)
+        except Exception:
+            log(f"unknown SLACK_CLI_TZ {name!r} - falling back to system zone")
+    return datetime.datetime.now().astimezone().tzinfo
+
+TZ = _tz()
+
+def _dt(ts):
+    return datetime.datetime.fromtimestamp(float(ts), TZ)
+
+def age_s(ts):
+    try: return int(time.time() - float(ts))
+    except (TypeError, ValueError): return None
+
+def dur(d):
+    """A span, to one significant unit - what a reader actually acts on."""
+    d = abs(int(d))
+    if d < 45:            return f"{d}s"
+    if d < 2700:          return f"{round(d / 60)}m"          # .. 45m
+    if d < 79200:         return f"{round(d / 3600)}h"        # .. 22h
+    if d < 604800:        return f"{round(d / 86400)}d"       # .. 7d
+    if d < 2246400:       return f"{round(d / 604800)}w"      # .. 26d
+    if d < 27648000:      return f"{round(d / 2629800)}mo"    # .. 320d
+    return f"{round(d / 31557600)}y"
+
+def ago(ts, now=None):
+    """'3h ago' / 'in 2m'."""
+    try: d = int((time.time() if now is None else now) - float(ts))
+    except (TypeError, ValueError): return "?"
+    if abs(d) < 45: return "just now"
+    return f"in {dur(d)}" if d < 0 else f"{dur(d)} ago"
+
 def ts_fmt(ts):
-    try: return time.strftime("%m-%d %H:%M", time.localtime(float(ts)))
-    except Exception: return str(ts)
+    """Absolute, always with the year - a bare MM-DD silently reads as this year."""
+    try: return _dt(ts).strftime("%Y-%m-%d %H:%M")
+    except (TypeError, ValueError): return str(ts)
+
+def ts_iso(ts):
+    """ISO 8601 with UTC offset: unambiguous wherever the output is read."""
+    try: return _dt(ts).isoformat(timespec="seconds")
+    except (TypeError, ValueError): return None
+
+def stamp(ts):
+    """The prefix every message line carries."""
+    return f"{ago(ts):>8} \u00b7 {ts_fmt(ts)}"
+
+def edit_gap(m):
+    """Slack keeps an edit as separate metadata, so rendered text hides it."""
+    e = m.get("edited")
+    if not isinstance(e, dict): return None
+    try: return int(float(e["ts"]) - float(m["ts"]))
+    except (KeyError, TypeError, ValueError): return -1
+
+def mention_ids(m):
+    return re.findall(r"<@([UWB][A-Z0-9]+)", m.get("text") or "")
+
+def ts_json(ts):
+    """Timestamp fields for --json. `ts` stays Slack's raw id (threads need it)."""
+    return {"ts": ts, "time": ts_iso(ts), "ago": ago(ts), "age_seconds": age_s(ts)}
+
+def msg_json(ws, m):
+    """A message as data. `text` is rendered for reading; `raw_text` is what Slack
+    stores, and only it separates a real <@U...> mention from someone typing the
+    same name - the rendering collapses the two."""
+    gap = edit_gap(m)
+    return {**ts_json(m.get("ts")),
+            "user": ws.uname(m.get("user") or m.get("bot_id")),
+            "text": ws.render(m.get("text", "")),
+            "raw_text": m.get("text", ""),
+            "edited": None if gap is None else
+                      {"seconds_after_post": gap, "by": m["edited"].get("user")},
+            "mentions": mention_ids(m),
+            "mentions_you": bool(ws.me) and f"<@{ws.me}>" in (m.get("text") or "")}
+
+def now_line():
+    n = datetime.datetime.now(TZ)
+    off = n.strftime("%z")
+    return (f"# now {n:%Y-%m-%d %H:%M} {n:%Z} (UTC{off[:3]}:{off[3:]}) "
+            f"- every \"ago\" below is measured from this")
 
 def print_msgs(ws, msgs, header=None):
-    if header: print(header)
+    if header:
+        print(header)
+        print(now_line())
+        print()
     for m in msgs:
         who = ws.uname(m.get("user") or m.get("bot_id"))
         body = ws.render(m.get("text", "")).strip()
@@ -346,9 +447,15 @@ def print_msgs(ws, msgs, header=None):
             body = "[file] " + ", ".join(f.get("name", "?") for f in m["files"])
         if not body and m.get("attachments"):
             body = "[attachment] " + (m["attachments"][0].get("fallback") or "")[:160]
-        rep = m.get("reply_count")
-        tag = f"   ↳ {rep} replies (ts={m['ts']})" if rep else ""
-        print(f"[{ts_fmt(m.get('ts'))}] {who}: {body}{tag}")
+        marks = []
+        if ws.me and f"<@{ws.me}>" in (m.get("text") or ""): marks.append("@you")
+        gap = edit_gap(m)
+        if gap is not None:
+            marks.append("edited" if gap < 0 else f"edited {dur(gap)} later")
+        if m.get("reply_count"):
+            marks.append(f"{m['reply_count']} replies (ts={m['ts']})")
+        tag = ("   ↳ " + ", ".join(marks)) if marks else ""
+        print(f"[{stamp(m.get('ts'))}] {who}: {body}{tag}")
 
 # ---------------------------------------------------------------- workspaces
 
@@ -396,8 +503,8 @@ def cmd_ls(a, cache, cookie, as_json):
     if as_json:
         print(json.dumps([{k: w.get(k) for k in ("domain", "team", "user")}
                           for w in ws], indent=2)); return
-    age = (int(time.time()) - cache.get("minted_at", 0)) // 60
-    print(f"{len(ws)} workspaces (tokens minted {age}m ago):\n")
+    print(f"{len(ws)} workspaces (tokens minted "
+          f"{ago(cache.get('minted_at', 0))}):\n")
     for w in ws:
         print(f"  {w['domain']:<24} {w.get('team','')[:34]:<34} {w.get('user','')}")
 
@@ -425,13 +532,17 @@ def cmd_dms(a, cache, cookie, as_json):
     with ThreadPoolExecutor(max_workers=8) as ex:
         names = list(ex.map(lambda c: ws.convname(c), convs))
     for c, n in zip(convs, names):
+        # `updated` is milliseconds, and is the only activity clock Slack hands
+        # back with the conversation list - there is no `latest` here.
+        up = c.get("updated")
         rows.append({"name": n, "id": c["id"],
-                     "last": c.get("latest", {}).get("ts") if isinstance(
-                         c.get("latest"), dict) else None})
+                     "updated": round(up / 1000) if up else None})
     rows.sort(key=lambda r: r["name"].lower())
     if as_json: print(json.dumps(rows, indent=2)); return
     print(f"{len(rows)} DMs in {ws.team}:\n")
-    for r in rows: print(f"  {r['name']:<34} {r['id']}")
+    for r in rows:
+        seen = f"  updated {ago(r['updated'])}" if r["updated"] else ""
+        print(f"  {r['name']:<34} {r['id']}{seen}")
 
 def cmd_users(a, cache, cookie, as_json):
     ws = resolve_ws(cache, cookie, a[0])
@@ -456,12 +567,11 @@ def cmd_read(a, cache, cookie, as_json):
     if not r.get("ok"): die(f"conversations.history: {r.get('error')}")
     msgs = list(reversed(r.get("messages", [])))
     if as_json:
-        print(json.dumps([{"ts": m.get("ts"), "user": ws.uname(m.get("user")),
-                           "text": ws.render(m.get("text", "")),
+        print(json.dumps([{**msg_json(ws, m),
                            "thread_ts": m.get("thread_ts"),
                            "reply_count": m.get("reply_count")}
                           for m in msgs], indent=2)); return
-    print_msgs(ws, msgs, f"# {a[1]} in {ws.team} — last {len(msgs)}\n")
+    print_msgs(ws, msgs, f"# {a[1]} in {ws.team} — last {len(msgs)}")
 
 def cmd_thread(a, cache, cookie, as_json):
     ws = resolve_ws(cache, cookie, a[0])
@@ -470,10 +580,8 @@ def cmd_thread(a, cache, cookie, as_json):
     if not r.get("ok"): die(f"conversations.replies: {r.get('error')}")
     msgs = r.get("messages", [])
     if as_json:
-        print(json.dumps([{"ts": m.get("ts"), "user": ws.uname(m.get("user")),
-                           "text": ws.render(m.get("text", ""))}
-                          for m in msgs], indent=2)); return
-    print_msgs(ws, msgs, f"# thread in {ws.team} — {len(msgs)} messages\n")
+        print(json.dumps([msg_json(ws, m) for m in msgs], indent=2)); return
+    print_msgs(ws, msgs, f"# thread in {ws.team} — {len(msgs)} messages")
 
 def cmd_search(a, cache, cookie, as_json):
     targets = (all_ws(cache, cookie) if a[0] == "--all"
@@ -489,14 +597,16 @@ def cmd_search(a, cache, cookie, as_json):
             for m in matches:
                 rows.append({"workspace": ws.domain, "team": ws.team,
                              "channel": m.get("channel", {}).get("name"),
-                             "user": m.get("username"), "ts": m.get("ts"),
+                             "user": m.get("username"), **ts_json(m.get("ts")),
                              "text": ws.render(m.get("text") or "").strip(),
+                             "raw_text": m.get("text") or "",
                              "permalink": m.get("permalink")})
     rows.sort(key=lambda r: float(r["ts"] or 0), reverse=True)
     if as_json: print(json.dumps(rows, indent=2)); return
-    print(f"{len(rows)} hits for {q!r}\n")
+    print(f"{len(rows)} hits for {q!r}")
+    print(now_line() + "\n")
     for r in rows:
-        print(f"[{ts_fmt(r['ts'])}] {r['team']} #{r['channel']} "
+        print(f"[{stamp(r['ts'])}] {r['team']} #{r['channel']} "
               f"{r['user']}: {r['text'][:150]}")
 
 def cmd_inbox(a, cache, cookie, as_json):
@@ -541,16 +651,15 @@ def cmd_inbox(a, cache, cookie, as_json):
                 out.append({"workspace": ws.domain, "team": ws.team,
                             "conversation": it.get("name"), "id": it["id"],
                             "kind": it["kind"], "mentions": it["mentions"],
-                            "messages": [{"ts": x.get("ts"),
-                                          "user": ws.uname(x.get("user")),
-                                          "text": ws.render(x.get("text", ""))}
+                            "messages": [msg_json(ws, x)
                                          for x in it.get("messages", [])]})
         print(json.dumps(out, indent=2)); return
     total = sum(len(i) for _, i in results)
     if not total:
         print("nothing unread across "
               f"{len(targets)} workspace(s)."); return
-    print(f"{total} unread conversation(s) across {len(targets)} workspace(s)\n")
+    print(f"{total} unread conversation(s) across {len(targets)} workspace(s)")
+    print(now_line() + "\n")
     for ws, items in results:
         if not items: continue
         print(f"=== {ws.team} ({ws.domain})")
@@ -559,7 +668,7 @@ def cmd_inbox(a, cache, cookie, as_json):
             print(f"  {it.get('name', it['id']):<34}{mark}")
             for x in it.get("messages", []):
                 who = ws.uname(x.get("user"))
-                print(f"      [{ts_fmt(x.get('ts'))}] {who}: "
+                print(f"      [{stamp(x.get('ts'))}] {who}: "
                       f"{ws.render(x.get('text','')).strip()[:220]}")
         print()
 
@@ -577,6 +686,26 @@ def cmd_whoami(a, cache, cookie, as_json):
         print(f"  {r['workspace']:<24} {str(r['team'])[:30]:<30} "
               f"{r['user']} ({r['user_id']})  ok={r['ok']} {r.get('error') or ''}")
 
+MENTION_RE = re.compile(r"(?<![\w<@])@([A-Za-z0-9][A-Za-z0-9._-]*)")
+
+def expand_mentions(ws, text):
+    """Turn @handle into Slack's <@U...> form, the only thing that pings anyone.
+
+    Typing "@name" posts the literal characters: Slack deprecated `link_names`
+    for individual users, so a mention has to go out as an id. A name that is
+    unknown or matches more than one person is left exactly as typed, and every
+    substitution is printed before anything is sent."""
+    pings = []
+    def sub(m):
+        hits = ws.find_user(m.group(1))
+        exact = [u for u in hits
+                 if (u.get("name") or "").lower() == m.group(1).lower()]
+        if len(exact) == 1: hits = exact
+        if len(hits) != 1: return m.group(0)
+        pings.append((m.group(0), hits[0]))
+        return f"<@{hits[0]['id']}>"
+    return MENTION_RE.sub(sub, text), pings
+
 def cmd_send(a, cache, cookie, as_json):
     """Post a message. Dry-run unless --yes is given.
 
@@ -586,17 +715,27 @@ def cmd_send(a, cache, cookie, as_json):
     if "--thread" in a:
         k = a.index("--thread"); thread_ts = a[k + 1]; a = a[:k] + a[k + 2:]
     confirm = "--yes" in a
-    a = [x for x in a if x != "--yes"]
-    if len(a) < 3: die("usage: slack send <ws> <#chan|@person|ID> <text> [--thread TS] [--yes]")
+    literal = "--literal" in a
+    a = [x for x in a if x not in ("--yes", "--literal")]
+    if len(a) < 3: die("usage: slack send <ws> <#chan|@person|ID> <text> "
+                       "[--thread TS] [--literal] [--yes]")
     ws = resolve_ws(cache, cookie, a[0])
     ch = ws.resolve(a[1])
     text = " ".join(a[2:])
+    pings = []
+    if not literal: text, pings = expand_mentions(ws, text)
     info = ws.api("conversations.info", channel=ch)
     label = ws.convname(info.get("channel", {"id": ch})) if info.get("ok") else ch
     print(f"workspace : {ws.team} ({ws.domain})")
     print(f"as        : {ws.m.get('user')} ({ws.m.get('user_id')})")
     print(f"to        : {label}  [{ch}]" + (f"  thread {thread_ts}" if thread_ts else ""))
     print("-" * 60); print(text); print("-" * 60)
+    for lit, u in pings:
+        real = u.get("profile", {}).get("real_name") or ""
+        print(f"pings     : {lit} \u2192 <@{u['id']}>  {real} (@{u.get('name')})")
+    for uid in re.findall(r"<@([UWB][A-Z0-9]+)", text):
+        if not any(u["id"] == uid for _, u in pings):
+            print(f"pings     : <@{uid}>  {ws.uname(uid)}")
     if not confirm:
         print("DRY RUN — nothing sent. Re-run with --yes to post.",
               file=sys.stderr); return
