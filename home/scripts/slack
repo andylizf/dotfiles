@@ -397,6 +397,13 @@ def ts_iso(ts):
     try: return _dt(ts).isoformat(timespec="seconds")
     except (TypeError, ValueError): return None
 
+def clip(text, n):
+    """Shorten for scanning, and say so. A silently cut line reads as the whole
+    message, and a reader who needs the tail concludes it was never written."""
+    text = (text or "").strip()
+    if len(text) <= n: return text
+    return text[:n].rstrip() + f" \u2026[+{len(text) - n} chars: slack read]"
+
 def stamp(ts):
     """The prefix every message line carries."""
     return f"{ago(ts):>8} \u00b7 {ts_fmt(ts)}"
@@ -446,7 +453,7 @@ def print_msgs(ws, msgs, header=None):
         if not body and m.get("files"):
             body = "[file] " + ", ".join(f.get("name", "?") for f in m["files"])
         if not body and m.get("attachments"):
-            body = "[attachment] " + (m["attachments"][0].get("fallback") or "")[:160]
+            body = "[attachment] " + clip(m["attachments"][0].get("fallback"), 160)
         marks = []
         if ws.me and f"<@{ws.me}>" in (m.get("text") or ""): marks.append("@you")
         gap = edit_gap(m)
@@ -454,8 +461,10 @@ def print_msgs(ws, msgs, header=None):
             marks.append("edited" if gap < 0 else f"edited {dur(gap)} later")
         if m.get("reply_count"):
             marks.append(f"{m['reply_count']} replies (ts={m['ts']})")
-        tag = ("   ↳ " + ", ".join(marks)) if marks else ""
-        print(f"[{stamp(m.get('ts'))}] {who}: {body}{tag}")
+        # On the header line, not trailing the body: a multi-line message would
+        # otherwise hide the marks hundreds of characters down.
+        tag = ("  ↳ " + ", ".join(marks)) if marks else ""
+        print(f"[{stamp(m.get('ts'))}] {who}{tag}: {body}")
 
 # ---------------------------------------------------------------- workspaces
 
@@ -607,7 +616,7 @@ def cmd_search(a, cache, cookie, as_json):
     print(now_line() + "\n")
     for r in rows:
         print(f"[{stamp(r['ts'])}] {r['team']} #{r['channel']} "
-              f"{r['user']}: {r['text'][:150]}")
+              f"{r['user']}: {clip(r['text'], 150)}")
 
 def cmd_inbox(a, cache, cookie, as_json):
     """Everything unread, across every workspace."""
@@ -669,7 +678,7 @@ def cmd_inbox(a, cache, cookie, as_json):
             for x in it.get("messages", []):
                 who = ws.uname(x.get("user"))
                 print(f"      [{stamp(x.get('ts'))}] {who}: "
-                      f"{ws.render(x.get('text','')).strip()[:220]}")
+                      f"{clip(ws.render(x.get('text','')), 220)}")
         print()
 
 def cmd_whoami(a, cache, cookie, as_json):
