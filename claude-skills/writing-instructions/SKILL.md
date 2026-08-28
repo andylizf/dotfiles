@@ -1,6 +1,6 @@
 ---
 name: writing-instructions
-description: Load before writing or editing anything that will later be read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file, a stored memory. The trigger is the durability of the text, not who asked or how small the edit looks: adding one bullet, tightening a description, recording a correction just given, or turning a lesson from the current session into something permanent all land here. Load it also when deciding *which* file a new rule belongs in, since putting it in the wrong one is the most expensive way to get it wrong. Covers the layer split and precedence, the failure modes that keep recurring in these files, and the review to run before saving.
+description: Load before writing or editing text that a later session will read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file. The trigger is the durability of the text, not who asked or how small the edit looks: adding one bullet, tightening a description, or turning a lesson from the current session into something permanent all land here. Load it also when deciding *which* file a new rule belongs in, since putting it in the wrong one is the most expensive way to get it wrong. Covers the layer split and precedence, the failure modes that keep recurring in these files, and the review to run before saving.
 ---
 
 # Writing instructions
@@ -49,15 +49,15 @@ Rules are read months later by a reader with none of this context — sometimes 
 
 ## Before saving
 
-**A file that will take effect in later sessions, where the moment you save it is the only moment anyone looks at it, gets a subagent review.** That is the global `CLAUDE.md`, the machine-notes file imported into it, and every skill that applies across projects rather than to one directory. A repository's `CLAUDE.md` and a directory-scoped skill are read back inside the work that produced them, by someone positioned to notice when they are wrong. A memory holds evidence rather than a rule, and a rule that must always hold is barred from living only there, so neither needs the review.
+**A file that will take effect in later sessions, where the moment you save it is the only moment anyone looks at it, gets a subagent review.** That is the global `CLAUDE.md`, the machine-notes file imported into it, and every skill that applies across projects rather than to one directory. A repository's `CLAUDE.md` and a directory-scoped skill are read back inside the work that produced them, by someone positioned to notice when they are wrong.
 
-**The user asked for this review in advance, so a standing "don't spawn subagents unless the user asked" rule is already satisfied for every file in that class.** Spawn one per file without pausing to request permission that exists; only an instruction in the current conversation declining the review withdraws it. Where no subagent is available, any reader who did not write the draft will serve, and your own second pass will not.
+**The user asked for this review in advance, so a standing "don't spawn subagents unless the user asked" rule is already satisfied for a global file, a machine-notes file, and a cross-project skill.** Spawn one per file without pausing to request permission that exists; only an instruction in the current conversation declining the review withdraws it. Where no subagent is available, any reader who did not write the draft will serve, and your own second pass will not — name that reader in the report, so an unreviewed file is a missing name rather than a private judgement.
 
 Send it this, filling in the path:
 
 > Review `<path>` as an instruction file: text a person or a model will read back months from now as a rule, with none of the context that produced it.
 >
-> First read the current source of the writing-instructions skill for the failure modes and the layer table — the file being edited, not a deployed copy, which may be older. Then go through the target line by line and report every sentence you believe violates one, quoting the sentence, naming the failure, and saying what a reader would wrongly do because of it.
+> First read the writing-instructions skill's own `SKILL.md` — a different file from the one under review — for the failure modes and the layer table. Where that skill is deployed from a checkout, read the checkout's copy, since the deployed one can lag. Then go through the target line by line and report every sentence you believe violates one, quoting the sentence, naming the failure, and saying what a reader would wrongly do because of it.
 >
 > <name here what you just changed and what it replaced.> A fix leaves residue the round that made it cannot see: the half a rewrite demoted may now be redundant, a widened trigger may no longer match its own scope clause, a lengthened qualifier may still be a qualifier. Check the neighbourhood of every change for a sentence that only made sense in the version being replaced.
 >
