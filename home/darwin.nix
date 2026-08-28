@@ -9,6 +9,32 @@ let
   #             string from Bitwarden and injects it via LARKSUITE_CLI_USER_ACCESS_TOKEN, so a reader
   #             never holds a refresh_token and can never break the writer's single-use refresh chain.
   writerHost = "zhifei-clawhouse";
+
+  # Deliberately `#!/bin/sh`, and free of any store path: this script runs in the
+  # window where /nix does not exist yet, so everything it names must live on the
+  # system or data volume.
+  bootSafeFish = pkgs.writeText "boot-safe-fish" ''
+    #!/bin/sh
+    # Wait for the real fish to appear instead of failing at it. See the
+    # installBootSafeShell activation below for why this exists.
+    FISH="/etc/profiles/per-user/${user}/bin/fish"
+    TIMEOUT=90
+
+    n=0
+    while [ ! -x "$FISH" ] && [ "$n" -lt "$TIMEOUT" ]; do
+    	sleep 1
+    	n=$((n + 1))
+    done
+
+    if [ -x "$FISH" ]; then
+    	[ "$n" -gt 0 ] && echo "(waited $n seconds for /nix to mount)" >&2
+    	exec "$FISH" "$@"
+    fi
+
+    echo "fish is still unavailable: /nix did not mount within $TIMEOUT seconds." >&2
+    echo "Check /var/log/determinate-nix-init.log to see how determinate-nixd fared." >&2
+    exec /bin/zsh "$@"
+  '';
 in
 {
   # macOS-specific home-manager config.
@@ -137,5 +163,33 @@ PLIST
       install_wrapper
       echo "[lark-sync] role=reader ($HOSTLOCAL)"
     fi
+  '';
+
+  # ---- boot-safe shell wrapper ----
+  # /nix is a FileVault-encrypted APFS volume marked `noauto` in /etc/fstab, so the
+  # system never mounts it on its own: determinate-nixd unlocks and mounts it after
+  # login, measured at 80-120s into boot. VS Code is restored by loginwindow well
+  # before that, so it resolves its configured shell while /nix is still absent and
+  # the restored terminal dies with "Path to shell executable ... does not exist".
+  # The same window swallows anything else that starts early and reaches into /nix,
+  # the login shell included, usually without saying so.
+  #
+  # The wrapper waits for the shell rather than failing at it, with a timeout and a
+  # zsh fallback so it can never hang a terminal. nix-darwin plays the same trick on
+  # its own activation daemon (`wait4path /nix/store && exec ...`).
+  #
+  # Two constraints shape the install:
+  #   - It must be a REAL FILE on the data volume. A home.file entry is a symlink
+  #     into the store, hence missing during exactly the window it exists to cover
+  #     — so it is copied out at activation, as installClaudeSettings does.
+  #   - Its basename must stay `fish`: VS Code keys terminal shell integration off
+  #     the executable name.
+  #
+  # To use it, point the editor's terminal profile at the path below. The directory
+  # sits outside PATH on purpose, so this shadows nothing.
+  home.activation.installBootSafeShell = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    run mkdir -p "${home}/.local/libexec/boot-safe"
+    run cp -f ${bootSafeFish} "${home}/.local/libexec/boot-safe/fish"
+    run chmod 755 "${home}/.local/libexec/boot-safe/fish"
   '';
 }
