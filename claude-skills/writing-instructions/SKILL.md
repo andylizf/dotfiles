@@ -59,6 +59,8 @@ Send it this, filling in the path:
 >
 > First read the current source of the writing-instructions skill for the failure modes and the layer table — the file being edited, not a deployed copy, which may be older. Then go through the target line by line and report every sentence you believe violates one, quoting the sentence, naming the failure, and saying what a reader would wrongly do because of it.
 >
+> <name here what you just changed and what it replaced.> A fix leaves residue the round that made it cannot see: the half a rewrite demoted may now be redundant, a widened trigger may no longer match its own scope clause, a lengthened qualifier may still be a qualifier. Check the neighbourhood of every change for a sentence that only made sense in the version being replaced.
+>
 > Add two tests to that list: can a sentence be read as permission for the opposite of what it means, and does it survive with no conversation context behind it?
 >
 > You must return your three most suspect sentences even when you judge the file sound, ranked, with your reasoning. Never reply that it looks fine.
