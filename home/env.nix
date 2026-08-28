@@ -44,16 +44,21 @@ let
   };
 
   # VAR -> path under ~/.config; the PATH itself is the value, not the contents.
-  #
-  # Deliberately empty. GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE belongs here only
-  # if the sops-deployed credential were guaranteed current, and it is not: the
-  # file is a snapshot taken when a host last deployed, so hosts drift apart.
-  # Measured 2026-08-29 -- the same secret path held a working refresh token on
-  # one machine and a revoked one on another. Forcing gws onto it there replaced
-  # a working credential with a dead one, and broke a calendar sync that had
-  # been fine. gws's own store is per-machine and refreshed by its own login,
-  # which is the property that matters for a credential.
   pathVars = {
+    # Point gws at the sops-deployed credential rather than the copy it writes
+    # for itself, so every host shares one rotation instead of each drifting on
+    # its own schedule.
+    #
+    # A host that has not redeployed since the secret was last rotated still
+    # carries the old snapshot, and pointing gws at a stale one swaps a working
+    # credential for a dead one -- seen on 2026-08-29, where one machine held a
+    # valid refresh token and another a revoked one, and forcing the override
+    # there broke a calendar sync that had been fine. That is a stale-deploy
+    # symptom, not a reason to avoid the shared credential: redeploying restored
+    # it, after which the secret refreshed successfully and the calendar sync
+    # ran clean. Rotate the secret and every host needs a deploy, as with any
+    # other secret here.
+    GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE = "gws/credentials.json";
   };
 
   # ---- renderers ------------------------------------------------------------
