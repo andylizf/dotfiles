@@ -61,7 +61,13 @@ Send it this, filling in the path:
 >
 > <name here what you just changed and what it replaced.> A fix leaves residue the round that made it cannot see: the half a rewrite demoted may now be redundant, a widened trigger may no longer match its own scope clause, a lengthened qualifier may still be a qualifier. Check the neighbourhood of every change for a sentence that only made sense in the version being replaced. Read the whole file even so — a new sentence most often collides with one that did not change, and a review scoped to the edit is looking at one half of that pair.
 >
-> Two more passes the compliance sweep will not reach on its own. Ask of each rule whether it is *right*, not only whether it breaks another rule: a rule can be internally consistent and still give bad advice. And list every word, title, or term of art that a reader who never saw this conversation would stop at — you have the whole file in front of you, so nothing here reads as opaque to you, and opacity is the failure you are least able to feel.
+> Two more passes the compliance sweep will not reach on its own.
+>
+> First, ask of each rule whether it is *right*, not only whether it breaks another rule: a rule can be internally consistent and still give bad advice.
+>
+> Second, restate every rule in words a competent outsider to this work would use, and report each place the restatement fails. Do not judge which words look hard — asking that of a reader who reads everything fluently returns almost nothing. Two things make the failure visible instead: a term you can only restate by reusing the term, and a term whose plain substitute changes the meaning. Both mean the file has to define it or drop it.
+>
+> Answer from the file in front of you and nothing else. If understanding a rule takes something you know about this user, this machine, or this project, say so and name what it took — a rule that needs it is not self-contained, and that is a finding, not a shortcut.
 >
 > Add two tests to that list: can a sentence be read as permission for the opposite of what it means, and does it survive with no conversation context behind it?
 >
@@ -69,6 +75,6 @@ Send it this, filling in the path:
 
 Its report is evidence, not a verdict: act on what you agree with, and say what you rejected.
 
-A subagent shares your blind spots — same model, same file, same words transparent to both of you — so it catches contradictions and empty sentences and misses jargon that only a person would stumble on. Route what survives to the person the file is for. Every file gets a cold read-back of your own, reviewed or not. Name the higher-layer rule you checked it against, and the memory if one is relevant or "none" if none is, so a skipped check is a missing sentence rather than a private judgement.
+A subagent starts without this conversation, but not without your vocabulary: a word is jargon only relative to a reader, and one common in the text both of you were trained on reads as plain to both of you and as jargon to someone outside the field. Asked to audit their own writing, experts flag about a quarter of the terms that actually stop a newcomer, and a reviewer sharing the vocabulary flags no more. So route what survives to the person the file is for, and treat what they stumble on as the measurement. Every file gets a cold read-back of your own, reviewed or not. Name the higher-layer rule you checked it against, and the memory if one is relevant or "none" if none is, so a skipped check is a missing sentence rather than a private judgement.
 
 Then say which layer it went in and why, so the choice is visible rather than assumed.
