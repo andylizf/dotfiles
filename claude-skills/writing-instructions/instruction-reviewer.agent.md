@@ -3,6 +3,7 @@ name: instruction-reviewer
 description: Reviews an instruction file before it is saved — a global CLAUDE.md, a machine-notes file, or a skill that applies across projects. Give it the path and say what just changed. Returns ranked findings; never edits.
 tools: Read, Grep, Glob
 model: opus
+effort: xhigh
 skills:
   - writing-instructions
 ---
