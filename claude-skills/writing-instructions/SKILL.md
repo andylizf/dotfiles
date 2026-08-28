@@ -53,7 +53,7 @@ Rules are read months later by a reader with none of this context — sometimes 
 
 **The user asked for this review in advance, so a standing "don't spawn subagents unless the user asked" rule is already satisfied for a global file, a machine-notes file, and a cross-project skill.** Spawn one per file without pausing to request permission that exists; only an instruction in the current conversation declining the review withdraws it. Where no subagent is available, any reader who did not write the draft will serve, and your own second pass will not — name that reader in the report, so an unreviewed file is a missing name rather than a private judgement.
 
-Dispatch the `instruction-reviewer` subagent, whose definition lives beside this file as `instruction-reviewer.agent.md` and carries the whole procedure — it preloads this skill and reads with `load-claude-md` off, so it meets a rule the way a later session will. Give it two things: the path, and what you just changed and what it replaced. Editing this skill's failure-mode list changes what that agent reviews against, so the two are edited together.
+Dispatch the `instruction-reviewer` subagent, giving it the path and what you just changed and what it replaced.
 
 Its report is evidence, not a verdict: act on what you agree with, and say what you rejected.
 
