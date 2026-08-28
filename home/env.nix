@@ -44,11 +44,16 @@ let
   };
 
   # VAR -> path under ~/.config; the PATH itself is the value, not the contents.
+  #
+  # Deliberately empty. GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE belongs here only
+  # if the sops-deployed credential were guaranteed current, and it is not: the
+  # file is a snapshot taken when a host last deployed, so hosts drift apart.
+  # Measured 2026-08-29 -- the same secret path held a working refresh token on
+  # one machine and a revoked one on another. Forcing gws onto it there replaced
+  # a working credential with a dead one, and broke a calendar sync that had
+  # been fine. gws's own store is per-machine and refreshed by its own login,
+  # which is the property that matters for a credential.
   pathVars = {
-    # Points gws at the sops-deployed credential instead of the copy it writes
-    # for itself. Without this a machine falls back to that private copy, which
-    # expires independently and then looks exactly like "the token was revoked".
-    GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE = "gws/credentials.json";
   };
 
   # ---- renderers ------------------------------------------------------------
