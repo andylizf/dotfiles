@@ -57,6 +57,16 @@ slack setup --cookie xoxd-...
 That is all another machine needs, which is also the reason not to scatter it
 around: the cookie alone is full read and write access to every workspace.
 
+### The tool and the cookie are separate requirements
+
+The tool is pure stdlib and reads no application data, so it installs on any host
+regardless of whether Slack was ever there. What needs a signed-in Slack session
+is producing the cookie once: `slack setup` reads the macOS desktop app, and a
+browser session's `d` cookie works too when passed with `--cookie`. Once produced,
+the cookie is a string — a host that has never had Slack is a full read-and-write
+client the moment it receives one. So a machine can run the tool without Slack; it
+cannot mint the first cookie without a Slack session somewhere.
+
 ## Why not the first-party integrations
 
 Both are gated on being a workspace administrator, which a plain member is not:
