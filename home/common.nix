@@ -83,93 +83,12 @@
       #   set -gx ANTHROPIC_API_KEY (string trim (cat ~/.config/anthropic/token))
       # end
 
-      # Claude Code OAuth token (for Linux headless — macOS uses Keychain which auto-refreshes)
-      if test (uname) != Darwin; and test -f ~/.config/anthropic/claude-oauth-token
-        set -gx CLAUDE_CODE_OAUTH_TOKEN (string trim (cat ~/.config/anthropic/claude-oauth-token))
-      end
+      # Shared environment, rendered from home/env.nix so that zsh, bash and
+      # launchd get exactly the same set. Do not add variables here -- add them
+      # to env.nix, or they will exist only where fish is the login shell.
+      ${config.dotfilesEnv.fishInit}
 
-      # Claude Code env flags
-      set -gx CLAUDE_CODE_USE_VERTEX 0
-      set -gx ANTHROPIC_VERTEX_PROJECT_ID llm-retrieval-403823
-      set -gx ANTHROPIC_MODEL "opus[1m]"
-      set -gx ANTHROPIC_DEFAULT_HAIKU_MODEL claude-sonnet-4-6
-      # set -gx ANTHROPIC_DEFAULT_SONNET_MODEL claude-opus-4-6
-      if test -f ~/.config/huggingface/token
-        set -gx HF_TOKEN (string trim (cat ~/.config/huggingface/token))
-      end
-
-      # OpenAI: export OPENAI_API_KEY if present
-      if test -f ~/.config/openai/token
-        set -gx OPENAI_API_KEY (string trim (cat ~/.config/openai/token))
-      end
-
-      # Cloudflare Access service token (CF-Access-Client-Id / Secret)
-      if test -f ~/.config/cloudflare/client-id
-        set -gx CF_ACCESS_CLIENT_ID (string trim (cat ~/.config/cloudflare/client-id))
-      end
-      if test -f ~/.config/cloudflare/client-secret
-        set -gx CF_ACCESS_CLIENT_SECRET (string trim (cat ~/.config/cloudflare/client-secret))
-      end
-
-      # Cloudflare API token (scoped, for wrangler/terraform/CLI)
-      if test -f ~/.config/cloudflare/api-token
-        set -gx CLOUDFLARE_API_TOKEN (string trim (cat ~/.config/cloudflare/api-token))
-      end
-
-      # Vercel: export VERCEL_TOKEN if present
-      if test -f ~/.config/vercel/token
-        set -gx VERCEL_TOKEN (string trim (cat ~/.config/vercel/token))
-      end
-
-      # Notion MCP reads ~/.config/notion/token through notion-mcp-wrapper.
-      # Do not depend on an interactive shell exporting NOTION_TOKEN.
-
-      # Google Workspace CLI (gws): point at sops-managed credentials
-      if test -f ~/.config/gws/credentials.json
-        set -gx GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE ~/.config/gws/credentials.json
-      end
-
-      # Codex auth.json: seed from sops on Linux if not already present
-      if test (uname) != Darwin; and test -f ~/.config/sops-nix/codex-auth.json; and not test -f ~/.codex/auth.json
-        mkdir -p ~/.codex
-        cp ~/.config/sops-nix/codex-auth.json ~/.codex/auth.json
-        chmod 600 ~/.codex/auth.json
-      end
-
-      # Weights & Biases: export WANDB_API_KEY if present
-      if test -f ~/.config/wandb/token
-        set -gx WANDB_API_KEY (string trim (cat ~/.config/wandb/token))
-      end
-
-      # Gemini: export GOOGLE_API_KEY (and GEMINI_API_KEY fallback) if present
-      if test -f ~/.config/gemini/token
-        set -l _GEMINI_TOKEN (string trim (cat ~/.config/gemini/token))
-        if test -n "$_GEMINI_TOKEN"
-          set -gx GOOGLE_API_KEY "$_GEMINI_TOKEN"
-          if not set -q GEMINI_API_KEY
-            set -gx GEMINI_API_KEY "$_GEMINI_TOKEN"
-          end
-        end
-      end
-
-      # Lambda Labs Cloud API (multiple profiles)
-      # 'default' → LAMBDA_API_KEY, others → LAMBDA_API_KEY_<NAME>
-      for f in ~/.config/lambda/*
-        if test -f $f
-          set -l profile_name (basename $f)
-          set -l token_value (string trim (cat $f))
-          if test -n "$token_value"
-            if test "$profile_name" = "default"
-              set -gx LAMBDA_API_KEY "$token_value"
-            else
-              set -l var_name "LAMBDA_API_KEY_"(string upper $profile_name)
-              set -gx $var_name "$token_value"
-            end
-          end
-        end
-      end
-
-      # Switch Lambda profile: lambda-use <profile>
+      # fish-only convenience: switch Lambda profile with `lambda-use <profile>`.
       function lambda-use
         if test (count $argv) -eq 0
           echo "Usage: lambda-use <profile>"
@@ -186,14 +105,6 @@
         else
           echo "Profile not found: $profile"
           return 1
-        end
-      end
-
-      # Nix: use GitHub token for higher API rate limits (60/h → 5000/h)
-      if command -q gh
-        set -l _gh_token (gh auth token 2>/dev/null)
-        if test -n "$_gh_token"
-          set -gx NIX_CONFIG "access-tokens = github.com=$_gh_token"
         end
       end
 

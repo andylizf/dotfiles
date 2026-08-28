@@ -39,6 +39,7 @@
 
         baseModules = [
           sops-nix.homeManagerModules.sops
+          ./home/env.nix
           ./home/common.nix
           ./home/secrets.nix
         ];
