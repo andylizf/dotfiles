@@ -1,0 +1,635 @@
+#!/usr/bin/env python3
+"""
+slack — read and write every Slack workspace you are signed into.
+
+One credential covers all of them: the desktop app's `d` session cookie. Each
+workspace's short-lived API token (`xoxc`) is minted from that cookie on demand,
+so there is no token store to keep fresh and no Slack app, LevelDB or Node
+dependency at runtime. Pure stdlib; runs anywhere the cookie is present.
+
+  slack setup                                extract the cookie (macOS desktop app)
+  slack ls                                   list workspaces
+  slack inbox [-w <ws>] [-m N]               unread across ALL workspaces
+  slack channels <ws> [--all]                channels
+  slack dms <ws>                             direct messages
+  slack users <ws> [query]                   find people
+  slack read <ws> <#chan|@person|ID> [-n N]  recent messages
+  slack thread <ws> <target> <ts>            a thread's replies
+  slack search <ws|--all> <query...>         search messages
+  slack send <ws> <target> <text> [--yes]    post (dry-run without --yes)
+  slack whoami [<ws>]                        identity check
+  slack refresh                              re-discover workspaces, re-mint tokens
+
+<ws> matches a workspace by domain or team-name substring ("dao", "sky").
+Add --json to any read command for machine-readable output.
+"""
+import os, sys, json, time, re, html, sqlite3, shutil, hashlib, binascii
+import subprocess, tempfile, gzip, urllib.request, urllib.parse, urllib.error
+from concurrent.futures import ThreadPoolExecutor
+
+HOME = os.path.expanduser("~")
+CONF = f"{HOME}/.config/slack-cli"
+COOKIE_FILE = f"{CONF}/cookie"
+CACHE_FILE = f"{CONF}/cache.json"
+UA_FILE = f"{CONF}/user-agent"
+
+# Slack ties a session to the client that created it, so requests carrying this
+# cookie identify themselves as the desktop app that minted it. A browser-shaped
+# User-Agent on a desktop-app cookie reads as a new device: it invites sign-in
+# alerts and, on stricter tenants, session invalidation. `slack setup` sniffs the
+# installed app's real string; this is the fallback when it cannot.
+UA_FALLBACK = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+               "(KHTML, like Gecko) Slack/4.51.180 Chrome/150.0.7871.114 "
+               "Electron/43.1.1 Safari/537.36")
+
+def user_agent():
+    ua = os.environ.get("SLACK_CLI_UA")
+    if ua: return ua
+    if os.path.exists(UA_FILE):
+        ua = open(UA_FILE).read().strip()
+        if ua: return ua
+    return UA_FALLBACK
+
+UA = user_agent()
+
+def die(msg, code=1):
+    print(f"slack: {msg}", file=sys.stderr); sys.exit(code)
+
+def log(*a):
+    print("[slack]", *a, file=sys.stderr)
+
+# --------------------------------------------------------------- credentials
+
+def read_cookie():
+    if not os.path.exists(COOKIE_FILE):
+        die("no session cookie. Run `slack setup` (on a Mac running the Slack "
+            "desktop app) or `slack setup --cookie xoxd-...`")
+    return open(COOKIE_FILE).read().strip()
+
+def write_cookie(val):
+    os.makedirs(CONF, exist_ok=True)
+    with open(COOKIE_FILE, "w") as f: f.write(val + "\n")
+    os.chmod(COOKIE_FILE, 0o600)
+
+def sniff_desktop_ua():
+    """The installed app's own User-Agent, out of its logs."""
+    logs = (f"{HOME}/Library/Containers/com.tinyspeck.slackmacgap/Data/Library/"
+            f"Application Support/Slack/logs")
+    if not os.path.isdir(logs): return None
+    pat = re.compile(rb"Slack/[0-9.]+ Chrome/[0-9.]+ Electron/[0-9.]+ Safari/[0-9.]+")
+    for root, _, files in os.walk(logs):
+        for fn in files:
+            try:
+                with open(os.path.join(root, fn), "rb") as f:
+                    m = pat.search(f.read())
+                if m:
+                    return ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                            "AppleWebKit/537.36 (KHTML, like Gecko) "
+                            + m.group(0).decode())
+            except Exception:
+                continue
+    return None
+
+def extract_cookie_from_app():
+    """Decrypt the shared `d` cookie out of the macOS desktop app's Cookies DB.
+
+    The key lives in the login Keychain as 'Slack Safe Storage'; macOS prompts
+    once (choose Always Allow to make later runs silent)."""
+    db = (f"{HOME}/Library/Containers/com.tinyspeck.slackmacgap/Data/Library/"
+          f"Application Support/Slack/Cookies")
+    if not os.path.exists(db):
+        die("Slack desktop app data not found — is it installed and signed in?")
+    key = subprocess.run(["security", "find-generic-password", "-ws",
+                          "Slack Safe Storage"], capture_output=True,
+                         text=True).stdout.strip()
+    if not key:
+        die("could not read 'Slack Safe Storage' from the Keychain (denied?)")
+    aeskey = hashlib.pbkdf2_hmac("sha1", key.encode(), b"saltysalt", 1003, 16)
+    tmp = tempfile.mktemp(suffix=".db"); shutil.copy(db, tmp)
+    try:
+        rows = sqlite3.connect(tmp).execute(
+            "select encrypted_value from cookies where name='d'").fetchall()
+    finally:
+        os.remove(tmp)
+    for (enc,) in rows:
+        if enc[:3] in (b"v10", b"v11"): enc = enc[3:]
+        p = subprocess.run(["openssl", "enc", "-aes-128-cbc", "-d", "-nopad",
+                            "-K", binascii.hexlify(aeskey).decode(),
+                            "-iv", binascii.hexlify(b" " * 16).decode()],
+                           input=enc, capture_output=True).stdout
+        if p and p[-1] <= 16: p = p[:-p[-1]]
+        for cand in (p, p[32:]):
+            s = cand.decode("utf-8", "ignore")
+            if "xoxd-" in s: return s[s.index("xoxd-"):].strip()
+    die("no `d` cookie in the Cookies DB — sign in to the desktop app first")
+
+# ------------------------------------------------------------------ web/HTTP
+
+def _get(url, cookie, timeout=30):
+    req = urllib.request.Request(url, headers={
+        "Cookie": f"d={cookie}", "User-Agent": UA,
+        "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9", "Accept-Encoding": "gzip"})
+    r = urllib.request.urlopen(req, timeout=timeout)
+    raw = r.read()
+    if r.headers.get("Content-Encoding") == "gzip": raw = gzip.decompress(raw)
+    return raw.decode("utf-8", "ignore")
+
+def discover_domains(cookie):
+    """The signed-in workspace list, straight from the cookie."""
+    body = _get("https://app.slack.com/auth?app=client", cookie)
+    doms = sorted(set(re.findall(r'([a-z0-9][a-z0-9-]*)\.slack\.com', body)))
+    return [d for d in doms if d not in ("app", "api", "my", "slack", "status",
+                                         "a", "files", "edgeapi")]
+
+def mint(domain, cookie):
+    """Mint a fresh xoxc for one workspace using only the cookie."""
+    body = _get(f"https://{domain}.slack.com/customize", cookie)
+    m = re.search(r'"api_token":"(xoxc-[^"]+)"', body)
+    return m.group(1) if m else None
+
+# --------------------------------------------------------------------- cache
+
+def load_cache():
+    if os.path.exists(CACHE_FILE):
+        try: return json.load(open(CACHE_FILE))
+        except Exception: pass
+    return {"minted_at": 0, "workspaces": {}}
+
+def save_cache(c):
+    os.makedirs(CONF, exist_ok=True)
+    with open(CACHE_FILE, "w") as f: json.dump(c, f, indent=2)
+    os.chmod(CACHE_FILE, 0o600)
+
+def rebuild_cache(cookie, verbose=True):
+    doms = discover_domains(cookie)
+    if verbose: log(f"discovered {len(doms)} workspaces; minting tokens...")
+    out = {}
+    def one(d):
+        try:
+            tok = mint(d, cookie)
+            if not tok: return d, None
+            at = api_raw("auth.test", tok, cookie)
+            if not at.get("ok"): return d, None
+            return d, {"domain": d, "team": at.get("team", d), "xoxc": tok,
+                       "user": at.get("user"), "user_id": at.get("user_id"),
+                       "url": at.get("url")}
+        except Exception as e:
+            if verbose: log(f"  {d}: {e}")
+            return d, None
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for d, w in ex.map(one, doms):
+            if w: out[d] = w
+            elif verbose: log(f"  {d}: could not mint (session expired?)")
+    cache = {"minted_at": int(time.time()), "workspaces": out}
+    save_cache(cache)
+    if verbose: log(f"{len(out)}/{len(doms)} workspaces live")
+    return cache
+
+def ensure_cache(cookie):
+    c = load_cache()
+    if not c["workspaces"]: c = rebuild_cache(cookie)
+    return c
+
+# ----------------------------------------------------------------- Slack API
+
+def api_raw(method, token, cookie, retries=4, **params):
+    data = urllib.parse.urlencode({k: v for k, v in params.items()
+                                   if v is not None}).encode()
+    req = urllib.request.Request(
+        f"https://slack.com/api/{method}", data=data,
+        headers={"Authorization": f"Bearer {token}", "Cookie": f"d={cookie}",
+                 "User-Agent": UA,
+                 "Content-Type": "application/x-www-form-urlencoded"})
+    for i in range(retries):
+        try:
+            return json.load(urllib.request.urlopen(req, timeout=25))
+        except Exception as e:
+            if i == retries - 1: return {"ok": False, "error": f"NET:{e}"}
+            time.sleep(1.5)
+
+DEAD = ("invalid_auth", "not_authed", "token_expired", "token_revoked")
+
+class WS:
+    """One workspace. Re-mints its token transparently if Slack rejects it."""
+    def __init__(self, meta, cookie, cache):
+        self.m, self.cookie, self.cache = meta, cookie, cache
+        self._users, self._chans = {}, None
+
+    domain = property(lambda s: s.m["domain"])
+    team = property(lambda s: s.m.get("team", s.m["domain"]))
+
+    def api(self, method, _retried=False, **p):
+        r = api_raw(method, self.m["xoxc"], self.cookie, **p)
+        if not r.get("ok") and r.get("error") in DEAD and not _retried:
+            tok = mint(self.domain, self.cookie)
+            if tok:
+                self.m["xoxc"] = tok
+                self.cache["workspaces"][self.domain]["xoxc"] = tok
+                save_cache(self.cache)
+                return self.api(method, _retried=True, **p)
+        return r
+
+    # -- name resolution ---------------------------------------------------
+    def uname(self, uid):
+        if not uid: return "?"
+        if uid not in self._users:
+            r = self.api("users.info", user=uid)
+            p = r.get("user", {}).get("profile", {}) if r.get("ok") else {}
+            self._users[uid] = (p.get("display_name") or p.get("real_name")
+                                or r.get("user", {}).get("name") or uid)
+        return self._users[uid]
+
+    def conversations(self, types="public_channel,private_channel,im,mpim"):
+        out, cur = [], ""
+        for _ in range(20):
+            r = self.api("users.conversations", types=types, limit=1000,
+                         cursor=cur, exclude_archived="true")
+            if not r.get("ok"): die(f"{self.domain}: {r.get('error')}")
+            out += r.get("channels", [])
+            cur = r.get("response_metadata", {}).get("next_cursor", "")
+            if not cur: break
+        return out
+
+    def all_channels(self):
+        out, cur = [], ""
+        for _ in range(20):
+            r = self.api("conversations.list", limit=1000, cursor=cur,
+                         types="public_channel,private_channel",
+                         exclude_archived="true")
+            if not r.get("ok"): die(f"{self.domain}: {r.get('error')}")
+            out += r.get("channels", [])
+            cur = r.get("response_metadata", {}).get("next_cursor", "")
+            if not cur: break
+        return out
+
+    def find_user(self, q):
+        """Match a person by display/real name, handle or email."""
+        ql = q.lstrip("@").lower()
+        hits, cur = [], ""
+        for _ in range(20):
+            r = self.api("users.list", limit=1000, cursor=cur)
+            if not r.get("ok"): die(f"users.list: {r.get('error')}")
+            for u in r.get("members", []):
+                if u.get("deleted"): continue
+                p = u.get("profile", {})
+                blob = " ".join(filter(None, [
+                    u.get("name"), p.get("display_name"), p.get("real_name"),
+                    p.get("email")])).lower()
+                if ql in blob: hits.append(u)
+            cur = r.get("response_metadata", {}).get("next_cursor", "")
+            if not cur: break
+        return hits
+
+    def resolve(self, ref):
+        """A channel ref -> conversation ID. Accepts ID, #channel, @person."""
+        ref = ref.strip()
+        if re.fullmatch(r"[CGD][A-Z0-9]{6,}", ref): return ref
+        if ref.startswith("@"):
+            hits = self.find_user(ref)
+            if not hits: die(f"no user matching {ref!r} in {self.team}")
+            if len(hits) > 1:
+                exact = [u for u in hits
+                         if (u.get("profile", {}).get("display_name", "").lower()
+                             == ref[1:].lower() or u.get("name", "").lower()
+                             == ref[1:].lower())]
+                if len(exact) == 1: hits = exact
+                else:
+                    names = ", ".join(f"@{u['name']}" for u in hits[:8])
+                    die(f"{ref!r} is ambiguous: {names}")
+            r = self.api("conversations.open", users=hits[0]["id"],
+                         return_im="true")
+            if not r.get("ok"): die(f"conversations.open: {r.get('error')}")
+            return r["channel"]["id"]
+        name = ref.lstrip("#")
+        if self._chans is None:
+            self._chans = {c.get("name"): c["id"]
+                           for c in self.conversations() if c.get("name")}
+        if name in self._chans: return self._chans[name]
+        for c in self.all_channels():
+            if c.get("name") == name: return c["id"]
+        die(f"no channel #{name} in {self.team}")
+
+    def convname(self, conv):
+        if conv.get("name"): return ("#" if not conv.get("is_private")
+                                     else "\U0001f512") + conv["name"]
+        if conv.get("is_im"): return "@" + self.uname(conv.get("user"))
+        if conv.get("is_mpim"): return "group-dm " + conv.get("id", "")
+        return conv.get("id", "?")
+
+    # -- text rendering ----------------------------------------------------
+    def render(self, text):
+        if not text: return ""
+        def sub(m):
+            body = m.group(1)
+            if body.startswith("@U") or body.startswith("@W"):
+                uid = body[1:].split("|")[0]
+                return "@" + self.uname(uid)
+            if body.startswith("#C"):
+                return "#" + (body.split("|")[1] if "|" in body else body[1:])
+            if "|" in body: return body.split("|", 1)[1]
+            return body
+        return html.unescape(re.sub(r"<([^<>]*)>", sub, text))
+
+# --------------------------------------------------------------- formatting
+
+def ts_fmt(ts):
+    try: return time.strftime("%m-%d %H:%M", time.localtime(float(ts)))
+    except Exception: return str(ts)
+
+def print_msgs(ws, msgs, header=None):
+    if header: print(header)
+    for m in msgs:
+        who = ws.uname(m.get("user") or m.get("bot_id"))
+        body = ws.render(m.get("text", "")).strip()
+        if not body and m.get("files"):
+            body = "[file] " + ", ".join(f.get("name", "?") for f in m["files"])
+        if not body and m.get("attachments"):
+            body = "[attachment] " + (m["attachments"][0].get("fallback") or "")[:160]
+        rep = m.get("reply_count")
+        tag = f"   ↳ {rep} replies (ts={m['ts']})" if rep else ""
+        print(f"[{ts_fmt(m.get('ts'))}] {who}: {body}{tag}")
+
+# ---------------------------------------------------------------- workspaces
+
+def resolve_ws(cache, cookie, q):
+    ws = cache["workspaces"]
+    if q in ws: return WS(ws[q], cookie, cache)
+    ql = q.lower()
+    hits = [w for w in ws.values()
+            if ql in w["domain"].lower() or ql in w.get("team", "").lower()]
+    if not hits: die(f"no workspace matching {q!r}. Try `slack ls`.")
+    if len(hits) > 1:
+        die(f"{q!r} is ambiguous: " +
+            ", ".join(f"{w['domain']} ({w['team']})" for w in hits))
+    return WS(hits[0], cookie, cache)
+
+def all_ws(cache, cookie):
+    return [WS(w, cookie, cache)
+            for w in sorted(cache["workspaces"].values(),
+                            key=lambda x: x.get("team", "").lower())]
+
+# ------------------------------------------------------------------ commands
+
+def cmd_setup(a, *_):
+    if "--cookie" in a:
+        val = a[a.index("--cookie") + 1]
+    else:
+        val = extract_cookie_from_app()
+    write_cookie(val)
+    log(f"cookie stored in {COOKIE_FILE} (mode 600)")
+    ua = sniff_desktop_ua()
+    if ua:
+        with open(UA_FILE, "w") as f: f.write(ua + "\n")
+        global UA; UA = ua
+        log(f"matching the desktop app's User-Agent: {ua.split(') ',1)[-1]}")
+    rebuild_cache(val)
+    cmd_ls([], load_cache(), val, False)
+
+def cmd_refresh(a, cache, cookie, as_json):
+    rebuild_cache(cookie)
+    cmd_ls([], load_cache(), cookie, as_json)
+
+def cmd_ls(a, cache, cookie, as_json):
+    ws = sorted(cache["workspaces"].values(),
+                key=lambda x: x.get("team", "").lower())
+    if as_json:
+        print(json.dumps([{k: w.get(k) for k in ("domain", "team", "user")}
+                          for w in ws], indent=2)); return
+    age = (int(time.time()) - cache.get("minted_at", 0)) // 60
+    print(f"{len(ws)} workspaces (tokens minted {age}m ago):\n")
+    for w in ws:
+        print(f"  {w['domain']:<24} {w.get('team','')[:34]:<34} {w.get('user','')}")
+
+def cmd_channels(a, cache, cookie, as_json):
+    ws = resolve_ws(cache, cookie, a[0])
+    everything = "--all" in a
+    chans = ws.all_channels() if everything else [
+        c for c in ws.conversations(types="public_channel,private_channel")]
+    chans.sort(key=lambda c: c.get("name") or "")
+    if as_json:
+        print(json.dumps([{"name": c.get("name"), "id": c["id"],
+                           "members": c.get("num_members"),
+                           "private": c.get("is_private"),
+                           "member": c.get("is_member")} for c in chans],
+                         indent=2)); return
+    print(f"{len(chans)} channels in {ws.team}:\n")
+    for c in chans:
+        mark = "\U0001f512" if c.get("is_private") else "#"
+        print(f"  {mark}{c.get('name',''):<34} {c['id']}  ({c.get('num_members','?')})")
+
+def cmd_dms(a, cache, cookie, as_json):
+    ws = resolve_ws(cache, cookie, a[0])
+    convs = ws.conversations(types="im,mpim")
+    rows = []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        names = list(ex.map(lambda c: ws.convname(c), convs))
+    for c, n in zip(convs, names):
+        rows.append({"name": n, "id": c["id"],
+                     "last": c.get("latest", {}).get("ts") if isinstance(
+                         c.get("latest"), dict) else None})
+    rows.sort(key=lambda r: r["name"].lower())
+    if as_json: print(json.dumps(rows, indent=2)); return
+    print(f"{len(rows)} DMs in {ws.team}:\n")
+    for r in rows: print(f"  {r['name']:<34} {r['id']}")
+
+def cmd_users(a, cache, cookie, as_json):
+    ws = resolve_ws(cache, cookie, a[0])
+    q = " ".join(a[1:]) if len(a) > 1 else ""
+    hits = ws.find_user(q) if q else ws.find_user("")
+    rows = [{"id": u["id"], "handle": u.get("name"),
+             "name": u.get("profile", {}).get("real_name"),
+             "email": u.get("profile", {}).get("email")} for u in hits]
+    if as_json: print(json.dumps(rows, indent=2)); return
+    print(f"{len(rows)} people in {ws.team} matching {q!r}:\n")
+    for r in rows:
+        print(f"  {r['id']:<12} @{(r['handle'] or ''):<22} "
+              f"{(r['name'] or '')[:28]:<28} {r['email'] or ''}")
+
+def cmd_read(a, cache, cookie, as_json):
+    n = 30
+    if "-n" in a:
+        k = a.index("-n"); n = int(a[k + 1]); a = a[:k] + a[k + 2:]
+    ws = resolve_ws(cache, cookie, a[0])
+    ch = ws.resolve(a[1])
+    r = ws.api("conversations.history", channel=ch, limit=n)
+    if not r.get("ok"): die(f"conversations.history: {r.get('error')}")
+    msgs = list(reversed(r.get("messages", [])))
+    if as_json:
+        print(json.dumps([{"ts": m.get("ts"), "user": ws.uname(m.get("user")),
+                           "text": ws.render(m.get("text", "")),
+                           "thread_ts": m.get("thread_ts"),
+                           "reply_count": m.get("reply_count")}
+                          for m in msgs], indent=2)); return
+    print_msgs(ws, msgs, f"# {a[1]} in {ws.team} — last {len(msgs)}\n")
+
+def cmd_thread(a, cache, cookie, as_json):
+    ws = resolve_ws(cache, cookie, a[0])
+    ch = ws.resolve(a[1])
+    r = ws.api("conversations.replies", channel=ch, ts=a[2], limit=200)
+    if not r.get("ok"): die(f"conversations.replies: {r.get('error')}")
+    msgs = r.get("messages", [])
+    if as_json:
+        print(json.dumps([{"ts": m.get("ts"), "user": ws.uname(m.get("user")),
+                           "text": ws.render(m.get("text", ""))}
+                          for m in msgs], indent=2)); return
+    print_msgs(ws, msgs, f"# thread in {ws.team} — {len(msgs)} messages\n")
+
+def cmd_search(a, cache, cookie, as_json):
+    targets = (all_ws(cache, cookie) if a[0] == "--all"
+               else [resolve_ws(cache, cookie, a[0])])
+    q = " ".join(a[1:])
+    if not q: die("search needs a query")
+    def one(ws):
+        r = ws.api("search.messages", query=q, count=20)
+        return ws, r.get("messages", {}).get("matches", []) if r.get("ok") else []
+    rows = []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for ws, matches in ex.map(one, targets):
+            for m in matches:
+                rows.append({"workspace": ws.domain, "team": ws.team,
+                             "channel": m.get("channel", {}).get("name"),
+                             "user": m.get("username"), "ts": m.get("ts"),
+                             "text": ws.render(m.get("text") or "").strip(),
+                             "permalink": m.get("permalink")})
+    rows.sort(key=lambda r: float(r["ts"] or 0), reverse=True)
+    if as_json: print(json.dumps(rows, indent=2)); return
+    print(f"{len(rows)} hits for {q!r}\n")
+    for r in rows:
+        print(f"[{ts_fmt(r['ts'])}] {r['team']} #{r['channel']} "
+              f"{r['user']}: {r['text'][:150]}")
+
+def cmd_inbox(a, cache, cookie, as_json):
+    """Everything unread, across every workspace."""
+    m = 0
+    if "-m" in a:
+        k = a.index("-m"); m = int(a[k + 1]); a = a[:k] + a[k + 2:]
+    targets = (all_ws(cache, cookie) if "-w" not in a
+               else [resolve_ws(cache, cookie, a[a.index("-w") + 1])])
+    def one(ws):
+        r = ws.api("client.counts", thread_counts_by_channel="true")
+        if not r.get("ok"): return ws, []
+        items = []
+        for kind in ("channels", "ims", "mpims"):
+            for c in r.get(kind, []):
+                if c.get("has_unreads") or c.get("mention_count"):
+                    items.append({"id": c["id"], "kind": kind,
+                                  "mentions": c.get("mention_count", 0),
+                                  "last_read": c.get("last_read")})
+        th = r.get("threads", {}) or {}
+        if not items and not th.get("has_unreads"): return ws, []
+        if items:
+            byid = {c["id"]: c for c in ws.conversations()}
+            for it in items:
+                conv = byid.get(it["id"], {"id": it["id"]})
+                it["name"] = ws.convname(conv)
+                if m:
+                    h = ws.api("conversations.history", channel=it["id"],
+                               limit=m, oldest=it.get("last_read") or 0)
+                    it["messages"] = list(reversed(h.get("messages", [])))
+        rank = {"ims": 1, "mpims": 2, "channels": 3}
+        items.sort(key=lambda i: (0 if i["mentions"] else 1,
+                                  rank.get(i["kind"], 9), i.get("name") or ""))
+        return ws, items
+    results = []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        results = list(ex.map(one, targets))
+    if as_json:
+        out = []
+        for ws, items in results:
+            for it in items:
+                out.append({"workspace": ws.domain, "team": ws.team,
+                            "conversation": it.get("name"), "id": it["id"],
+                            "kind": it["kind"], "mentions": it["mentions"],
+                            "messages": [{"ts": x.get("ts"),
+                                          "user": ws.uname(x.get("user")),
+                                          "text": ws.render(x.get("text", ""))}
+                                         for x in it.get("messages", [])]})
+        print(json.dumps(out, indent=2)); return
+    total = sum(len(i) for _, i in results)
+    if not total:
+        print("nothing unread across "
+              f"{len(targets)} workspace(s)."); return
+    print(f"{total} unread conversation(s) across {len(targets)} workspace(s)\n")
+    for ws, items in results:
+        if not items: continue
+        print(f"=== {ws.team} ({ws.domain})")
+        for it in items:
+            mark = f"  @{it['mentions']} mention(s)" if it["mentions"] else ""
+            print(f"  {it.get('name', it['id']):<34}{mark}")
+            for x in it.get("messages", []):
+                who = ws.uname(x.get("user"))
+                print(f"      [{ts_fmt(x.get('ts'))}] {who}: "
+                      f"{ws.render(x.get('text','')).strip()[:220]}")
+        print()
+
+def cmd_whoami(a, cache, cookie, as_json):
+    targets = (all_ws(cache, cookie) if not a
+               else [resolve_ws(cache, cookie, a[0])])
+    rows = []
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for ws, r in ex.map(lambda w: (w, w.api("auth.test")), targets):
+            rows.append({"workspace": ws.domain, "team": r.get("team"),
+                         "user": r.get("user"), "user_id": r.get("user_id"),
+                         "ok": r.get("ok"), "error": r.get("error")})
+    if as_json: print(json.dumps(rows, indent=2)); return
+    for r in rows:
+        print(f"  {r['workspace']:<24} {str(r['team'])[:30]:<30} "
+              f"{r['user']} ({r['user_id']})  ok={r['ok']} {r.get('error') or ''}")
+
+def cmd_send(a, cache, cookie, as_json):
+    """Post a message. Dry-run unless --yes is given.
+
+    Sending under the user's identity is gated: without --yes this resolves the
+    target and prints the exact text that would be posted, and posts nothing."""
+    thread_ts = None
+    if "--thread" in a:
+        k = a.index("--thread"); thread_ts = a[k + 1]; a = a[:k] + a[k + 2:]
+    confirm = "--yes" in a
+    a = [x for x in a if x != "--yes"]
+    if len(a) < 3: die("usage: slack send <ws> <#chan|@person|ID> <text> [--thread TS] [--yes]")
+    ws = resolve_ws(cache, cookie, a[0])
+    ch = ws.resolve(a[1])
+    text = " ".join(a[2:])
+    info = ws.api("conversations.info", channel=ch)
+    label = ws.convname(info.get("channel", {"id": ch})) if info.get("ok") else ch
+    print(f"workspace : {ws.team} ({ws.domain})")
+    print(f"as        : {ws.m.get('user')} ({ws.m.get('user_id')})")
+    print(f"to        : {label}  [{ch}]" + (f"  thread {thread_ts}" if thread_ts else ""))
+    print("-" * 60); print(text); print("-" * 60)
+    if not confirm:
+        print("DRY RUN — nothing sent. Re-run with --yes to post.",
+              file=sys.stderr); return
+    r = ws.api("chat.postMessage", channel=ch, text=text, thread_ts=thread_ts,
+               link_names="true", unfurl_links="true")
+    if not r.get("ok"): die(f"chat.postMessage: {r.get('error')}")
+    print(f"sent: ts={r.get('ts')} channel={r.get('channel')}", file=sys.stderr)
+    if as_json: print(json.dumps({"ok": True, "ts": r.get("ts"),
+                                  "channel": r.get("channel")}))
+
+# ---------------------------------------------------------------------- main
+
+COMMANDS = {"setup": cmd_setup, "refresh": cmd_refresh, "ls": cmd_ls,
+            "channels": cmd_channels, "dms": cmd_dms, "users": cmd_users,
+            "read": cmd_read, "thread": cmd_thread, "search": cmd_search,
+            "inbox": cmd_inbox, "whoami": cmd_whoami, "send": cmd_send}
+
+NEEDS_WS = {"channels", "dms", "users", "read", "thread", "search", "send"}
+
+def main():
+    argv = sys.argv[1:]
+    as_json = "--json" in argv
+    argv = [x for x in argv if x != "--json"]
+    if not argv or argv[0] in ("-h", "--help", "help"):
+        print(__doc__); return
+    cmd, rest = argv[0], argv[1:]
+    if cmd not in COMMANDS: die(f"unknown command {cmd!r}; see `slack --help`")
+    if cmd == "setup": return cmd_setup(rest)
+    cookie = read_cookie()
+    cache = ensure_cache(cookie)
+    if cmd in NEEDS_WS and not rest:
+        die(f"`{cmd}` needs a workspace. Try `slack ls`.")
+    COMMANDS[cmd](rest, cache, cookie, as_json)
+
+if __name__ == "__main__":
+    main()

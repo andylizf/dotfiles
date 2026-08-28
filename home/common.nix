@@ -395,6 +395,14 @@ PYPIRC
     source = ./scripts/notion-mcp-wrapper.sh;
     executable = true;
   };
+  # Reads and writes every Slack workspace the desktop app is signed into, from
+  # one session cookie. Pure stdlib, so it deploys everywhere; on a host without
+  # the desktop app, `slack setup --cookie xoxd-...` is the whole install.
+  # Usage and credential model: docs/slack-cli.md.
+  home.file.".local/bin/slack" = {
+    source = ./scripts/slack;
+    executable = true;
+  };
   # Shared user-level skills for Claude Code and Codex. Codex discovers user
   # skills under ~/.agents/skills and supports symlinked skill directories, so
   # both agents read the same tracked sources instead of maintaining copies.
