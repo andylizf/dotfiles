@@ -188,6 +188,14 @@ PLIST
   # To use it, point the editor's terminal profile at the path below. The directory
   # sits outside PATH on purpose, so this shadows nothing.
   home.activation.installBootSafeShell = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    # A dangling symlink on the way (this machine had ~/.local/libexec pointing at
+    # an uninstalled Homebrew formula) makes `mkdir -p` fail with "File exists",
+    # which aborts the whole activation. Clear anything that is not a directory.
+    for p in "${home}/.local/libexec" "${home}/.local/libexec/boot-safe"; do
+      if [ -e "$p" ] || [ -L "$p" ]; then
+        [ -d "$p" ] && [ ! -L "$p" ] || run rm -rf "$p"
+      fi
+    done
     run mkdir -p "${home}/.local/libexec/boot-safe"
     run cp -f ${bootSafeFish} "${home}/.local/libexec/boot-safe/fish"
     run chmod 755 "${home}/.local/libexec/boot-safe/fish"
