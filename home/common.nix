@@ -1,4 +1,4 @@
-{ pkgs, lib, config, ... }:
+{ pkgs, lib, config, resilient, ... }:
 {
   # Run one activation step in isolation. home-manager concatenates every
   # `home.activation.*` fragment into a single `set -eu` bash script, so the
@@ -293,7 +293,7 @@
   };
 
 
-  home.activation.fixSshPerms = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.fixSshPerms = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "fixSshPerms" ''
     mkdir -p "$HOME/.ssh"
     chmod 700 "$HOME/.ssh" || true
     touch "$HOME/.ssh/authorized_keys"
@@ -302,49 +302,49 @@
     if ! grep -Fxq "$PUBKEY" "$HOME/.ssh/authorized_keys"; then
       printf '%s\n' "$PUBKEY" >> "$HOME/.ssh/authorized_keys"
     fi
-  '';
+  '');
 
-  home.activation.ensureSshConfig = lib.hm.dag.entryAfter [ "fixSshPerms" ] ''
+  home.activation.ensureSshConfig = lib.hm.dag.entryAfter [ "fixSshPerms" ] (resilient "ensureSshConfig" ''
     if [ ! -f "$HOME/.ssh/config" ]; then
       touch "$HOME/.ssh/config"
       chmod 600 "$HOME/.ssh/config" || true
     fi
-  '';
+  '');
 
   # Optional: set npm global prefix to ~/.local (safer PATH)
-  home.activation.npmPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.npmPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "npmPrefix" ''
     if command -v npm >/dev/null 2>&1; then
       npm config set prefix "$HOME/.local" --global || true
       mkdir -p "$HOME/.local/bin"
     fi
-  '';
+  '');
 
-  home.activation.ensureGcloudDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureGcloudDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureGcloudDir" ''
     mkdir -p "$HOME/.config/gcloud"
     chmod 700 "$HOME/.config/gcloud" || true
-  '';
+  '');
 
-  home.activation.ensureAwsDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureAwsDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureAwsDir" ''
     mkdir -p "$HOME/.aws"
     chmod 700 "$HOME/.aws" || true
-  '';
+  '');
 
-  home.activation.ensureDockerConfigDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureDockerConfigDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureDockerConfigDir" ''
     mkdir -p "$HOME/.docker"
     chmod 700 "$HOME/.docker" || true
-  '';
+  '');
 
   # Ensure GNU readlink is used during activation (macOS BSD readlink lacks -e).
-  home.activation.fixReadlink = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
+  home.activation.fixReadlink = lib.hm.dag.entryBefore [ "linkGeneration" ] (resilient "fixReadlink" ''
     readlink() {
       "${pkgs.coreutils}/bin/readlink" "$@"
     }
-  '';
+  '');
 
   # Sync Docker config from sops-nix secrets to ~/.docker/config.json
   # Docker Desktop cannot handle symlinks (cross-device link errors).
   # sops-nix stores secrets at ~/.config/sops-nix/secrets/<name>, not at custom paths.
-  home.activation.syncDockerConfig = lib.hm.dag.entryAfter [ "ensureDockerConfigDir" ] ''
+  home.activation.syncDockerConfig = lib.hm.dag.entryAfter [ "ensureDockerConfigDir" ] (resilient "syncDockerConfig" ''
     src="$HOME/.config/sops-nix/secrets/docker/config.json"
     dst="$HOME/.docker/config.json"
     if [ -f "$src" ] || [ -L "$src" ]; then
@@ -357,24 +357,24 @@
         install -m 600 "$src" "$dst"
       fi
     fi
-  '';
+  '');
 
-  home.activation.ensureAnthropicDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureAnthropicDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureAnthropicDir" ''
     mkdir -p "$HOME/.config/anthropic"
     chmod 700 "$HOME/.config/anthropic" || true
-  '';
+  '');
 
-  home.activation.ensureLambdaDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureLambdaDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureLambdaDir" ''
     mkdir -p "$HOME/.config/lambda"
     chmod 700 "$HOME/.config/lambda" || true
-  '';
+  '');
 
-  home.activation.ensureWandbDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureWandbDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureWandbDir" ''
     mkdir -p "$HOME/.config/wandb"
     chmod 700 "$HOME/.config/wandb" || true
-  '';
+  '');
 
-  home.activation.syncPypirc = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.syncPypirc = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "syncPypirc" ''
     token_file="$HOME/.config/pypi/token"
     dst="$HOME/.pypirc"
     if [ -f "$token_file" ]; then
@@ -390,21 +390,21 @@ PYPIRC
         mv "$tmp" "$dst"
       fi
     fi
-  '';
+  '');
 
-  home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.syncHuggingFaceToken = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "syncHuggingFaceToken" ''
     if [ -f "$HOME/.config/huggingface/token" ]; then
       mkdir -p "$HOME/.cache/huggingface"
       install -m 600 "$HOME/.config/huggingface/token" "$HOME/.cache/huggingface/token"
     fi
-  '';
+  '');
 
-  home.activation.ensureOverleafConfigDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureOverleafConfigDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureOverleafConfigDir" ''
     mkdir -p "$HOME/.config/overleaf"
     chmod 700 "$HOME/.config/overleaf" || true
-  '';
+  '');
 
-  home.activation.syncOverleafGitCredentials = lib.hm.dag.entryAfter [ "ensureOverleafConfigDir" ] ''
+  home.activation.syncOverleafGitCredentials = lib.hm.dag.entryAfter [ "ensureOverleafConfigDir" ] (resilient "syncOverleafGitCredentials" ''
     token_file="$HOME/.config/overleaf/git-token"
     cred_file="$HOME/.config/overleaf/git-credentials"
     if [ -f "$token_file" ]; then
@@ -416,7 +416,7 @@ PYPIRC
         mv "$tmp_file" "$cred_file"
       fi
     fi
-  '';
+  '');
 
   home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
   home.file.".codex/AGENTS.md".source = ../claude-instruction.md;
@@ -479,7 +479,7 @@ PYPIRC
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
   # We seed it from the nix-derived template on first setup, and also migrate
   # away from any old read-only symlink left by previous generations.
-  home.activation.installClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.installClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "installClaudeSettings" ''
     mkdir -p "$HOME/.claude"
     dst="$HOME/.claude/settings.json"
     src="${pkgs.writeText "claude-settings.json" ''
@@ -533,7 +533,7 @@ PYPIRC
     if [ ! -f "$dst" ]; then
       install -m 644 "$src" "$dst"
     fi
-  '';
+  '');
 
   # Global MCP servers for Claude Code (user scope → auto-trusted, no approval prompt)
 
@@ -541,7 +541,7 @@ PYPIRC
   # installation updates itself; repeatedly downloading every CLI made an otherwise
   # idempotent Home Manager switch slow and fragile. Set DOTFILES_FORCE_CLI_UPDATE=1
   # for an explicit refresh.
-  home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] ''
+  home.activation.installDevCLIs = lib.hm.dag.entryAfter [ "npmPrefix" ] (resilient "installDevCLIs" ''
     set -e
     force_update="''${DOTFILES_FORCE_CLI_UPDATE:-0}"
     export npm_config_prefix="$HOME/.local"
@@ -581,13 +581,13 @@ PYPIRC
     else
       echo "[dotfiles] Google Workspace CLI already present; skipping install"
     fi
-  '';
+  '');
 
   # Claude user-scoped MCP setup. Notion is launched through a wrapper that
   # reads the sops-managed token file itself, so zsh, fish, GUI, and tmux
   # sessions all get identical behavior without storing the secret in config.
   home.activation.configureClaudeMcp =
-    lib.hm.dag.entryAfter [ "installDevCLIs" "linkGeneration" ] ''
+    lib.hm.dag.entryAfter [ "installDevCLIs" "linkGeneration" ] (resilient "configureClaudeMcp" ''
       marker="$HOME/.claude/.mcp-registered-v3"
       claude_bin="$HOME/.local/bin/claude"
       if [ -x "$claude_bin" ] && [ ! -f "$marker" ]; then
@@ -604,7 +604,7 @@ PYPIRC
           echo "[dotfiles] failed to configure Notion MCP; will retry next switch" >&2
         fi
       fi
-    '';
+    '');
 
   home.file.".codex/notify_bell.sh".source = ../scripts/notify_bell.sh;
 
@@ -663,7 +663,7 @@ PYPIRC
   # it is absent or is a stale Home-Manager symlink into /nix/store. Once codex
   # owns a real file, leave it alone so runtime trust/hook writes persist.
   home.activation.seedCodexConfig =
-    lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "seedCodexConfig" ''
       cfg="${config.home.homeDirectory}/.codex/config.toml"
       tpl="${config.home.homeDirectory}/.codex/config.toml.hm-template"
       if [ ! -e "$cfg" ] || [ -L "$cfg" ]; then
@@ -672,13 +672,13 @@ PYPIRC
         $DRY_RUN_CMD chmod 0644 "$cfg"
         echo "[dotfiles] seeded writable ~/.codex/config.toml from template"
       fi
-    '';
+    '');
 
   # The writable runtime config is intentionally not replaced after its first
   # seed, because Codex persists trust and hook state there. Keep just the TUI
   # notification keys in sync with the declarative template instead.
   home.activation.configureCodexTuiNotifications =
-    lib.hm.dag.entryAfter [ "seedCodexConfig" ] ''
+    lib.hm.dag.entryAfter [ "seedCodexConfig" ] (resilient "configureCodexTuiNotifications" ''
       cfg="${config.home.homeDirectory}/.codex/config.toml"
       if [ -f "$cfg" ]; then
         cfg_tmp="$cfg.tui-notifications"
@@ -757,14 +757,14 @@ PYPIRC
         chmod 0644 "$cfg_tmp"
         mv "$cfg_tmp" "$cfg"
       fi
-    '';
+    '');
 
   # Keep the real omem CLI and Codex plugin installed from the local omem
   # repository. Reinstall only when the repository revision changes, the binary/plugin
   # is missing, or DOTFILES_FORCE_CLI_UPDATE=1. Lifecycle hooks are machine-managed in
   # system/darwin.nix, so the plugin itself remains the MCP delivery bundle.
   home.activation.configureCodexOmem =
-    lib.hm.dag.entryAfter [ "installDevCLIs" "seedCodexConfig" ] ''
+    lib.hm.dag.entryAfter [ "installDevCLIs" "seedCodexConfig" ] (resilient "configureCodexOmem" ''
       omem_repo="$HOME/Projects/omem"
       codex_bin="$HOME/.local/bin/codex"
       cfg="$HOME/.codex/config.toml"
@@ -834,7 +834,7 @@ TOML
       else
         echo "[dotfiles] $omem_repo or codex missing; skipping omem integration" >&2
       fi
-    '';
+    '');
 
   # Ensure Cursor remote terminals default to Nix-provided fish shell.
   home.file.".cursor-server/data/Machine/settings.json".text =

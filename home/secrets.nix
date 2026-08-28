@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, resilient, ... }:
 let
   cfg = config.dotfiles;
 in
@@ -227,7 +227,7 @@ in
       mode = "0600";
     };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
-      (lib.hm.dag.entryAfter [ "sops-nix" ] ''
+      (lib.hm.dag.entryAfter [ "sops-nix" ] (resilient "sopsManualSync" ''
         if ! (
           ${systemctlCheckSnippet}
         ); then
@@ -239,6 +239,6 @@ in
           fi
           ${sopsExec}
         fi
-      '');
+      ''));
   });
 }
