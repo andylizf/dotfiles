@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, resilient, ... }:
 let
   home = config.home.homeDirectory;
   user = config.home.username;
@@ -63,13 +63,13 @@ in
   home.file.".local/bin/lark-publish-tokens.sh" = { source = ./scripts/lark-publish-tokens.sh; executable = true; };
   home.file.".local/bin/lark-extract-ats.py"    = { source = ./scripts/lark-extract-ats.py;    executable = true; };
 
-  home.activation.ensureLarkSyncDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureLarkSyncDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureLarkSyncDir" ''
     run mkdir -p "${home}/.config/lark-sync"
-  '';
+  '');
 
   # bws (Bitwarden Secrets Manager CLI): nixpkgs package fails to build, so fetch the prebuilt
   # binary to ~/.local/bin on first activation (idempotent). Needed by both readers and writer.
-  home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "installBws" ''
     if [ ! -x "${home}/.local/bin/bws" ]; then
       run mkdir -p "${home}/.local/bin"
       arch="$(uname -m)"
@@ -89,7 +89,7 @@ in
         rm -rf "$tmp"
       fi
     fi
-  '';
+  '');
 
   # Hostname-gated role setup: pick writer vs reader and install the right launchd agent + wrapper.
   # Keyed on ComputerName, NOT LocalHostName: Bonjour silently appends "-2"/"-3" to LocalHostName on
@@ -97,7 +97,7 @@ in
   # (mac-mini LocalHostName drifted to "zhifei-clawhouse-3") → it was misdetected as a reader, so the
   # deploy booted out + deleted the refresh agent, killing the sole token-refresh chain until manual
   # repair. ComputerName is user-set, never auto-suffixed, and distinct across the macs → stable key.
-  home.activation.larkSyncRole = lib.hm.dag.entryAfter [ "linkGeneration" "installBws" "ensureLarkSyncDir" ] ''
+  home.activation.larkSyncRole = lib.hm.dag.entryAfter [ "linkGeneration" "installBws" "ensureLarkSyncDir" ] (resilient "larkSyncRole" ''
     BIN="${home}/.local/bin"
     LA="${home}/Library/LaunchAgents"
     CFG="${home}/.config/lark-sync"
@@ -163,7 +163,7 @@ PLIST
       install_wrapper
       echo "[lark-sync] role=reader ($HOSTLOCAL)"
     fi
-  '';
+  '');
 
   # ---- boot-safe shell wrapper ----
   # /nix is a FileVault-encrypted APFS volume marked `noauto` in /etc/fstab, so the
@@ -187,7 +187,7 @@ PLIST
   #
   # To use it, point the editor's terminal profile at the path below. The directory
   # sits outside PATH on purpose, so this shadows nothing.
-  home.activation.installBootSafeShell = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.installBootSafeShell = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "installBootSafeShell" ''
     # A dangling symlink on the way (this machine had ~/.local/libexec pointing at
     # an uninstalled Homebrew formula) makes `mkdir -p` fail with "File exists",
     # which aborts the whole activation. Clear anything that is not a directory.
@@ -199,5 +199,5 @@ PLIST
     run mkdir -p "${home}/.local/libexec/boot-safe"
     run cp -f ${bootSafeFish} "${home}/.local/libexec/boot-safe/fish"
     run chmod 755 "${home}/.local/libexec/boot-safe/fish"
-  '';
+  '');
 }

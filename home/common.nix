@@ -1,5 +1,34 @@
 { pkgs, lib, config, ... }:
 {
+  # Run one activation step in isolation. home-manager concatenates every
+  # `home.activation.*` fragment into a single `set -eu` bash script, so the
+  # first step that exits non-zero silently skips every step ordered after it
+  # — and the deploy can still look like it succeeded. Wrapping a step means a
+  # failure is reported loudly and recorded, and the rest still runs.
+  #
+  # The `set +e` dance is not decorative. bash disables `set -e` INSIDE a
+  # subshell when that subshell sits in an `if !` or `|| ...` context, so the
+  # obvious spellings would let a step keep executing after its first error,
+  # which is worse than aborting. Running the subshell in a plain context and
+  # reading `$?` afterwards is what actually preserves the step's own `set -e`.
+  _module.args.resilient = name: script: ''
+    set +e
+    ( set -e
+    ${script}
+    )
+    _dotfilesRc=$?
+    set -e
+    if [ "''${_dotfilesRc}" -ne 0 ]; then
+      echo "[dotfiles] ---------------------------------------------" >&2
+      echo "[dotfiles] ACTIVATION STEP FAILED: ${name} (rc=''${_dotfilesRc})" >&2
+      echo "[dotfiles] The remaining steps still run; this one did not." >&2
+      echo "[dotfiles] ---------------------------------------------" >&2
+      mkdir -p "${config.home.homeDirectory}/.local/state/dotfiles" || true
+      echo "$(date -Iseconds) ${name} rc=''${_dotfilesRc}" \
+        >> "${config.home.homeDirectory}/.local/state/dotfiles/activation-failures.log" || true
+    fi
+  '';
+
   # Set once and bump intentionally when adopting changed defaults.
   home.stateVersion = "24.05";
 
