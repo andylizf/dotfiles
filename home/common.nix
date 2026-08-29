@@ -70,6 +70,20 @@
     nodejs_24
     direnv
     ripgrep
+    # Disk-usage browsers, for answering "what is eating this disk" without a
+    # hand-rolled `du | sort` every time. `dua` scans in parallel and is the one
+    # to reach for on a large tree; `dua i` and `ncdu` both give an interactive
+    # browser to descend through.
+    #
+    # Both size a file by its allocated blocks, exactly as `du` does, so both
+    # count each APFS clone in full even though the blocks are shared. On a
+    # machine running web-plane -- which clones Chrome, and which macOS clones
+    # again per launch -- that inflates the total several times over: measured
+    # 2026-08-29, a 500 MB file plus its clone reads as 1.0 GB in all three
+    # tools while occupying 500 MB. Use them to find candidates; price the
+    # cleanup with `df` before and after.
+    dua
+    ncdu
     # Toolchains for building and testing the projects checked out on these
     # machines, so a suite that needs one is not blocked on a machine that
     # happens to lack it.
