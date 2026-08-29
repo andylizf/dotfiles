@@ -12,10 +12,12 @@ Rules are read months later by a reader with none of this context — sometimes 
 | Layer | Holds | Editing |
 |---|---|---|
 | Global `CLAUDE.md` | Principles true across every project and session | **Never on your own initiative.** Propose the wording and wait. |
-| Machine notes | One machine's facts: safety rules needed *before* acting, and things costly to rediscover | Present tense, self-contained, lean. Rewrite a changed line as though it had always read that way |
+| Machine notes | Safety rules you need *before* acting here, and what is costly to rediscover on this box. Beyond those, only what another machine would have no use for | Present tense, self-contained, lean. Rewrite a changed line as though it had always read that way |
 | A skill | Procedures loaded on demand for one kind of work | Freely. A rule that must always hold, but is not universal enough for the global file, belongs here |
 | A repository's `CLAUDE.md` | Facts about that codebase | Freely |
 | A stored memory | **Evidence** — what happened, what was said, what a system actually does | Freely |
+
+**A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
 
 **A rule that must always hold goes in a skill or the global file, never only in a memory.** Memory gives a rule the worst combination there is: present only sometimes, and authoritative whenever it is. When a memory contradicts an instruction the instruction wins, and the memory is what to fix — in the same turn.
 
