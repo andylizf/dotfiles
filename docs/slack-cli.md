@@ -58,9 +58,12 @@ the distinction:
 - `edited` — `{seconds_after_post, by}`, or null. Slack keeps an edit as separate
   metadata, so a message rewritten after posting is otherwise indistinguishable
   from one that was not.
+- `reactions` — `[{name, count, users}]`, ids resolved to names. A reaction is
+  stored outside the message text, so a thread whose answer was an emoji reads as
+  unanswered without it.
 
 The human output marks the same facts on the line: `↳ @you, edited 2m later,
-3 replies`.
+3 replies, :thumbsup: Alex Kim`.
 
 ## Sending is gated
 

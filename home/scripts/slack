@@ -415,6 +415,18 @@ def edit_gap(m):
     try: return int(float(e["ts"]) - float(m["ts"]))
     except (KeyError, TypeError, ValueError): return -1
 
+def reactions_fmt(ws, m):
+    """Who reacted with what. Slack keeps reactions outside the message text, so
+    a rendered message hides them completely - and where an emoji is the answer
+    (an approval, a headcount), that is the answer going missing."""
+    out = []
+    for r in m.get("reactions") or []:
+        users = [ws.uname(u) for u in (r.get("users") or [])]
+        hidden = (r.get("count") or len(users)) - len(users)
+        if hidden > 0: users.append(f"+{hidden}")
+        out.append(f":{r.get('name')}: {', '.join(users) or r.get('count')}")
+    return out
+
 def mention_ids(m):
     return re.findall(r"<@([UWB][A-Z0-9]+)", m.get("text") or "")
 
@@ -434,6 +446,9 @@ def msg_json(ws, m):
             "edited": None if gap is None else
                       {"seconds_after_post": gap, "by": m["edited"].get("user")},
             "mentions": mention_ids(m),
+            "reactions": [{"name": r.get("name"), "count": r.get("count"),
+                           "users": [ws.uname(u) for u in (r.get("users") or [])]}
+                          for r in m.get("reactions") or []],
             "mentions_you": bool(ws.me) and f"<@{ws.me}>" in (m.get("text") or "")}
 
 def now_line():
@@ -461,6 +476,7 @@ def print_msgs(ws, msgs, header=None):
             marks.append("edited" if gap < 0 else f"edited {dur(gap)} later")
         if m.get("reply_count"):
             marks.append(f"{m['reply_count']} replies (ts={m['ts']})")
+        marks.extend(reactions_fmt(ws, m))
         # On the header line, not trailing the body: a multi-line message would
         # otherwise hide the marks hundreds of characters down.
         tag = ("  ↳ " + ", ".join(marks)) if marks else ""
