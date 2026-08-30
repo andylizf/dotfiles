@@ -2,15 +2,14 @@
 name: teach
 description: >-
   Use whenever your reply will explain how something works — any concept, mechanism, paper, system,
-  formula, or piece of technical/abstract material — and ESPECIALLY when they are meeting it for the
-  first time. **The trigger is a property of the answer you are about to write, never of the words
-  they asked with.** Check it against your own outgoing reply; a question phrased in no particular
-  way still qualifies the moment the answer would describe how something works, and matching their
-  wording against remembered example phrasings is itself the failure this skill exists to prevent.
-  It applies whether or not they asked for a "lesson", and whether the answer lands in chat or in an
-  explanatory file, doc, or report. Encodes their settled preferences for how explanations should read
-  so you avoid the recurring failure of writing like a reference manual instead of teaching like a
-  person.
+  formula, or piece of technical/abstract material. **The trigger is a property of the answer you are
+  about to write, never of the words they asked with.** Check it against your own outgoing reply; a
+  question phrased in no particular way still qualifies the moment the answer would describe how
+  something works. It applies whether or not they asked for a "lesson", and whether the answer lands
+  in chat, in an explanatory file, doc, or report, or in a status report on changes you made — that
+  last is the disguise that gets missed, because it still qualifies the moment it says how anything
+  works. An earlier load in this session settles nothing about the reply you are writing now. Encodes
+  their settled preferences so explanations read as teaching rather than as a reference manual.
 ---
 
 # Teaching
