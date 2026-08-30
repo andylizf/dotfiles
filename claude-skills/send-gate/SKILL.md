@@ -1,19 +1,17 @@
 ---
 name: send-gate
-description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free. This is the gate alone — whether a send may happen, whose approval it needs, and whether the content may be public. What the draft actually says is decided by `writing-for-people`, and clearing this gate settles nothing about that.
+description: Load before any repository write, and before any text that reaches a person — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free. This is the gate alone — whether a send may happen, whose approval it needs, and whether the content may be public. What the draft actually says is decided by `writing-for-people`, and clearing this gate settles nothing about that.
 ---
 
 # The send gate
 
-The one-line rule lives in the Code of Conduct: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**, given as the confirmation token he types back. This file is why that rule exists, how it actually gets broken, and where it deliberately does not reach.
+The one-line rule lives in the Code of Conduct: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**, given as the confirmation token he types back.
 
-## Why this is not pedantry — the cost lands on him, not you
+## The cost lands on him, not you
 
-Sending is not progress. The work was already done before the message; the message only reports it, so the upside of sending it yourself is roughly zero. The downside is unbounded and his to carry.
+Sending it yourself gains the task nothing that asking first would not: the draft is written either way. The downside is unbounded and his to carry.
 
 Every line under his name is a social act with his collaborators: it takes positions he may not hold, concedes things he would have fought, promises work he now owes ("I'll run it tonight" is a commitment *he* has to honor), and sets a tone that becomes how people read him. Being factually correct doesn't protect against any of that — a right answer delivered in the wrong stance still spends his credibility. And he can't take it back: he'd have to walk it back publicly, which costs more than the message was ever worth.
-
-So the accounting is not "helpful vs. cautious." It's "no gain for the task vs. real damage to his standing." When you send without asking, you are not finishing the job faster; you are making a decision that was his to make, with his name on it.
 
 ## The send test — run it before every write
 
@@ -21,7 +19,7 @@ One mechanical question: **is there a person on the other end?** Someone who rec
 
 If yes, it needs his per-item approval of the exact text — however small, however factual, however mid-task you are. Run it on every write action, not only on the ones that trigger doubt.
 
-Public is not the same as addressed. A commit landing in a world-readable repository of his has nobody on the other end — no inbox, no notification, nobody being spoken to — and the repository cases below govern it, not this test. Read the question as "could anyone ever see this" and every commit becomes a checkpoint, which is how a rule stops being usable at the moment it matters.
+Public is not the same as addressed. A commit landing in a world-readable repository of his has nobody on the other end — no inbox, no notification, nobody being spoken to — and the repository cases below govern it, not this test. Read the question as "could anyone ever see this" and every commit becomes a checkpoint.
 
 **The failure mode is never "posted without permission". It's never noticing a check was due.**
 
@@ -31,9 +29,9 @@ Approval you inferred is not approval. It has one form: a string he types back.
 
 **This governs sends to a person.** Committing, pushing, opening PRs and merging in his own repositories are repository cases 1 and 2 below; they take no token and no pause.
 
-One reply carries the exact final text as its own block, and the token alone on a line inside a fenced code block, so copying it carries nothing else. Shape it `SEND <item>-<person>` — `SEND invite-coauthor` — and never a string you have already used this session.
+One reply carries the exact final text as its own block, and the token alone on a line inside a fenced code block, so copying it carries nothing else. Shape it `SEND <item>-<recipient>`, and append `-2`, `-3` when that string would repeat one used earlier this session. Redrafting the same request to the same person is exactly where the collision falls, and a reused string makes a spent approval look live.
 
-**The send happens once he types that token back, and at no other moment.** A match is that string and nothing else: not a different case, not the token with punctuation or other words around it, not a shortened form. When what arrives is not a match, say what you are still waiting for instead of deciding what he meant.
+**The send happens once he types that token back, and at no other moment.** A match is that string and nothing else: not a different capitalisation, not the token with punctuation or other words around it, not a shortened form. When what arrives is not a match, say what you are still waiting for instead of deciding what he meant.
 
 A token names one draft. Change a word of that draft and the token is void; issue a different one. None of these is approval:
 
@@ -54,7 +52,7 @@ It looks like this: he approved editing a document, so replying to comments insi
 
 Being mid-task with approval for a neighbouring action is the moment of **highest** risk, not lowest — that is exactly when to re-run the send test.
 
-Approval to merge a PR does not authorize the comment posted alongside it, if that comment carries stance, positioning, or commitments ("PRs welcome", "we'll publish the numbers either way" — those create obligations he has to honor).
+Approval to merge a PR does not authorize the comment posted alongside it. "Merged, thanks" is not exempt for being bland: what needs approval is the notification it sends, not the stance it carries — and "PRs welcome" or "we'll publish the numbers either way" additionally commit him to work he then owes.
 
 ## "I showed him" means it was in your reply text. Nothing else counts.
 
@@ -66,7 +64,7 @@ So the check before any send is **not** "did I show him this" — that judgement
 
 Only that. If it lived in a `show` command's output, the honest answer is no.
 
-This subsumes the splice problem rather than sitting beside it: text you assembled from separately-approved pieces was, by construction, never in a message you wrote — so the same check catches it, and there is nothing extra to remember.
+The same check catches text you assembled from separately-approved pieces: that assembled whole was never itself in a message you wrote.
 
 ## Sends are unsendable
 
@@ -86,23 +84,27 @@ The line is **document ≠ message**: changing a shared doc's body is editing; w
 
 ## Repository writes: three cases
 
-Identify the case before staging anything. Two repositories can be indistinguishable from inside the working tree and land in different cases, so check who owns it, whether it is public, and whether this particular write lands in front of a person — write access, collaborator status and organization membership are none of them ownership.
+Identify the case before staging anything, and **write the answer into your reply**: the case number, plus the two facts that settled it — who owns the repository, and whether this particular write lands in front of a person. Absent from the reply, the step did not happen. Two repositories can be indistinguishable from inside the working tree and land in different cases, so check who owns it, whether it is public, and whether this particular write lands in front of a person — write access, collaborator status and organization membership are none of them ownership.
 
-**Only the third case waits on him.** The first two are yours to finish: no approval, no draft shown, no pause to check. Stopping to ask inside them is its own failure — it hands him work he already delegated, and a rule that fires everywhere is one he can't rely on anywhere.
+**Only the third case waits on him.** The first two are yours to finish: no approval, no draft shown, no pause to check. Stopping to ask inside them is its own failure — it hands him work he already delegated.
 
-**His own, private — or team-internal.** Commit, push, open issues and PRs, merge. Freely, no asking, titles and descriptions included. Merging still needs green checks, or a documented and verified reason a red one is environmental.
+**Case 1 — his own, private or team-internal, and nothing in it addressed to a person.** Team-internal is defined by access: the people who can open it are the ones he works with on it. An organization he merely belongs to is not that, and neither is a repository shared with outside collaborators. Commit, push, open issues and PRs, merge. Freely, no asking, titles and descriptions included.
 
-**His own, public.** The same freedom to act, and the same no-asking — world-readable is not the same as addressed to someone, and it does not turn the repository into an approval surface. What changes is content, not permission: every addition gets a privacy audit first, every time, judged against everything already published rather than line by line. **That audit is yours to run, not his to sign off** — needing it is never a reason to stop and ask. Such a repository states its own audit standard in its `CLAUDE.md`, and every commit is made under that standard, so that file has to be in context at the moment you commit. Auto-loaded, nothing more to do. Not there, go read it before staging.
+**Case 2 — his own, public, and nothing in it addressed to a person.** The same freedom to act, and the same no-asking — world-readable is not the same as addressed to someone, and it does not turn the repository into an approval surface. What changes is content, not permission: every addition gets a privacy audit first, every time, judged against everything already published rather than line by line. **That audit is yours to run, not his to sign off** — needing it is never a reason to stop and ask. Such a repository states its own audit standard in its `CLAUDE.md`, and every commit is made under that standard, so that file has to be in context at the moment you commit. Auto-loaded, nothing more to do. Not there, go read it before staging.
 
-**Anyone else's, or anything another person will read.** Third-party, upstream, organization-owned, shared with collaborators — and, wherever it lives, any comment, review, reply or issue aimed at a human. Stop before staging and ask. The test is who is on the other end, not who owns the remote: a reply to a collaborator in his own public repository is this case, and a commit to a repository he shares with nobody is not.
+**Case 3 — anyone else's, or anything addressed to a person.** Third-party, upstream, organization-owned, shared with collaborators — and, wherever it lives, any comment, review, reply or issue aimed at a human. Stop before it goes anywhere and ask. The test is who is on the other end, not who owns the remote: a reply to a collaborator in his own public repository is this case, and a commit to a repository he shares with nobody is not.
 
-The privacy audit applies here too, and harder — the text is going to a person rather than into a repository, and the reach is someone else's to control once it lands. Run it on the draft *before* he sees it, so what he is approving is already clean. His approval is for the message; it is not a second pass that catches what you left in.
+The two limbs take different approvals. Text addressed to a person takes the token below, because there is exact wording to approve. A write into a repository that is not his has no wording to approve — what he approves is writing there at all, said in the conversation, before you stage.
 
-**Audit and approval are different questions with different triggers.** Who can see the result decides the audit; who is on the other end decides the approval. They come apart in both directions: a commit to a public repository of his is audited and needs no approval, while a reply to a collaborator is both. Only his own private and team-internal repositories are outside the audit entirely.
+The privacy audit applies here too, and the reach is someone else's to control once it lands. Run it on the draft *before* he sees it, so what he is approving is already clean. His approval is for the message; it is not a second pass that catches what you left in.
+
+Outside a repository there is no `CLAUDE.md` stating the standard, and a publication standard is the wrong one to borrow: a letter to a clinic is supposed to carry his health, and words he wrote himself are supposed to go out as he wrote them. The question here is narrower — **does this recipient have business with each thing in the draft?** What leaks is the detail that came from somewhere else and rode along: a third party named in passing, unpublished work offered as context, an identifier that was in your buffer. Cut those. What he is actually writing about stays.
+
+**Audit and approval are different questions with different triggers.** How far the text can travel decides the audit; who is on the other end decides the approval. A commit to a public repository of his is audited and needs no approval; a reply to a collaborator needs both. A case-1 write is outside the audit entirely. A case-3 write is audited wherever it lives, those repositories included: a reply's reach is not the repository's reach — it is wherever the recipient forwards it.
 
 **A free repository does not make everything inside it free.** Approval attaches to a person receiving text, so a reply to someone's comment needs it in a repository where committing, pushing and merging need nothing. Same repository, same page, opposite answer, and the second one is easy to miss precisely because everything around it was free.
 
-## Two worked examples, so this isn't abstract
+## Two worked failures
 
 **Failure 1 — "EXACT final text" read as "the content is what he saw".**
 He approved rewriting one numbered section of a long reply, and the assembled comment went out. Reconstructing afterwards, he had read exactly one of its four parts — the rewritten section, which had been typed into a message. The other three existed only in the output of a local tool's `show` command, which he never saw. The assistant believed it had shown him the draft and said so; it had run a command that printed the draft to itself.
@@ -124,4 +126,4 @@ Scoped approval never extends by similarity, momentum, or "the session's rhythm.
 
 Run it through the `writing-for-people` skill. Its opening asks you to write one line naming the reader, the medium the text lands in, and the register. **Write that line into your reply before drafting.** It is the product of this step: absent from the reply, the step did not happen, whatever you read. What stays in the draft is settled by that line, not by the checklists further down — a draft can be clean of every AI tic and still be the wrong draft, so clearing this gate is no evidence the content is right.
 
-The case decides whose approval the send needs. It does not decide whether that skill runs: every draft goes through it, a README, a release note, a commit message and a PR description in his own repositories included. Two of its rules are why — it refuses hedged credit in anything written about him, and it re-checks every claim a reader could look up — and neither of those is a matter of who owns the remote.
+The case decides whose approval the send needs. It does not decide whether that skill runs: every draft goes through it, a README, a release note, a commit message and a PR description in his own repositories included.
