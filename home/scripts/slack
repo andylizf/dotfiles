@@ -19,8 +19,12 @@ dependency at runtime. Pure stdlib; runs anywhere the cookie is present.
   slack send <ws> <target> <text> [--yes]    post (dry-run without --yes)
                                              @name becomes a real mention;
                                              --literal keeps it as plain text
+  slack join <ws> <#chan|ID>                 join a public channel
+  slack leave <ws> <#chan|ID>                leave a channel
   slack whoami [<ws>]                        identity check
   slack refresh                              re-discover workspaces, re-mint tokens
+  slack api <ws> <method> [k=v ...]          call any Web API method directly;
+                                             anything a person would see needs --yes
 
 <ws> matches a workspace by domain or team-name substring ("dao", "sky").
 Add --json to any read command for machine-readable output.
@@ -771,14 +775,72 @@ def cmd_send(a, cache, cookie, as_json):
     if as_json: print(json.dumps({"ok": True, "ts": r.get("ts"),
                                   "channel": r.get("channel")}))
 
+def cmd_join(a, cache, cookie, as_json):
+    if len(a) < 2: die("usage: slack join <ws> <#channel|ID>")
+    ws = resolve_ws(cache, cookie, a[0])
+    chan = ws.resolve(a[1])
+    r = ws.api("conversations.join", channel=chan)
+    if not r.get("ok"): die(f"conversations.join: {r.get('error')}")
+    c = r.get("channel", {})
+    name = c.get("name") or a[1]
+    # Slack reports the no-op case as a warning, not a top-level flag.
+    already = (r.get("warning") == "already_in_channel"
+               or "already_in_channel" in r.get("response_metadata", {}).get("warnings", []))
+    if as_json:
+        print(json.dumps({"ok": True, "channel": chan, "name": name,
+                          "already_in_channel": already})); return
+    print(f"{'already in' if already else 'joined'} #{name}  [{chan}]  ({ws.team})")
+
+def cmd_leave(a, cache, cookie, as_json):
+    if len(a) < 2: die("usage: slack leave <ws> <#channel|ID>")
+    ws = resolve_ws(cache, cookie, a[0])
+    chan = ws.resolve(a[1])
+    r = ws.api("conversations.leave", channel=chan)
+    if not r.get("ok"): die(f"conversations.leave: {r.get('error')}")
+    if as_json: print(json.dumps({"ok": True, "channel": chan})); return
+    print(f"left {a[1]}  [{chan}]  ({ws.team})")
+
+# Raw API escape hatch. `send` exists so a draft is shown before it lands;
+# a raw call must not become the way around that, so anything that puts text
+# or a reaction in front of another person is held back behind --yes.
+API_WRITES = {
+    "chat.postMessage", "chat.postEphemeral", "chat.update", "chat.delete",
+    "chat.scheduleMessage", "chat.meMessage", "files.upload",
+    "files.completeUploadExternal", "reactions.add", "reactions.remove",
+    "conversations.invite", "conversations.kick", "conversations.create",
+    "conversations.rename", "conversations.archive", "conversations.setTopic",
+    "conversations.setPurpose", "pins.add", "reminders.add",
+}
+
+def cmd_api(a, cache, cookie, as_json):
+    if len(a) < 2: die("usage: slack api <ws> <method> [key=value ...] [--yes]")
+    yes = "--yes" in a
+    a = [x for x in a if x != "--yes"]
+    ws = resolve_ws(cache, cookie, a[0])
+    method = a[1]
+    params = {}
+    for kv in a[2:]:
+        if "=" not in kv: die(f"bad param {kv!r}; expected key=value")
+        k, v = kv.split("=", 1)
+        params[k] = v
+    if method in API_WRITES and not yes:
+        die(f"{method} puts something in front of a person. Use `slack send`, "
+            f"which shows a dry run first — or re-run with --yes once the exact "
+            f"content has been approved.")
+    r = ws.api(method, **params)
+    print(json.dumps(r, indent=2))
+    if not r.get("ok"): sys.exit(1)
+
 # ---------------------------------------------------------------------- main
 
 COMMANDS = {"setup": cmd_setup, "refresh": cmd_refresh, "ls": cmd_ls,
             "channels": cmd_channels, "dms": cmd_dms, "users": cmd_users,
             "read": cmd_read, "thread": cmd_thread, "search": cmd_search,
-            "inbox": cmd_inbox, "whoami": cmd_whoami, "send": cmd_send}
+            "inbox": cmd_inbox, "whoami": cmd_whoami, "send": cmd_send,
+            "join": cmd_join, "leave": cmd_leave, "api": cmd_api}
 
-NEEDS_WS = {"channels", "dms", "users", "read", "thread", "search", "send"}
+NEEDS_WS = {"channels", "dms", "users", "read", "thread", "search", "send",
+            "join", "leave", "api"}
 
 def main():
     argv = sys.argv[1:]
