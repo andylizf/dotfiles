@@ -19,6 +19,9 @@ dependency at runtime. Pure stdlib; runs anywhere the cookie is present.
   slack send <ws> <target> <text> [--yes]    post (dry-run without --yes)
                                              @name becomes a real mention;
                                              --literal keeps it as plain text
+  slack react <ws> <target> <ts> <emoji>     add a reaction (dry-run without --yes;
+                                             --remove to take one back)
+  slack mark <ws> <target> [<ts>]            mark read through <ts>, default latest
   slack join <ws> <#chan|ID>                 join a public channel
   slack leave <ws> <#chan|ID>                leave a channel
   slack whoami [<ws>]                        identity check
@@ -831,16 +834,68 @@ def cmd_api(a, cache, cookie, as_json):
     print(json.dumps(r, indent=2))
     if not r.get("ok"): sys.exit(1)
 
+def cmd_react(a, cache, cookie, as_json):
+    """Add or remove an emoji reaction. Dry-run unless --yes is given.
+
+    A reaction notifies the author, so it is gated the way `send` is: without
+    --yes this resolves the target and prints what it would react to."""
+    confirm = "--yes" in a
+    remove = "--remove" in a
+    a = [x for x in a if x not in ("--yes", "--remove")]
+    if len(a) < 4:
+        die("usage: slack react <ws> <#chan|@person|ID> <ts> <emoji> "
+            "[--remove] [--yes]")
+    ws = resolve_ws(cache, cookie, a[0])
+    ch = ws.resolve(a[1])
+    ts, emoji = a[2], a[3].strip(":")
+    verb = "remove" if remove else "add"
+    r = ws.api("conversations.history", channel=ch, latest=ts, oldest=ts,
+               inclusive="true", limit=1)
+    msgs = r.get("messages", []) if r.get("ok") else []
+    if msgs:
+        m = msgs[0]
+        who = ws.uname(m.get("user") or m.get("bot_id") or "")
+        body = re.sub(r"\s+", " ", m.get("text", ""))[:120]
+        print(f"workspace : {ws.team} ({ws.domain})")
+        print(f"reacting  : :{emoji}: {verb} on {who}'s message [{ts}]")
+        print("-" * 60); print(body); print("-" * 60)
+    else:
+        print(f"reacting  : :{emoji}: {verb} on {ch} [{ts}]  (message not readable)")
+    if not confirm:
+        print("DRY RUN — no reaction sent. Re-run with --yes.", file=sys.stderr)
+        return
+    r = ws.api(f"reactions.{verb}", channel=ch, timestamp=ts, name=emoji)
+    if not r.get("ok"): die(f"reactions.{verb}: {r.get('error')}")
+    print(f"{verb}ed :{emoji}: on {ts}", file=sys.stderr)
+    if as_json: print(json.dumps({"ok": True, "ts": ts, "name": emoji}))
+
+def cmd_mark(a, cache, cookie, as_json):
+    """Mark a conversation read. Nobody is notified, so this needs no gate."""
+    if len(a) < 2: die("usage: slack mark <ws> <#chan|@person|ID> [<ts>]")
+    ws = resolve_ws(cache, cookie, a[0])
+    ch = ws.resolve(a[1])
+    ts = a[2] if len(a) > 2 else None
+    if ts is None:
+        h = ws.api("conversations.history", channel=ch, limit=1)
+        msgs = h.get("messages", []) if h.get("ok") else []
+        if not msgs: die(f"nothing to mark in {a[1]}")
+        ts = msgs[0]["ts"]
+    r = ws.api("conversations.mark", channel=ch, ts=ts)
+    if not r.get("ok"): die(f"conversations.mark: {r.get('error')}")
+    if as_json: print(json.dumps({"ok": True, "channel": ch, "ts": ts})); return
+    print(f"marked {a[1]} read through {ts}  ({ws.team})")
+
 # ---------------------------------------------------------------------- main
 
 COMMANDS = {"setup": cmd_setup, "refresh": cmd_refresh, "ls": cmd_ls,
             "channels": cmd_channels, "dms": cmd_dms, "users": cmd_users,
             "read": cmd_read, "thread": cmd_thread, "search": cmd_search,
             "inbox": cmd_inbox, "whoami": cmd_whoami, "send": cmd_send,
-            "join": cmd_join, "leave": cmd_leave, "api": cmd_api}
+            "join": cmd_join, "leave": cmd_leave, "api": cmd_api,
+            "react": cmd_react, "mark": cmd_mark}
 
 NEEDS_WS = {"channels", "dms", "users", "read", "thread", "search", "send",
-            "join", "leave", "api"}
+            "join", "leave", "api", "react", "mark"}
 
 def main():
     argv = sys.argv[1:]
