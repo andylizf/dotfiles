@@ -1,9 +1,9 @@
 ---
-name: external-send
-description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
+name: send-gate
+description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free. This is the gate alone — whether a send may happen, whose approval it needs, and whether the content may be public. What the draft actually says is decided by `writing-for-people`, and clearing this gate settles nothing about that.
 ---
 
-# External sends under Zhifei's identity
+# The send gate
 
 The one-line rule lives in the Code of Conduct: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**, given as the confirmation token he types back. This file is why that rule exists, how it actually gets broken, and where it deliberately does not reach.
 
@@ -120,23 +120,8 @@ A run of quick releases — a token typed back for item after item, or a "send a
 
 Scoped approval never extends by similarity, momentum, or "the session's rhythm." **The more consecutive approvals he has given, the MORE carefully you should check whether the next action is actually covered.**
 
-## Never hedge his own work
-
-When the subject is **him, or work he had a hand in** — CV, bio, application, cover note, project blurb, README, talk abstract — do not add qualifiers that shrink his contribution. He has stated this as a standing rule for outward-facing writing about himself: no defensive framing.
-
-A shared-credit verb already carries the caveat. `co-developed` / `co-authored` / `led` tells the reader it was collaborative. Appending a ceiling on top of that is a second, unforced concession — it reads as apologising for the work, and nobody on the receiving end was going to assume sole authorship anyway.
-
-Two shapes, both from one editing pass where the assistant hedged twice and was corrected each time:
-
-- A line stating the scale of a collaborative artifact, then volunteering how small a fraction of it he personally built. The verb was already `co-developed`; the fraction was pure giveaway. Fix: say what he built, drop the fraction.
-- `led one case study` where `led the case study` was equally true. `one` quietly implies "only one of many"; the definite article concedes nothing and costs nothing.
-
-Scan every self-referential draft for `one of`, `part of`, `for N of them`, `helped with`, `assisted`, `some of`, `a portion of`, `just`, `only`. Cut each unless removing it would make the sentence false. **Accuracy is the constraint; modesty is not.**
-
-This cuts *against* the instinct the rest of this file trains, so hold both: caution about **whether to send** protects him, caution about **how much credit to claim** costs him. Different axes — do not let the first bleed into the second.
-
 ## Before showing him any draft
 
-Run it through the `avoid-ai-writing` skill. A draft that reads as obviously AI-written damages his credibility even if the content is right.
+Run it through the `writing-for-people` skill. Its opening asks you to write one line naming the reader, the medium the text lands in, and the register. **Write that line into your reply before drafting.** It is the product of this step: absent from the reply, the step did not happen, whatever you read. What stays in the draft is settled by that line, not by the checklists further down — a draft can be clean of every AI tic and still be the wrong draft, so clearing this gate is no evidence the content is right.
 
-What decides this is the case, not what kind of text it is. Everything in the third case gets scrubbed, because a person is going to read it. Nothing in the first two does — a README, a release note, a commit message and a PR description in his own repositories all get the same answer, and it is no. Do not reintroduce a second judgement about which of them counts as prose; the case is the whole test.
+The case decides whose approval the send needs. It does not decide whether that skill runs: every draft goes through it, a README, a release note, a commit message and a PR description in his own repositories included. Two of its rules are why — it refuses hedged credit in anything written about him, and it re-checks every claim a reader could look up — and neither of those is a matter of who owns the remote.

@@ -1,11 +1,11 @@
 ---
-name: avoid-ai-writing
-description: 扫掉 AI 写作痕迹(AI-isms)，让内容自己说话，中英文都适用。写或改会被人读到的文字时用：评论、code review、回复、帖子、邮件、文章、个人陈述、发言稿。Use when writing or editing text a person will read: comments, reviews, replies, posts, emails, essays, personal statements.
+name: writing-for-people
+description: 写或改任何会被人读到的字之前加载：评论、code review、回复、帖子、邮件、文章、个人陈述、发言稿、给评审看的材料。第一步是定读者和他拿去做什么：那一步决定内容留什么删什么，是本文件里最重要的一节，比任何文风检查都靠前。之后才是扫 AI 痕迹 (AI-isms)、中文标点、以及发之前重核每一条可核实的断言。Use before writing or editing any text a person will read. Its first section sets the reader and what they will do with the text, which decides what content stays; the checklists that follow scrub AI-isms, fix CJK punctuation, and re-verify every checkable claim.
 ---
 
-# 去除 AI 写作痕迹
+# 写给人看的字：先定读者，再去痕迹
 
-目标：写得像一个真人在认真说话，而不是一台被调教得过度光滑的机器。让事实和判断自己承重，不靠辞藻和结构撑场面。
+目标：先定读者是谁、他拿去做什么，那一步决定内容留什么删什么；然后才让它读起来像一个真人在认真说话，而不是一台被调教得过度光滑的机器。让事实和判断自己承重，不靠辞藻和结构撑场面。
 
 ## 动笔前：先定读者和文体
 
@@ -108,10 +108,26 @@ couple of directions and want your read on them."
 - 「他建议」→「他要求」（言语行为变了）
 - 「装了 X 才能跑」→「因为装了 X 所以能跑」（前提变因果）
 
-**本 skill 明令删的那几处不在此列**：稻草人的 X 半句、拖尾 -ing、铺垫句、段尾升华。
+**本 skill 明令删的那几处不在此列**：稻草人的 X 半句、拖尾 -ing、铺垫句、段尾升华、
+写他自己时那些自我缩小的限定词。
 那些删除已经判过了，照删，别拿这一条把它们捞回来。
 
 命中就把限定词加回去，哪怕加回去读着笨。**命题准确压过文风。**
+
+## 写他自己的时候，不要预先让步
+
+主语是**他，或他参与过的工作**时（CV、bio、申请、cover letter、项目简介、README、talk abstract），不要加缩小他贡献的限定词。这是他给对外写自己的东西定下的常规：不做防御性表述。
+
+共享署名的动词本身已经带了那个前提。`co-developed` / `co-authored` / `led` 已经告诉读者这是协作的，再往上加一层天花板是第二次、且没人要求的让步：读起来像在为这份工作道歉，而收件人本来也不会以为是他一个人做的。
+
+两种形态：
+
+- 写出一个协作产物的规模，然后主动交代他本人只做了其中多小的一部分。动词已经是 `co-developed` 了，那个比例纯属白送。改法：说他做了什么，删掉比例。
+- `led one case study`，而 `led the case study` 同样为真。`one` 悄悄暗示“众多之一”，定冠词什么都没让，也什么都不花。
+
+每一份写到他自己的稿子，扫这几个词：名词前光秃的 `one`/`a`、`one of`、`part of`、`for N of them`、`helped with`、`assisted`、`some of`、`a portion of`、`just`、`only`。逐个删掉或换成定冠词，除非改完会让读者得出错误结论。**约束是准确，不是谦虚。**
+
+**这条和防御性堆砌是同一个错误的两种形态。** 发送前的那份谨慎是关于**要不要发**的；让它渗进正文，一头是缩小自己的贡献，另一头是给一个常规请求配上数据和佐证，因为在替对方预演反驳。两头都回到同一条判据：**读者没有这一句，能不能走到终点。** 他要照着做的、以及让他自己得出结论的具体事实，都留；为一个已经写出来的结论再补的佐证，删。
 
 ## 英文 tell（写 HN 评论、英文内容时重点查）
 
@@ -216,7 +232,9 @@ couple of directions and want your read on them."
 并列项之间是顿号 `、` 不是逗号；书名篇名用 `《》`，不用引号也不用斜体；外国人名分隔用 `·`。
 破折号不在这张表里，因为它根本不该出现：别把半角 `--` 换成 `——` 了事，删掉它，改用逗号、句号或冒号。
 
-**引号最要命**：中文用 `“”`，套引号里层才用 `‘’`，别用 `"`，也别和 `「」` 混着来。
+**引号最要命**：中文用 `“”`，套引号里层才用 `‘’`，别用 `"`，也别和 `「」` 混着来。这条管的是**你产出的中文**。
+本文件自身是例外：`「」` 在这里是自指标记（本文的章节名、要照抄的模板、句式术语），`“”` 才是普通引语。
+往本文件加中文时照这个分工走，也别把既有的 `「」` 统一成 `“”`。
 英文那节说直引号才对。那是英文，英文句子里仍然是 `"`。中英混排的文档两套各归各。
 
 **不动的地方**：代码、路径、URL、参数名、数字（含 `12:30`）、整句英文引文。
@@ -225,7 +243,7 @@ couple of directions and want your read on them."
 定稿前跑一遍，肉眼漏得比想象中多：
 
 ```bash
-python3 ~/.claude/skills/avoid-ai-writing/scripts/cjk-punct.py --fix <文件>
+python3 ~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix <文件>
 ```
 
 还没落成文件的（聊天回复、issue 评论）就自己对着上面那行逐条过。

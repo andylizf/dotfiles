@@ -19,7 +19,7 @@ Assume beginner on *this* topic. The user is technically strong, but strength in
 nothing about another — and the failure this skill exists to prevent is writing at the density of
 someone who already holds the model. When in doubt, define the term.
 
-**Load `avoid-ai-writing` too, and apply both to the same draft.** The two work on different axes:
+**Load `writing-for-people` too, and apply both to the same draft.** The two work on different axes:
 that skill decides how the sentences sound, this one decides whether the explanation lands. Neither
 substitutes for the other.
 
