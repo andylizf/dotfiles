@@ -376,6 +376,12 @@ PYPIRC
     source = ./scripts/slack;
     executable = true;
   };
+  # `gws` bound to the university Workspace profile. The wrapper exists because
+  # the config-dir variable alone does not switch accounts — see the script.
+  home.file.".local/bin/gws-princeton" = {
+    source = ./scripts/gws-princeton;
+    executable = true;
+  };
   # Shared user-level skills for Claude Code and Codex. Codex discovers user
   # skills under ~/.agents/skills and supports symlinked skill directories, so
   # both agents read the same tracked sources instead of maintaining copies.

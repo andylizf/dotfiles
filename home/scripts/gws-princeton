@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Run `gws` against the university Google Workspace profile instead of the
+# personal one.
+#
+# GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE is exported by the shell rc whenever the
+# personal credential exists, and it outranks GOOGLE_WORKSPACE_CLI_CONFIG_DIR: a
+# bare `gws` with the config dir pointed at the second profile still mints tokens
+# for the personal account and writes them into that profile's cache, so calls
+# answer as the wrong identity while `gws auth status` reports the right one.
+# Clearing the variable is what makes the profile switch take effect; the cache
+# it already poisoned has to be deleted once.
+set -euo pipefail
+
+unset GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE
+export GOOGLE_WORKSPACE_CLI_CONFIG_DIR="$HOME/.config/gws-princeton"
+export GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND=file
+
+exec gws "$@"
