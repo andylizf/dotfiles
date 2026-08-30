@@ -1,11 +1,11 @@
 ---
 name: external-send
-description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
+description: Load before any write that leaves this machine — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free.
 ---
 
 # External sends under Zhifei's identity
 
-The one-line rule lives in the Code of Conduct: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**. This file is why that rule exists, how it actually gets broken, and where it deliberately does not reach.
+The one-line rule lives in the Code of Conduct: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**, given as the confirmation token he types back. This file is why that rule exists, how it actually gets broken, and where it deliberately does not reach.
 
 ## Why this is not pedantry — the cost lands on him, not you
 
@@ -24,6 +24,29 @@ If yes, it needs his per-item approval of the exact text — however small, howe
 Public is not the same as addressed. A commit landing in a world-readable repository of his has nobody on the other end — no inbox, no notification, nobody being spoken to — and the repository cases below govern it, not this test. Read the question as "could anyone ever see this" and every commit becomes a checkpoint, which is how a rule stops being usable at the moment it matters.
 
 **The failure mode is never "posted without permission". It's never noticing a check was due.**
+
+## Approval is a token he types
+
+Approval you inferred is not approval. It has one form: a string he types back.
+
+**This governs sends to a person.** Committing, pushing, opening PRs and merging in his own repositories are repository cases 1 and 2 below; they take no token and no pause.
+
+One reply carries the exact final text as its own block, and the token alone on a line inside a fenced code block, so copying it carries nothing else. Shape it `SEND <item>-<person>` — `SEND invite-coauthor` — and never a string you have already used this session.
+
+**The send happens once he types that token back, and at no other moment.** A match is that string and nothing else: not a different case, not the token with punctuation or other words around it, not a shortened form. When what arrives is not a match, say what you are still waiting for instead of deciding what he meant.
+
+A token names one draft. Change a word of that draft and the token is void; issue a different one. None of these is approval:
+
+- `可以`, `ok`, `go`, `发吧`, a thumbs-up
+- the instruction that preceded the draft ("reply to him", "send them an invite")
+- anything he does to clear a path: granting a permission, supplying an address, fixing a file
+- a question, a change of subject, silence
+
+One token per item: five sends need five tokens.
+
+Text he wrote himself and handed over to send verbatim is already his — send it. The token is for text you drafted.
+
+Never propose a token and send in the same reply. Once you have asked, the answer is required.
 
 ## Adjacent approval is the trap
 
@@ -93,7 +116,7 @@ The chain: enumerated surfaces read as a boundary → document-editing approval 
 
 ## Momentum creep
 
-A session of batch approvals ("批次1可以", "send all of those") builds a habit of executing external actions without per-item sign-off; by the time something genuinely sensitive comes up, the slide feels normal and you post it without asking.
+A run of quick releases — a token typed back for item after item, or a "send all of those" you let stand for a batch — builds a habit of executing external actions without per-item sign-off; by the time something genuinely sensitive comes up, the slide feels normal and you post it without asking.
 
 Scoped approval never extends by similarity, momentum, or "the session's rhythm." **The more consecutive approvals he has given, the MORE carefully you should check whether the next action is actually covered.**
 
