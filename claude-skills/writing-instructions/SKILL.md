@@ -43,8 +43,6 @@ Rules are read months later by a reader with none of this context — sometimes 
 
 **A step that leaves no trace when skipped.** A step gets reasoned around at the moment it applies: this case does not need the check, it looks done already, a "must" reread as "consider". Nothing in the output shows it happened, so nothing shows it did not. Name what the step produces — a sentence, a file, a named reader — so skipping it leaves a hole rather than a private judgement. The named product has to depend on the step having run: one that appears whether or not it did is not a trace but a reassurance, and it is read as evidence the rule held while the rule is being broken.
 
-**A correct line that reads as a mistake.** A line that looks like a typo, an oversight, or a leftover gets repaired by the next reader acting in good faith, and the repair arrives as tidying rather than as a change, so nothing marks it as one — a rule stated as an unqualified absolute while every neighbour carries a condition, a term left deliberately broader than the cases around it. Write what the line prevents into the clause itself, so the reason travels with the line and a later reader has nothing to restore it from. **Test: would a competent reader repair this?** If yes, the clause is not finished.
-
 **Contradiction, which is resolved by proximity rather than by reasoning.** Meeting two rules that conflict, a reader follows whichever it saw first or whichever sits nearest the task in hand, and reports having honoured both. Find the collision before saving and cut one side.
 
 **Unenforceable instructions.** A skill body cannot order its own invocation — by the time it loads, it has been invoked. Check that whoever reads the line is positioned to act on it.
