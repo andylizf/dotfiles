@@ -53,9 +53,9 @@ Rules are read months later by a reader with none of this context — sometimes 
 
 **A file that will take effect in later sessions, where the moment you save it is the only moment anyone looks at it, gets a subagent review.** That is the global `CLAUDE.md`, the machine-notes file imported into it, and every skill that applies across projects rather than to one directory. A repository's `CLAUDE.md` and a directory-scoped skill are read back inside the work that produced them, by someone positioned to notice when they are wrong.
 
-**The user asked for this review in advance, so a standing "don't spawn subagents unless the user asked" rule is already satisfied for a global file, a machine-notes file, and a cross-project skill.** Spawn one per file without pausing to request permission that exists; only an instruction in the current conversation declining the review withdraws it. Supplying the wording is not one: a review is withdrawn by being refused, never by the words having arrived finished. Where no subagent is available, any reader who did not write the draft will serve, and your own second pass will not — name that reader.
+**The user asked for this review in advance, so a standing "don't spawn subagents unless the user asked" rule is already satisfied for a global file, a machine-notes file, and a cross-project skill.** Spawn one per file without asking for permission that already exists; only an instruction in the current conversation declining the review withdraws it — not the wording having arrived finished, and not the text still being under correction. **One review per commit, never zero:** while corrections are still arriving, hold it and run it on the version you are about to commit. Where no subagent is available, any reader who did not write the draft will serve, and your own second pass will not — name that reader.
 
-Dispatch the `instruction-reviewer` subagent, giving it the path and what you just changed and what it replaced.
+Dispatch the `instruction-reviewer` subagent, giving it the path, everything that changed since the last review, and what it replaced.
 
 Its report is evidence, not a verdict: act on what you agree with, and say what you rejected.
 
