@@ -80,7 +80,7 @@ A script hitting `/comments`, `/replies`, `/messages`, `/issues`, or any send en
 
 ## What stays free
 
-Editing files nobody else can open, and local drafts. An annotation addressed to him inside a shared document is not on this list: it lands in front of everyone holding access like any other write. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
+Editing files nobody else can open, and local drafts. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
 
 A document joins that list only once the lookup in the send test shows his account is the only one holding access. Comment threads on a document are messaging people whatever the document's access.
 
