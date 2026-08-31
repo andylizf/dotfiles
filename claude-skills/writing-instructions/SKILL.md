@@ -17,6 +17,13 @@ Rules are read months later by a reader with none of this context — sometimes 
 | A repository's `CLAUDE.md` | Facts about that codebase | Freely |
 | A stored memory | **Evidence** — what happened, what was said, what a system actually does | Freely |
 
+**Inside a skill, the description and the body are two layers.** The description is the only text
+read before the skill loads, so it carries everything that decides *whether* to load: the trigger,
+and every sentence that closes an exemption — that a one-line reply still counts, that being asked
+first changes nothing, that the commonest miss is the shape which does not feel like the work at
+all. The body is read after that decision and holds what to do once you are here. A trigger rule
+written into the body cannot fire: whoever needed it never got that far.
+
 **A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
 
 **A rule that must always hold goes in a skill or the global file, never only in a memory.** Memory gives a rule the worst combination there is: present only sometimes, and authoritative whenever it is. When a memory contradicts an instruction the instruction wins, and the memory is what to fix — in the same turn.
