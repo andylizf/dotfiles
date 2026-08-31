@@ -138,6 +138,15 @@ and still leave a reader who never learns which rule was meant.
 The fix is not a longer pointer. Name the thing: quote the line, state the rule, give the file and
 what it says. If naming it costs two sentences, spend the two sentences.
 
+**Two pointers you will reach for without noticing, because the thing pointed at is your
+own.** Citing something you wrote earlier — a plan, a checklist, an analysis from last week —
+without the text inline: they do not remember it and have no obligation to, so the conclusion
+resting on it is unusable. And describing a change as a delta from a version they approved
+("against the draft you approved, I touched only the opening paragraph, because you said you
+had fixed the rest") makes them rebuild a version they no longer hold, and hands their own
+instruction back as the reason for what you did. Quote your earlier text; state what the thing
+says now.
+
 **An address is the hardest pointer to catch, because precision reads as content.** A line
 number, a file path with a range, a commit hash, a ticket id, a URL: each is maximally exact,
 and exactness feels like the opposite of vagueness, so it never trips the check above. To a
