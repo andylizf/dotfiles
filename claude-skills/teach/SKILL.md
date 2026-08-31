@@ -55,7 +55,7 @@ The seven rules are properties: plain words, small chunks, no buried conclusion.
 an order, and an explanation can satisfy all seven and still leave the reader holding nothing. This
 is the order.
 
-**1. Open by naming what is about to be explained, and how much of it.** One line, before anything
+**1. Open by naming what is about to be explained, why, and how much of it.** One line, before anything
 else, so they know whether a paragraph or a page is coming. This is not rule 2 restated: rule 2 puts
 the substantive answer up front, this declares the scope. Both belong at the top and they are two
 different sentences.
@@ -83,9 +83,14 @@ main line needs, or an aside — **and what is it doing**: evidence, mechanism, 
 exception. A section that does not declare its role has not had this run on it, and that is
 visible in the draft.
 
-**Re-derive all three every time you explain it again.** Resuming from where you stopped carries
-the drift forward. A pass that starts from "what am I actually trying to say" reorganises; one
-that starts from the last paragraph extends.
+These are the opening declaration's three questions in running form: asked once at the top, and
+again at every piece.
+
+**Asked to explain it again, re-derive all three and rewrite the whole thing from zero.** Resuming
+from where you stopped carries the drift forward, and answering only the part they queried leaves
+them holding two pieces and joining them. A pass that starts from "what am I actually trying to
+say" reorganises; one that starts from the last paragraph extends. Rewrite everything, including
+the parts you got right the first time.
 
 **4. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
@@ -180,7 +185,9 @@ thing they cannot see.
 **Failure two: a class where an instance was asked for.** Asked to be concrete or specific, they
 want the real material — an actual example, the literal text, the exact values, the file with its
 real contents. Answering with a sharper description of the category repeats the pointer move, since
-a category is an address for its instances. Keep two requests apart here: writing a *rule* for
+a category is an address for its instances. "There is a port mismatch in the config" is the
+category and sounds specific; "line 3 of config.yaml says port: 8080 and the service listens on
+9090" is the instance, and only the second can be acted on. Keep two requests apart here: writing a *rule* for
 general reuse means stripping an incident down to its mechanism, while answering a *question* means
 producing the incident itself. The first is abstraction doing its job; the second is abstraction
 dodging the question.
@@ -241,11 +248,6 @@ will contain even one number, `evidence.md` is mandatory.**
 | `references/evidence.md` | Anything with numbers, comparisons, measurements, or claims that need backing |
 | `references/interaction.md` | Responding to *them* — correcting their work, handling "没看懂", answering questions, running a feedback loop |
 
-**Asked to redo an explanation, redo all of it.** Answering only the part they queried, as a
-supplement to what you already wrote, leaves them holding two pieces and joining them
-themselves. Rewrite the whole thing from zero, so that someone meeting the material for the
-first time gets every part in one pass — including the parts you got right the first time.
-
 ## Before it leaves your hands
 
 **This applies to any explanatory artifact — a file, a doc, a report — not just chat replies.** The
@@ -270,12 +272,17 @@ Then scan for the specific failures:
 - Does the analogy use a term they haven't used themselves recently? → define it, or change the analogy.
 - Said where the analogy stops being true? → same shape ≠ same cause.
 - Decided the scope before writing, or tried to fit everything in? → cut, and name what's excluded.
-- Every number, one at a time: can the reader compute it from what is already on the page? → each one
+- Every number, one at a time: does it earn its place at all — a number carrying no decision is
+  cut, not sourced. If it stays: can the reader compute it from what is already on the page? → each one
   is either an input (say what was measured and how) or a derivation (write the arithmetic inline).
   "I measured it" is provenance, not derivation. **Hardest to catch: a measured number that
   contradicts what the reader would compute from the formula you just gave them** — that one needs
   the arithmetic *and* a sentence on why the expected route fails.
 - Does every "went from X to Y" say what the starting configuration was? → describe the baseline first.
+- Claiming a thing improves, enables or fixes something, without saying what happened before it
+  existed? → give both states concretely: what the situation was without it, and what it is now.
+  The claim is the difference between them, so a reader given only the after has been told the
+  conclusion and shown none of it.
 - Invented a plain-sounding compound noun and left it undefined? → one sentence on what it measures.
 - Does the worked example give a value for every quantity the arithmetic touches? → fill the gaps.
 - Introduced an abstract structure (schema, dataset, format, directory layout) by describing it
