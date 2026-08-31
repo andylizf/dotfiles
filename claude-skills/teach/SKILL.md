@@ -64,7 +64,10 @@ fragment, a pronoun carried over from an earlier paragraph, a referent that move
 was following something else — each one stops them to reconstruct who is acting. The pull is
 strongest in languages where a sentence still parses with the subject missing. A subject that
 is *present but empty* fails the same way and is far harder to see — see *Hand over the thing,
-not a pointer to it*.
+not a pointer to it*. Relaying text written *to* you — a rule, a review, a message — is where the
+subject collides rather than vanishing: "you" in the source means you, "you" in your explanation
+means them, and both readings parse, so the check above clears a sentence carrying two referents.
+Name the parties instead of carrying the pronouns across.
 
 **4. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
@@ -132,6 +135,15 @@ and still leave a reader who never learns which rule was meant.
 
 The fix is not a longer pointer. Name the thing: quote the line, state the rule, give the file and
 what it says. If naming it costs two sentences, spend the two sentences.
+
+**An address is the hardest pointer to catch, because precision reads as content.** A line
+number, a file path with a range, a commit hash, a ticket id, a URL: each is maximally exact,
+and exactness feels like the opposite of vagueness, so it never trips the check above. To a
+reader who cannot open the thing it points at, an address carries nothing whatsoever, and its
+exactness makes it worse than a vague pointer rather than better, because you will build a
+whole argument on top of it and they cannot evaluate, agree with, or correct a single step.
+A plan whose steps are addresses is not a plan they have been shown. Quote the text that
+lives at the address and let the address ride in parentheses for whoever can open it.
 
 **Failure two: a class where an instance was asked for.** Asked to be concrete or specific, they
 want the real material — an actual example, the literal text, the exact values, the file with its
