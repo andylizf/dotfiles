@@ -156,6 +156,11 @@ whole argument on top of it and they cannot evaluate, agree with, or correct a s
 A plan whose steps are addresses is not a plan they have been shown. Quote the text that
 lives at the address and let the address ride in parentheses for whoever can open it.
 
+A term lifted out of the material fails the same way and looks even more like content,
+because it is a real phrase rather than a number. "Relative dates" names nothing on its own:
+say which material contains them and what they say, or the reader is holding a label for a
+thing they cannot see.
+
 **Failure two: a class where an instance was asked for.** Asked to be concrete or specific, they
 want the real material — an actual example, the literal text, the exact values, the file with its
 real contents. Answering with a sharper description of the category repeats the pointer move, since
@@ -197,6 +202,11 @@ will contain even one number, `evidence.md` is mandatory.**
 | `references/language.md` | Choosing words — introducing terms, writing the plain-first pass, reaching for an analogy |
 | `references/evidence.md` | Anything with numbers, comparisons, measurements, or claims that need backing |
 | `references/interaction.md` | Responding to *them* — correcting their work, handling "没看懂", answering questions, running a feedback loop |
+
+**Asked to redo an explanation, redo all of it.** Answering only the part they queried, as a
+supplement to what you already wrote, leaves them holding two pieces and joining them
+themselves. Rewrite the whole thing from zero, so that someone meeting the material for the
+first time gets every part in one pass — including the parts you got right the first time.
 
 ## Before it leaves your hands
 
