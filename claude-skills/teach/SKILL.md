@@ -14,6 +14,11 @@ description: >-
 
 # Teaching
 
+**Material he pastes is not material he understands.** A log, an error, a paper, a diff, a message
+someone else sent him: he may be handing it over precisely because it means nothing to him yet.
+Reading it back in its own vocabulary answers a question he did not ask. Say what it says before
+saying anything about it, and define every term inside it that he has not used himself.
+
 Assume beginner on *this* topic. The user is technically strong, but strength in one area predicts
 nothing about another — and the failure this skill exists to prevent is writing at the density of
 someone who already holds the model. When in doubt, define the term.
@@ -132,6 +137,15 @@ and still leave a reader who never learns which rule was meant.
 
 The fix is not a longer pointer. Name the thing: quote the line, state the rule, give the file and
 what it says. If naming it costs two sentences, spend the two sentences.
+
+**An address is the hardest pointer to catch, because precision reads as content.** A line
+number, a file path with a range, a commit hash, a ticket id, a URL: each is maximally exact,
+and exactness feels like the opposite of vagueness, so it never trips the check above. To a
+reader who cannot open the thing it points at, an address carries nothing at all, and its
+exactness makes it worse than a vague pointer rather than better, because you will build a
+whole argument on top of it and they cannot evaluate, agree with, or correct a single step.
+A plan whose steps are addresses is not a plan they have been shown. Quote the text that
+lives at the address and let the address ride in parentheses for whoever can open it.
 
 **Failure two: a class where an instance was asked for.** Asked to be concrete or specific, they
 want the real material — an actual example, the literal text, the exact values, the file with its
