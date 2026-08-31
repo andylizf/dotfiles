@@ -425,6 +425,14 @@ PYPIRC
   home.file.".claude/agents/instruction-reviewer.md".source =
     ../claude-skills/writing-instructions/instruction-reviewer.agent.md;
 
+  # writing-reviewer: the same arrangement for drafts that go to a person. The
+  # exhaustive half of the tell-scrub — the word table, the pattern list, the
+  # frequency ceilings — lives in this agent rather than in the skill, because
+  # those only apply to finished text while the skill has to be in context
+  # before the first sentence is written.
+  home.file.".claude/agents/writing-reviewer.md".source =
+    ../claude-skills/writing-for-people/writing-reviewer.agent.md;
+
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
   # We seed it from the nix-derived template on first setup, and also migrate

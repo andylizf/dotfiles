@@ -148,30 +148,7 @@ couple of directions and want your read on them."
 
 ## 英文 tell（写 HN 评论、英文内容时重点查）
 
-**词（出现即换成普通词）：**
-
-| AI 词 | 换成 |
-|---|---|
-| leverage / utilize | use |
-| robust | reliable / solid |
-| seamless / streamline | smooth / simplify |
-| delve / dive into | look at / get into |
-| foster / empower | build / help / let |
-| boast / feature / serve as | has / is |
-| showcase / highlight / underscore | show |
-| pivotal / crucial / vital | important（或直接说为什么） |
-| tapestry / landscape / ecosystem / realm | （具体名词） |
-| meticulous / intricate / nuanced | careful / detailed |
-| testament to / nestled | （删，直接说事实） |
-
-**短语 / 套路（删或重写）：**
-- 开场客套："Great question", "Certainly", "You're absolutely right", "Let me break this down"
-- 收尾客套："Hope this helps", "Feel free to reach out", "At the end of the day", "Only time will tell", "The future looks bright", "a game-changer"
-- 软化垫话："It's worth noting", "That said", "Interestingly", "It's important to remember"
-- 假权威："Experts say", "Studies show", "It's widely believed"
-- 自我标注："Here's the interesting part", "The kicker?", "The catch?", "Here's the thing"
-
-补充词/短语：moreover / furthermore / albeit / indeed / certainly；"a symphony of" / "a tapestry of" / "delicate balance"；装腔状语 "with practiced efficiency" / "with measured steps" / "mastered precision"。
+**穷举用的清单不在这份文件里，在 `writing-reviewer` 那儿**（见「发之前」一节）：英文换词表、套路清单、字频上限。这里只留需要现场判断的句式。
 
 **句式：**
 - **否定排比**："It's not X, it's Y" / "Not only X but also Y" / "not just X — Y"。这是头号 tell，英文同样要管；留 1–2 个真有张力的，其余改平。
@@ -290,22 +267,6 @@ python3 ~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix <文件>
 连同它上面那条 `---` 一起删。想写结尾段这个冲动本身就是“每段都收个漂亮尾巴”的
 AI 本能。升华、展望、“这套模式还可以推广到…”一律删。
 
-## 字频扫描（肉眼漏掉的痕迹，用计数抓）
-
-定稿前数一遍，超量就砍。**分母是每 1000 字**（不是全文，不然长文永远不超标）。
-**不足一千字的不要折算，表里的数直接当绝对上限**：两百字里出现一个「不是X而是Y」就是一个，
-不是超标五倍。
-
-| 项 | 上限 / 千字 |
-|---|---|
-| 圆括号 ( ) | 5 |
-| “不是…而是” / "it's not...it's" | 1 |
-| 概念词加引号（成对数） | 2 |
-| “本质”“核心”“关键” | 2 |
-
-**破折号不在这张表里，因为它的上限是 0**：见到就删。
-
-正当保留不计入：英文术语注释 (transformative use)、法条号、案件年份/法院标注、脚注编号、行内代码。
 
 ## 两个判断测试（写完自检）
 
@@ -329,6 +290,18 @@ AI 本能。升华、展望、“这套模式还可以推广到…”一律删�
 - **页边笔记是钝的**：改了什么、为什么、需要对方做什么，三件事说完就完。不铺垫、不客套、不总结。
 - 笔记里破折号（—）基本不出现，真人用逗号和句号。
 - 语域向低不向高：小写开头、缩写、省略主语都比“考究的完整句”更像真人笔记。
+
+## 发之前：派 `writing-reviewer` 扫一遍
+
+**读者是别人的稿子**（评论、邮件、帖子、PR 描述、给评审看的材料）在给他看之前，把草稿
+全文交给 `writing-reviewer` subagent。它手上有穷举用的东西：英文换词表、英文套路清单、
+字频上限、标点。**这些不放在这份文件里，是因为它们只在成稿之后有用，而这份文件要在
+下笔之前就起作用。**
+
+它返回命中位置和改法，不改稿。**判据类的不派给它**：读者是谁、姿态、承重测试、限定词
+有没有被删掉——那些要在写的时候就定，事后没人替得了。
+
+给他自己看的分析不用派，一句话的聊天回复也不用，那些照本文件正文过。
 
 ## 发之前：读者要照着做的，才核
 
