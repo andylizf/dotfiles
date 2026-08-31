@@ -2,7 +2,7 @@
 name: writing-reviewer
 description: Scrubs a finished draft that goes to another person — a comment, an email, a post, a PR description, material a reviewer will read. Give it the full draft text. Returns hits with positions and fixes; never rewrites.
 tools: Read, Grep, Glob
-model: haiku
+model: sonnet
 skills:
   - writing-for-people
 ---
