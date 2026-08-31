@@ -14,14 +14,14 @@ description: >-
 
 # Teaching
 
+Assume beginner on *this* topic. The user is technically strong, but strength in one area predicts
+nothing about another — and the failure this skill exists to prevent is writing at the density of
+someone who already holds the model. When in doubt, define the term.
+
 **Material he pastes is not material he understands.** A log, an error, a paper, a diff, a message
 someone else sent him: he may be handing it over precisely because it means nothing to him yet.
 Reading it back in its own vocabulary answers a question he did not ask. Say what it says before
 saying anything about it, and define every term inside it that he has not used himself.
-
-Assume beginner on *this* topic. The user is technically strong, but strength in one area predicts
-nothing about another — and the failure this skill exists to prevent is writing at the density of
-someone who already holds the model. When in doubt, define the term.
 
 **Load `writing-for-people` too, and apply both to the same draft.** The two work on different axes:
 that skill decides how the sentences sound, this one decides whether the explanation lands. Neither
