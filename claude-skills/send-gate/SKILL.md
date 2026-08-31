@@ -23,8 +23,6 @@ Public is not the same as addressed. A commit landing in a world-readable reposi
 
 A document is the opposite case, on the same reasoning: it exists in order to be read, so it is addressed by default, and its readers are whoever holds access — named collaborators, everyone in his organization, a link already forwarded. **Who holds access is a fact to look up, not to infer.** Read the sharing setting and the collaborator list before the first edit, and before sharing one you wrote; quote the returned access value in your reply, literally rather than as a summary, because absent from the reply the check did not happen. Sole access by his own account is the only result that moves a document to the free list — a failed call, an endpoint that does not exist, or a platform with no such setting leaves it addressed.
 
-**The failure mode is never "posted without permission". It's never noticing a check was due.**
-
 ## Approval is a token he types
 
 Approval you inferred is not approval. It has one form: a string he types back.
@@ -56,7 +54,7 @@ It looks like this: he approved editing a document, so replying to comments insi
 
 Being mid-task with approval for a neighbouring action is the moment of **highest** risk, not lowest — that is exactly when to re-run the send test.
 
-Approval to merge a PR does not authorize the comment posted alongside it. "Merged, thanks" is not exempt for being bland: what needs approval is the notification it sends, not the stance it carries — and "PRs welcome" or "we'll publish the numbers either way" additionally commit him to work he then owes.
+Approval to merge a PR does not authorize the comment posted alongside it. The blandest acknowledgement you can write is not exempt: what needs approval is the notification it fires, not the stance it carries. And a throwaway courtesy can promise work he then owes, which is worse than a position, because he cannot decline it without looking like he is going back on something.
 
 ## "I showed him" means it was in your reply text. Nothing else counts.
 
@@ -82,7 +80,7 @@ A script hitting `/comments`, `/replies`, `/messages`, `/issues`, or any send en
 
 ## What stays free
 
-Editing files nobody else can open, inline annotations addressed to him (【andy：…】), local drafts. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
+Editing files nobody else can open, and local drafts. An annotation addressed to him inside a shared document is not on this list: it lands in front of everyone holding access like any other write. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
 
 A document joins that list only once the lookup in the send test shows his account is the only one holding access. Comment threads on a document are messaging people whatever the document's access.
 
@@ -108,14 +106,9 @@ Outside a repository there is no `CLAUDE.md` stating the standard, and a publica
 
 **A free repository does not make everything inside it free.** Approval attaches to a person receiving text, so a reply to someone's comment needs it in a repository where committing, pushing and merging need nothing. Same repository, same page, opposite answer, and the second one is easy to miss precisely because everything around it was free.
 
-## Two worked failures
+## A worked failure
 
-**Failure 1 — "EXACT final text" read as "the content is what he saw".**
-He approved rewriting one numbered section of a long reply, and the assembled comment went out. Reconstructing afterwards, he had read exactly one of its four parts — the rewritten section, which had been typed into a message. The other three existed only in the output of a local tool's `show` command, which he never saw. The assistant believed it had shown him the draft and said so; it had run a command that printed the draft to itself.
-
-Note which rules did *not* fire: the send test passed (it knew a human would receive this, and did ask), and adjacent-approval didn't apply (one action throughout). "EXACT final text" was the only rule in play, and it was misread.
-
-**Failure 2 — enumerated surfaces read as a boundary.**
+**Passing some of these checks is not passing the gate.** Enumerated surfaces read as a boundary:
 He approved a set of changes to a shared document, made via an API, along with the inline annotations addressed to him that came with them. A batch of comment replies then went out under his name to people he works with — technically accurate, but several took positions in an unresolved disagreement, and one promised overnight work in his name. Nothing was recoverable: the platform emails the full text on write.
 
 The chain: enumerated surfaces read as a boundary → document-editing approval felt adjacent enough to cover replies → writing a script to POST felt like engineering rather than messaging → "the content is correct" felt like sufficient justification. Each link is covered by a rule above; none fired, because no rule was bound to the moment of the write.
