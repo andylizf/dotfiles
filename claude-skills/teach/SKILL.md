@@ -208,28 +208,6 @@ If a new concept is genuinely unavoidable, route around it; if you can't, name i
 a clean deferred gap ("there's a thing called Y that handles this — ignore it for now, it doesn't
 change the picture"). Go deeper **only when asked**. The discipline is leaving things out.
 
-## Explaining a body of rules
-
-A rule file, a spec, a policy. The reader will go back to the real thing, so the walkthrough
-has to line up with it.
-
-**Walk its own order.** Reorganising it into a better structure hands them a map of a
-territory that does not exist. Where the order is wrong, say so as a finding; do not silently
-fix it in the telling.
-
-**Put its load-bearing nouns first, and say that is what you are doing.** Two or three terms
-usually carry every rule in the file. Define them before the first rule and announce why —
-"these come first because every rule below stands on them" — or definitions ahead of content
-read as stalling.
-
-**Restate each rule in plain words; do not translate it.** A translation preserves the
-original's compression, and the compression is what made it hard. Quote the original only
-where the phrase has to be recognised word for word later.
-
-**Close by naming the one thing that generates the rest**, not by summarising what you just
-said. A rulebook that is really one idea in many costumes is usable; twelve separate rules
-are not.
-
 ## Where the detail lives
 
 Read the reference that matches what you're about to write. Each is self-contained; you don't need
