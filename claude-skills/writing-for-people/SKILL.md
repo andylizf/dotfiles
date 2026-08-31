@@ -165,10 +165,22 @@ couple of directions and want your read on them."
 **句式：**
 - **否定排比**："It's not X, it's Y" / "Not only X but also Y" / "not just X — Y"。这是头号 tell，英文同样要管；留 1–2 个真有张力的，其余改平。
 - **提问紧接自答**："And that question? It's the answer." / "The result? Total chaos." → 删掉这种自问自答的小机灵。
-- **戏剧性断句**："Short sentences. Pauses. For effect." 一串名词/碎句堆戏剧感 → 合回正常句子。
+- **戏剧性断句**："Short sentences. Pauses. For effect." 碎句堆戏剧感 → 合回正常句子。
 - **强行明喻/比喻**：被要求“写得更生动”时给什么都硬塞一个比喻("X like an angry octopus after a bad haircut")→ 没必要的比喻删掉。
 - **三连**(rule of three)："fast, reliable, and scalable" 这种凑数三元组，砍成一个具体的。ChatGPT 改不掉这个，要专门盯。
 - **系动词回避**：别用 serves as / boasts / features 代替 is / has。
+- **名词串**：几个名词连着排，没有任何标记指明谁绑着谁，整串落在最后一个词上。
+  - 判据：**按你要写的那个意思读一遍，再换个分法读一遍，指的还是不是同一个东西**。
+    换出来没人会那么读的分法不算。`data retention policy review` 是“对数据保留策略的
+    审查”还是“数据保留方面的策略审查”，前者审的是一份策略，后者是一类审查活动，
+    不是同一个东西，命中。
+  - 不命中：`office building entrance`，怎么分都是同一个入口。
+  - 修法：中心词挪到最前面，其余按它们的实际关系展开。**拆开等于替原文选了一个读法**，
+    所以先把原意写下来一句，连它管的每一层关系一起写，不确定就别拆。
+    `independent child school travel safety improvement report`，若写下的原意是
+    “一份关于改进儿童独自上学途中安全的报告”，拆成 `report on improving the safety
+    of children's independent journeys to school`。
+  - 例外：读者所在领域的固定说法照留 (`cell death pathway`)。
 - **拖尾 -ing 拔高**："..., highlighting its significance" / "..., reflecting a broader shift" → 删掉这条尾巴，或拆成有事实的句子。
 - **拔高夸张**："You're not just onto something — you've changed the entire game" 这种顺势升级捧场 → 删。
 - **节奏均匀**：所有句子 15–25 词、所有段落一样长 = 机器感。故意让长短不齐。
@@ -332,6 +344,10 @@ AI 本能。升华、展望、“这套模式还可以推广到…”一律删�
 做法：定稿后**逐条列出可核实的断言**，一条一条去查，查完再发。列不出来说明你没在写事实。
 
 这条和「读者」第 4 条常常一起翻车，不是巧合：都是把“对我透明的东西”默认成“对他也透明”。
+**而核实这个动作本身会制造第二次翻车：回源查证会把源头的措辞一起带回来。** 论文里的基线名、
+代码里的变量名、工单号，在它们自己的文档里自明，搬到你这段字里是乱码；又因为刚查过、有出处，
+它们读起来是安全的，回头自查扫不到。**所以核完回写的那一句是新写的字，要重过「读者」第 4 条。
+准确说的是命题为真，不是照抄来源怎么说**：换成读者能核对的描述，命题一样真。
 
 **未验证的东西可以写，不能不标。** 上面读起来像“核不动就别发”，那是把一件事收得太紧：
 有些断言当场核不了：环境已经不在、复现要半小时、或者这本来就是给自己留的一条线索。
