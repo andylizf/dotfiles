@@ -29,6 +29,16 @@ let
     # credential file it does not report that, it DELETES it. Pinning the file
     # backend everywhere keeps one behaviour on every host and in every context.
     GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND = "file";
+
+    # Claude Code's Bash tool runs only bash or zsh. A login shell it does not
+    # recognise (fish here) is silently replaced by zsh, while the model is still
+    # told the login shell's name -- so it writes commands for a shell that is not
+    # the one executing them. Pinning the tool's shell does not change what the
+    # model is told, but it removes the expensive half of that mismatch: zsh
+    # aborts the whole command when an unquoted glob matches nothing, so
+    # `grep --include=*.py ...` never runs at all, while bash passes the pattern
+    # through to the program that was meant to expand it.
+    CLAUDE_CODE_SHELL = "${pkgs.bash}/bin/bash";
   };
 
   # VAR -> path under ~/.config; the file's trimmed contents become the value.
