@@ -71,6 +71,22 @@ strongest in languages where a sentence still parses with the subject missing. A
 is *present but empty* fails the same way and is far harder to see — see *Hand over the thing,
 not a pointer to it*.
 
+**3.5 Every piece has to say where it sits and what it is doing.** An explanation drifts: you set
+out to explain one thing, a second thing comes up while explaining it, and six paragraphs later
+they are following sentences they can parse without knowing why any of them is being said. The
+tell is that each part is individually clear and the whole is not — which is why re-reading your
+own draft does not catch it.
+
+Three questions they must be able to answer at any point, so answer them as you go: **what is the
+one thing this is trying to say; where does this piece sit** — the main line, a definition the
+main line needs, or an aside — **and what is it doing**: evidence, mechanism, consequence,
+exception. A section that does not declare its role has not had this run on it, and that is
+visible in the draft.
+
+**Re-derive all three every time you explain it again.** Resuming from where you stopped carries
+the drift forward. A pass that starts from "what am I actually trying to say" reorganises; one
+that starts from the last paragraph extends.
+
 **4. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
 use attached. This is not a summary of what was just said; it is its consequence, and it is the one
