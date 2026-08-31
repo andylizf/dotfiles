@@ -1,6 +1,6 @@
 ---
 name: send-gate
-description: Load before any repository write, and before any text that reaches a person — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free. This is the gate alone — whether a send may happen, whose approval it needs, and whether the content may be public. What the draft actually says is decided by `writing-for-people`, and clearing this gate settles nothing about that.
+description: Load before any repository write, and before any text that reaches a person — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, editing or sharing a document other people can open, submitting a form, registering, booking or scheduling, RSVPing, accepting or declining an invitation, or running code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file exists to catch, and the cases that need nothing are in here too. Covers the three repository cases, the send test, the confirmation token that is the only form his approval takes, why approval for a neighbouring action never covers the prose beside it, what "I showed him" actually requires, and what stays free. This is the gate alone — whether a send may happen, whose approval it needs, and whether the content may be public. What the draft actually says is decided by `writing-for-people`, and clearing this gate settles nothing about that.
 ---
 
 # The send gate
@@ -20,6 +20,8 @@ One mechanical question: **is there a person on the other end?** Someone who rec
 If yes, it needs his per-item approval of the exact text — however small, however factual, however mid-task you are. Run it on every write action, not only on the ones that trigger doubt.
 
 Public is not the same as addressed. A commit landing in a world-readable repository of his has nobody on the other end — no inbox, no notification, nobody being spoken to — and the repository cases below govern it, not this test. Read the question as "could anyone ever see this" and every commit becomes a checkpoint.
+
+A document is the opposite case, on the same reasoning: it exists in order to be read, so it is addressed by default, and its readers are whoever holds access — named collaborators, everyone in his organization, a link already forwarded. **Who holds access is a fact to look up, not to infer.** Read the sharing setting and the collaborator list before the first edit, and before sharing one you wrote; quote the returned access value in your reply, literally rather than as a summary, because absent from the reply the check did not happen. Sole access by his own account is the only result that moves a document to the free list — a failed call, an endpoint that does not exist, or a platform with no such setting leaves it addressed. What he approves is the resulting text of every passage you changed, as one block, never a description of what changed. One revision pass is one item, so a whole set of changes travels on one token when that block holds the whole set.
 
 **The failure mode is never "posted without permission". It's never noticing a check was due.**
 
@@ -78,9 +80,9 @@ A script hitting `/comments`, `/replies`, `/messages`, `/issues`, or any send en
 
 ## What stays free
 
-Editing files and documents he asked you to edit, inline annotations addressed to him (【andy：…】), local drafts. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
+Editing files nobody else can open, inline annotations addressed to him (【andy：…】), local drafts. And the first two repository cases below — committing, pushing, opening PRs and merging in his own repositories, private or public — which need no approval and no draft shown.
 
-The line is **document ≠ message**: changing a shared doc's body is editing; writing in its comment threads is messaging people.
+A document joins that list only once the lookup in the send test shows his account is the only one holding access. Comment threads on a document are messaging people whatever the document's access.
 
 ## Repository writes: three cases
 
@@ -112,7 +114,7 @@ He approved rewriting one numbered section of a long reply, and the assembled co
 Note which rules did *not* fire: the send test passed (it knew a human would receive this, and did ask), and adjacent-approval didn't apply (one action throughout). "EXACT final text" was the only rule in play, and it was misread.
 
 **Failure 2 — enumerated surfaces read as a boundary.**
-He approved editing a shared document via an API and adding inline annotations addressed to him. A batch of comment replies then went out under his name to people he works with — technically accurate, but several took positions in an unresolved disagreement, and one promised overnight work in his name. Nothing was recoverable: the platform emails the full text on write.
+He approved a set of changes to a shared document, made via an API, along with the inline annotations addressed to him that came with them. A batch of comment replies then went out under his name to people he works with — technically accurate, but several took positions in an unresolved disagreement, and one promised overnight work in his name. Nothing was recoverable: the platform emails the full text on write.
 
 The chain: enumerated surfaces read as a boundary → document-editing approval felt adjacent enough to cover replies → writing a script to POST felt like engineering rather than messaging → "the content is correct" felt like sufficient justification. Each link is covered by a rule above; none fired, because no rule was bound to the moment of the write.
 
