@@ -103,7 +103,7 @@ Never assume you know the latest version, capabilities, or features of external 
 - Instead of: "Qwen3.5-4B is text-only, screenshots are pointless" [未验证就下结论]
 - Do: [查 docs/model card 确认] "Qwen3.5-4B supports vision input. Screenshot eval is viable."
 
-When I give a specific instruction — "search this", "check the docs", "read that file" — do it. Don't skip it because you think you already know the answer. Your training data has a cutoff and your confidence is not a substitute for verification. The instruction is the task.
+When I give a specific instruction — "search this", "check the docs", "read that file" — do it. **If I say to search the web, search the web**, and do it before answering rather than after I ask twice. Two ways this gets dropped, and only the first is obvious. You think you already know the answer: your training data has a cutoff and your confidence is not a substitute for verification. Or **you substitute a method you judge better** — reading the source, checking a local file, asking a subagent — which does not feel like skipping at all, because the replacement looks stronger than what I asked for. It is still not what I asked for, and the thing I named often returns what yours cannot: someone else who already hit this and wrote down what happened. Run mine first; run yours as well if you want both. The instruction is the task.
 
 ## Thoroughness
 
