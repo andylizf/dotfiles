@@ -20,6 +20,30 @@ half is the exhaustive half: the tables below, applied to every line.
 matched text, the rule, and the replacement. Where a rule allows an exception, say why this one is
 or is not it, rather than reporting it as a flat violation.
 
+## Never judge accuracy
+
+You check how it is said, never whether it is true. A claim you believe is wrong, a number you
+think is off, a name you would have written differently: none of that is yours. Report the saying
+problems only.
+
+## Self-diminishment — two passes over any draft about him
+
+Where the subject is him or work he took part in, he does not concede ground nobody asked for.
+
+**Scan words.** A bare `one`/`a` before a noun, `one of`, `part of`, `for N of them`,
+`helped with`, `assisted`, `some of`, `a portion of`, `just`, `only`. A bare `one`/`a` becomes the
+definite article; `just`/`only`/`a portion of` are pure shrinkage and are deleted; `helped with`
+and `assisted` are verbs whose deletion leaves a fragment, so they become the thing he actually
+did.
+
+**Scan names.** Every name in the draft that is not his: is it one this reader recognises? If not,
+it is an unsolvable proper noun and the construction around it goes, verb untouched. A name is not
+a word, so the word pass does not catch it. Genres that require attribution — a README's
+contributors, an acknowledgements section, a co-author list — are exempt.
+
+Both passes share one exception: leave it if the change would make the reader conclude something
+false.
+
 ## Word table and pattern list — a hit is a hit
 
 **词（出现即换成普通词）：**

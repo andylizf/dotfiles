@@ -27,6 +27,21 @@ saying anything about it, and define every term inside it that he has not used h
 that skill decides how the sentences sound, this one decides whether the explanation lands. Neither
 substitutes for the other.
 
+## Why you keep failing: the curse of knowledge
+
+The one mechanism worth understanding, because every other rule is a countermeasure to it.
+
+Once you've mastered something the schema is automated, so retrieving it feels effortless — and you
+unconsciously **skip the intermediate steps a beginner needs**. What reads to you as one step
+("3x = 18, so x = 6") is several separate moves for someone building the model for the first time.
+That compression is why explanations land as a **说明书** (instruction manual): you strip out exactly
+the connective tissue that does the teaching. The two recurring complaints — reads like a 说明书, and
+太琐碎 (too granular, no longer 说人话) — are both this.
+
+Working memory holds a few things at once and a beginner has no schema to offload to. A jargon-first
+opening, a two-mechanism diagram, a wall of labeled fragments — each spends their scarce working
+memory on *decoding your format* instead of on *the idea*.
+
 ## The seven rules
 
 This list is itself the demo: apex first, detail underneath. If you internalize nothing else:
@@ -71,7 +86,7 @@ strongest in languages where a sentence still parses with the subject missing. A
 is *present but empty* fails the same way and is far harder to see — see *Hand over the thing,
 not a pointer to it*.
 
-**3.5 Every piece has to say where it sits and what it is doing.** An explanation drifts: you set
+**4. Every piece has to say where it sits and what it is doing.** An explanation drifts: you set
 out to explain one thing, a second thing comes up while explaining it, and six paragraphs later
 they are following sentences they can parse without knowing why any of them is being said. The
 tell is that each part is individually clear and the whole is not — which is why re-reading your
@@ -83,8 +98,8 @@ main line needs, or an aside — **and what is it doing**: evidence, mechanism, 
 exception. A section that does not declare its role has not had this run on it, and that is
 visible in the draft.
 
-These are the opening declaration's three questions in running form: asked once at the top, and
-again at every piece.
+These are step 1's three questions in running form: asked once at the top, and again at every
+piece.
 
 **Asked to explain it again, re-derive all three and rewrite the whole thing from zero.** Resuming
 from where you stopped carries the drift forward, and answering only the part they queried leaves
@@ -92,27 +107,15 @@ them holding two pieces and joining them. A pass that starts from "what am I act
 say" reorganises; one that starts from the last paragraph extends. Rewrite everything, including
 the parts you got right the first time.
 
-**4. Close on what it changes.** The last line says what they now do differently, or what the whole
+**5. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
 use attached. This is not a summary of what was just said; it is its consequence, and it is the one
 part that cannot be inferred from the rest.
 
-## Why you keep failing: the curse of knowledge
 
-The one mechanism worth understanding, because every other rule is a countermeasure to it.
+## How an explanation fails
 
-Once you've mastered something the schema is automated, so retrieving it feels effortless — and you
-unconsciously **skip the intermediate steps a beginner needs**. What reads to you as one step
-("3x = 18, so x = 6") is several separate moves for someone building the model for the first time.
-That compression is why explanations land as a **说明书** (instruction manual): you strip out exactly
-the connective tissue that does the teaching. The two recurring complaints — reads like a 说明书, and
-太琐碎 (too granular, no longer 说人话) — are both this.
-
-Working memory holds a few things at once and a beginner has no schema to offload to. A jargon-first
-opening, a two-mechanism diagram, a wall of labeled fragments — each spends their scarce working
-memory on *decoding your format* instead of on *the idea*.
-
-## Define the load-bearing noun before explaining the logic that stands on it
+### The load-bearing noun was never defined
 
 An explanation of a mechanism rests on primitives — the nouns it manipulates ("dead", "a turn",
 "the signal it waits for"). If you explain how the system *detects* / *handles* / *decides about* X
@@ -139,7 +142,7 @@ registers as a thing needing definition. It is the single most common way a "jus
 concretely" request keeps failing across several tries — and the tell is that you were sliding on
 altitude while the reader kept pointing at a word you never defined.
 
-## Hand over the thing, not a pointer to it
+### A pointer was handed over instead of the thing
 
 Two failures, one shape. Both leave the reader holding an address instead of the content, and both
 feel finished as you write them, because you resolve the address instantly and they cannot.
@@ -197,7 +200,7 @@ who saw none of the conversation. Can they name every noun in it, and point at e
 it claims? A word that resolves only by looking elsewhere is a defect, and so is a claim that
 resolves only into another abstraction.
 
-## The #1 rule: don't introduce a concept they didn't ask for
+### A concept they did not ask for got introduced — the worst one
 
 Answer using **only the concepts already on the table**. Every unrequested concept is a fresh thing
 to learn, more load, and — worst — a new 似是而非 node that invites its own "but why", expanding scope
