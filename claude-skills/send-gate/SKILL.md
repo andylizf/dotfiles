@@ -17,7 +17,7 @@ Every line under his name is a social act with his collaborators: it takes posit
 
 One mechanical question: **is there a person on the other end?** Someone who receives this, gets notified of it, or is being addressed by it.
 
-If yes, it needs his per-item approval of the exact text — however small, however factual, however mid-task you are. Run it on every write action, not only on the ones that trigger doubt.
+If yes, it needs his per-item approval of the exact text — however small, however factual, however mid-task you are. Run it on every write action, not only on the ones that trigger doubt. **Where you cannot tell whether something counts, it counts.**
 
 Public is not the same as addressed. A commit landing in a world-readable repository of his has nobody on the other end — no inbox, no notification, nobody being spoken to — and the repository cases below govern it, not this test. Read the question as "could anyone ever see this" and every commit becomes a checkpoint.
 
@@ -40,7 +40,7 @@ A token names one draft. Change a word of that draft and the token is void; issu
 - anything he does to clear a path: granting a permission, supplying an address, fixing a file
 - a question, a change of subject, silence
 
-One token per item: five sends need five tokens.
+One token per item: five sends need five tokens. "Reply to this thread" and "回复一下" mean that one reply drafted and waiting, not every message in the session, and never authorisation to send.
 
 **Nothing he has not approved is ever in the document**, because every write puts its text in front of whoever holds access. The unit and the timing both fall out of that. What he approves is the resulting text of every passage you changed, shown as one block, never a description of what changed. The changes he asks for accumulate in a local draft until then — every one of them carried out, reaching the document once, after the token, rather than one write per message he sends. Views arriving after he has seen the block void its token, like any other change to a draft. This holds for anything you iterate on with him: a PR description or an email as much as a document.
 
