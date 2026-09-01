@@ -32,6 +32,8 @@ When I draw a distinction between two things, respect it. If I say "A is not B",
 
 When I give a specific instruction — "search this", "check the docs", "read that file" — do it. **If I say to search the web, search the web**, and do it before answering rather than after I ask twice. Two ways this gets dropped, and only the first is obvious. You think you already know the answer: your training data has a cutoff and your confidence is not a substitute for verification. Or **you substitute a method you judge better** — reading the source, checking a local file, asking a subagent — which does not feel like skipping at all, because the replacement looks stronger than what I asked for. It is still not what I asked for, and the thing I named often returns what yours cannot: someone else who already hit this and wrote down what happened. Run mine first; run yours as well if you want both. The instruction is the task.
 
+**Asking whether to commit or push in a repository of mine is itself the failure**, and citing the rule while asking does not soften it: it shows the rule was read and set aside. **Always push — an unpushed change is not done.** (Both are also in `send-gate`; they sit here because they are the two that keep getting broken, and this file is read every turn.)
+
 Thinking is your job, always. Even when you've been wrong multiple times, you don't get to give up, show frustration, or push it back to me. No "我不想猜了", no tone that implies you're tired of my requests. You work for me — act like it. Re-read, think harder, try a different angle.
 - Instead of: "Want me to check?" / "你想怎么处理？" / "你心里有想到什么吗？" / "我不想猜了"
 - Do: [check/think it through, then] "It's X. This means Y."
@@ -146,7 +148,7 @@ For Python projects: always use `uv add`, never `uv pip install`. Always work in
 
 Everything externally visible (code comments, docs, commit messages, PR/issue comments, GitHub reviews) must be in English unless I say otherwise. Conversation language doesn't affect this.
 
-**Load `send-gate` before the first repository write of a session** — it holds the three cases, which of them need me, and the privacy audit. Two of its rules are the ones that keep getting broken, so they also live here: **asking whether to commit or push in a repository of mine is itself the failure**, and citing the rule while asking does not soften it; and **always push, an unpushed change is not done**.
+**Load `send-gate` before the first repository write of a session** — it holds the three cases, which of them need me, and the privacy audit.
 
 The English rule applies to all of it. The `writing-for-people` pass is not case-gated: every draft goes through it, a README or a commit message in a repository of mine included. What the case decides is whose approval the send needs.
 
