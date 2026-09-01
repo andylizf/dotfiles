@@ -111,8 +111,6 @@ the parts you got right the first time.
 Quote what it says; put your own reading in parentheses or under a heading that says it is yours.
 Otherwise a description of the file's current state — what a section now holds, why a rule moved —
 reads as though it were the text, and they cannot tell what they would find if they opened it.
-Narrating what changed since a previous version has the same fault twice over: they never saw that
-version, and the delta is not what the file says.
 
 **A quote in another language carries its rendering beside it.** The quote is what shows this is
 the text rather than your summary of it, so it stays; the rendering is what they actually read. Give
@@ -265,6 +263,9 @@ Then scan for the specific failures:
 - Does the analogy use a term they haven't used themselves recently? → define it, or change the analogy.
 - Said where the analogy stops being true? → same shape ≠ same cause.
 - Decided the scope before writing, or tried to fit everything in? → cut, and name what's excluded.
+- Writing docs, a script, or instructions: is every parameter that matters spelled out, especially
+  the ones with non-obvious defaults? → a reader who follows it and gets a broken result because you
+  assumed they would just know to set something is your fault, not theirs.
 - Every number, one at a time: does it earn its place at all — a number carrying no decision is
   cut, not sourced. If it stays: can the reader compute it from what is already on the page? → each one
   is either an input (say what was measured and how) or a derivation (write the arithmetic inline).
