@@ -5,9 +5,7 @@ description: Load before any repository write, and before any text that reaches 
 
 # The send gate
 
-**Everything you write is for him unless he says "draft a message to X". He decides what gets communicated outward.** That is the default this whole file sits on: sending is not the baseline that approval restrains, it is a thing he asks for. A draft nobody asked to be sent is finished when he has read it.
-
-When he does ask: anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**, given as the confirmation token he types back.
+Anything with a person on the other end — received, notified, addressed — needs his per-item approval of the **exact final text**, given as the confirmation token he types back.
 
 ## The cost lands on him, not you
 
