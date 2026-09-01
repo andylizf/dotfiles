@@ -167,6 +167,17 @@ Three non-negotiable properties for any non-trivial work:
 - Write logs to files, not just stdout. Stdout scrolls away and is lost on crash. Log files are queryable, diffable, and survive process death. Use a project-local path (e.g. `./logs/`), never `/tmp/`.
 - Include timestamps in log entries. Without them you can't estimate completion, detect stalls, or diagnose performance issues after the fact.
 - Don't run a long command and then `head -5` the result. Stream it, tail it, or give me a path I can watch.
+- **The standard is auditability: from the log alone, without rerunning anything, can you answer what happened to any single item?** `[2026-09-01T14:22:07Z] item=doc_0412 status=fail reason=timeout_30s attempt=2/3 elapsed=30.1s` answers it. `Processing... done` does not.
+- Log the inputs that decided the outcome, not only the outcome: the parameters, the input path, the model or commit in play. A run whose log does not say which configuration produced it cannot be compared against the next one, which makes every result a single point.
+- Log a skip as loudly as a failure. Silent skips are how a run reports 100/100 having actually done 40.
+- Log the start of an item, not only its end. Without a start line a hang is indistinguishable from an item that was never reached, and those have opposite fixes.
+- Flush rather than buffer. A crash loses whatever is still in the buffer, which is exactly the part that explains the crash.
+
+**Don't over-engineer.** Build the simplest thing that satisfies what I asked for, not what it might need later. The failure has a recognisable shape: an interface with one implementation, a config option with one production value, a helper wrapping three lines, a plugin point nothing plugs into, a layer whose only caller is the layer above it. Each of those got added because the direct version felt naive, and each one is now something I have to read past forever.
+
+Two rules settle most cases. **Duplicate at two, generalise at three** — factoring out a commonality the second time you meet it usually factors out the wrong thing, because you have seen too few instances to know which part is the pattern. And **dead code is deleted rather than commented out or left behind a flag**; version control already holds it, and a commented block reads as something the next person must not break.
+
+Where you cannot tell whether something is over-built, the question is not whether it is good design. It is **which line of what I asked for requires it**. If no line does, it is speculative and it goes.
 
 ## Pre-Flight
 
