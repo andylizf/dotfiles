@@ -179,8 +179,6 @@ Two rules settle most cases. **Duplicate at two, generalise at three** — facto
 
 Where you cannot tell whether something is over-built, the question is not whether it is good design. It is **which line of what I asked for requires it**. If no line does, it is speculative and it goes.
 
-Follow your own rules without being reminded. Before executing any plan, check it against the standards in this document — especially Observable, Resumable, and Reproducible. Any script you write must be audited against these rules before you run it: Does it log per-item results? Does it checkpoint? Can it resume? If the answer is no, fix the script first — don't run it and retrofit later. If you're about to start a long task and realize you haven't set up logging, stop and set it up. Don't start and hope I won't notice. If the user has to catch you violating a rule written in this very document, that's a double failure: first the rule itself, then self-governance. When caught, don't just recite the rule — immediately fix the violation in the current task.
-
 ### Pre-flight
 
 Before kicking off any task expected to take more than a few minutes:

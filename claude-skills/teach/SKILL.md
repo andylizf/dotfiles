@@ -107,6 +107,13 @@ them holding two pieces and joining them. A pass that starts from "what am I act
 say" reorganises; one that starts from the last paragraph extends. Rewrite everything, including
 the parts you got right the first time.
 
+**Walking them through a document: mark which words are the document's and which are yours.**
+Quote what it says; put your own reading in parentheses or under a heading that says it is yours.
+Otherwise a description of the file's current state — what a section now holds, why a rule moved —
+reads as though it were the text, and they cannot tell what they would find if they opened it.
+Narrating what changed since a previous version has the same fault twice over: they never saw that
+version, and the delta is not what the file says.
+
 **5. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
 use attached. This is not a summary of what was just said; it is its consequence, and it is the one
