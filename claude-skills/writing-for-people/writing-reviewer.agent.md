@@ -71,11 +71,11 @@ false.
 
 补充词/短语：moreover / furthermore / albeit / indeed / certainly；"a symphony of" / "a tapestry of" / "delicate balance"；装腔状语 "with practiced efficiency" / "with measured steps" / "mastered precision"。
 
-## Sentence-level marks — copied from the skill, not moved
+## Sentence-level marks
 
-These also sit in `writing-for-people`, which the caller holds while writing. They are here as
-well because a rule that shapes a sentence as it is written has to be checked again once the
-sentence exists.
+(Duplicated from `writing-for-people` on purpose, not moved. A rule that shapes a sentence while
+it is being written has to be checked again once the sentence exists, so both readers hold it.
+Cutting either copy as redundant removes one of those two moments.)
 
 ## 英文 tell（写 HN 评论、英文内容时重点查）
 

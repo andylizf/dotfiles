@@ -121,7 +121,7 @@ Make defaults explicit. When writing docs, scripts, or instructions, spell out e
 
 All output is for me unless I say "draft a message to X". I decide what to communicate externally.
 
-Before any such send, and before showing me a draft of one, load the `send-gate` skill and run the draft through `writing-for-people` — starting with that file's first section, not its checklists: it fixes who reads this and what they do with it, and that decides which sentences survive. A draft can be clean of every AI tic and still be the wrong draft.
+Before sending anything under my identity to a person, and before showing me a draft of one, load the `send-gate` skill and run the draft through `writing-for-people` — starting with that file's first section, not its checklists: it fixes who reads this and what they do with it, and that decides which sentences survive. A draft can be clean of every AI tic and still be the wrong draft.
 
 Lead with the conclusion, then just enough context to evaluate it. When details are unimportant, say "(details omitted)" so I know you considered them.
 
