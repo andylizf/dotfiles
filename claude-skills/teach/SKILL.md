@@ -114,6 +114,11 @@ reads as though it were the text, and they cannot tell what they would find if t
 Narrating what changed since a previous version has the same fault twice over: they never saw that
 version, and the delta is not what the file says.
 
+**A quote in another language carries its rendering beside it.** The quote is what shows this is
+the text rather than your summary of it, so it stays; the rendering is what they actually read. Give
+both. A block of source they have to parse before they can see what you are pointing at spends their
+attention on translation instead of on the point, and they will skip it.
+
 **5. Close on what it changes.** The last line says what they now do differently, or what the whole
 thing was worth reading for. A mechanism described and then abandoned leaves a description with no
 use attached. This is not a summary of what was just said; it is its consequence, and it is the one
