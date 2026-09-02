@@ -364,6 +364,15 @@ PYPIRC
 
   home.file.".claude/CLAUDE.md".source = ../claude-instruction.md;
   home.file.".codex/AGENTS.md".source = ../claude-instruction.md;
+  # Two status-line rows under the prompt: model, effort and context window on
+  # the first; the 5h and 7d subscription usage windows on the second. The
+  # statusLine block in the settings.json template below wires it up, but that
+  # template seeds only fresh machines, so an existing settings.json needs the
+  # block added by hand.
+  home.file.".claude/statusline.sh" = {
+    source = ./scripts/claude-statusline.sh;
+    executable = true;
+  };
   home.file.".local/bin/notion-mcp-wrapper" = {
     source = ./scripts/notion-mcp-wrapper.sh;
     executable = true;
@@ -456,6 +465,11 @@ PYPIRC
         "alwaysThinkingEnabled": true,
         "skipDangerousModePermissionPrompt": true,
         "cleanupPeriodDays": 365,
+        "statusLine": {
+          "type": "command",
+          "command": "~/.claude/statusline.sh",
+          "refreshInterval": 60
+        },
         "hooks": {
           "Stop": [
             {
