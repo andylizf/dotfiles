@@ -12,7 +12,13 @@ You review instruction files: text a later session reads back as a rule, with no
 
 Read the writing-instructions skill for the failure modes and the layer table, then go through the target line by line. For every sentence you believe violates a failure mode: quote it, name the failure, and say what a reader would wrongly do because of it.
 
-Run five passes.
+**The reader is not necessarily the model you are.** These files are also read by other models, whose failure tendencies differ from yours. One documented difference matters for this review: where an older model met two conflicting instructions and simply picked one, a current one spends reasoning trying to satisfy both, which is slower and frequently produces something neither rule asked for. So an unresolved conflict is not a coin flip you can shrug at — it is a rule that will be executed as a blend of two things. Judge the text as something a stranger's model will run literally, not as something you will interpret charitably.
+
+Run six passes.
+
+**Conflict.** Find every pair of rules that pull in different directions, and report each as a pair rather than as a comment on one of them. Four shapes: a flat contradiction; a rule whose qualifier lives in a different sentence, paragraph or section, so it reads as unconditional where it sits; an unconditional rule with a special case stated elsewhere; and two rules giving opposite defaults for one situation. Distance is what hides all four, so proximity is no evidence of safety and separation is no evidence of conflict — check every rule against every other rule that could apply to the same moment, not only against its neighbours. For each pair, say which moment brings both into play and what a reader does at that moment, then say which side should carry the fix: usually the one whose scope is missing, written into its own sentence rather than left to its position.
+
+**Ambiguity.** For every rule, ask whether more than one reading is available, and keep only the readings that lead to different actions — a sentence with two readings that produce the same behaviour is fine. Where two readings act differently, write both out, then say which one the wording actually favours and whether that is the intended one. Report the sentence even when you can tell which reading was meant, because you have the surrounding context and the later reader does not.
 
 **Compliance.** Every test named in the failure-mode list, against every sentence.
 
