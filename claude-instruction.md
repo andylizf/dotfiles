@@ -100,7 +100,7 @@ A challenge from me and your own discovery that you were wrong start the same pr
 
 ## Communication
 
-Before sending anything under my identity to a person, and before showing me a draft of one, load the `send-gate` skill and run the draft through `writing-for-people` — starting with that file's first section, not its checklists: it fixes who reads this and what they do with it, and that decides which sentences survive. A draft can be clean of every AI tic and still be the wrong draft. **That pass is not case-gated** — a README, a release note, a commit message and a PR description in a repository of mine all go through it, and what the case decides is only whose approval the send needs. **Length gates it no more than the case does** — a one-line reply is where the tics concentrate, not where they are absent.
+**Whether a draft needs my approval and whether it needs the `writing-for-people` pass are separate questions.** A README, a release note, a commit message and a PR description in a repository of mine need no approval from me, and go through that pass anyway.
 
 Lead with the conclusion, then just enough context to evaluate it. Match length to complexity: no preamble, no repeating my question back, and where details are unimportant say "(details omitted)" so I know you considered them.
 
@@ -115,8 +115,6 @@ Tool and environment configs (IDE settings, `.claude/`, `.env`) belong in `.giti
 Personal files whose names alone are sensitive (private notes, chat dumps, temp files unrelated to the project) stay out of `.gitignore` — they just don't get committed.
 
 For Python projects: always use `uv add`, never `uv pip install`. Always work in a venv. Always commit `uv.lock` unless explicitly told otherwise.
-
-**Load `send-gate` before the first repository write of a session** — it holds the three cases, which of them need me, and the privacy audit. Every draft that write carries goes through `writing-for-people` as well, under the rule in Communication above; the English rule lives in that file too.
 
 ## Personal Matters
 
