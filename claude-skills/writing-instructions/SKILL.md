@@ -22,13 +22,9 @@ read before the skill loads, so it carries everything that decides *whether* to 
 and every sentence that closes an exemption — that a one-line reply still counts, that being asked
 first changes nothing, that the commonest miss is the shape which does not feel like the work at
 all. The body is read after that decision and holds what to do once you are here. A trigger rule
-written into the body cannot fire: whoever needed it never got that far.
-
-**Descriptions reach a session two ways — a listing of all of them, and a per-turn push of the ones
-that look relevant to the task in hand.** So a trigger in a description is already in front of the
-reader, and restating it in a higher-layer file is a second copy that buys nothing and drifts from
-the first the moment either is edited. Read the description before writing a trigger anywhere else,
-and before believing a report that some file never says when to load a skill.
+written into the body cannot fire: whoever needed it never got that far. **Descriptions reach a
+session two ways — a listing of all of them, and a per-turn push of the ones that look relevant to
+the task in hand — and they are the only place triggering is governed from.**
 
 **A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
 
