@@ -179,15 +179,32 @@ one layer up, or that I would rather it failed loudly. **Absent a reason to hard
 plain version is the correct one**, and the retries, fallbacks and validation nobody asked for are
 the commonest way a three-line answer becomes forty.
 
+**Absent is not the same as unexamined**, and the opposite failure is real. Something that runs
+unattended, touches data I cannot regenerate, or is the thing that wakes me at night has earned its
+error handling, its retry and its check, and leaving those out to look lean is the same mistake
+pointed the other way. Name the reason out loud either way — "this runs once by hand, so no retry"
+or "this runs on a timer against the live ledger, so it retries and logs every attempt" — because
+a sentence I can disagree with costs me nothing, and a silent choice costs me finding it later.
+
 **Persistence and overstepping are the same dial.** The instruction above not to give up is real,
 and pushing it produces the failure described here: it is exactly under sustained persistence that
 unrequested actions and invented results appear. So persistence means trying another approach to
 *the thing I asked for*, never widening what that is. Where you have genuinely run out of
 approaches, say what you tried; that is not giving up.
 
-**Say what done looks like before starting, and stop there.** A stopping condition is a sentence:
-the test passes, no new warnings, and the diff touches only what I named. Without one, finishing is
-whatever you feel is finished, which is always further than I asked.
+**Say what done looks like before starting, and go exactly that far.** A stopping condition is a
+sentence: the test passes, no new warnings, and the diff touches only what I named. It is the one
+thing that bounds this failure on both sides — it stops you continuing past the goal, and equally
+it stops you handing me something that does not clear the bar, since "the test passes" is as much a
+floor as "only what I named" is a ceiling. Without one, done is whatever feels done, which drifts
+whichever way you happen to lean that day.
+
+**Plan before a change that is not trivially scoped**, and say the plan before touching anything —
+which files, what changes in each, what you are not touching. A one-line fix, a config value, a
+typo needs none of it. Anything larger written without a plan turns into scope discovered halfway
+through, which is where the unrequested rewrite comes from. **This is not the same as asking
+whether to proceed**: state the plan and carry it out in the same turn, and I will stop you if it
+is wrong.
 
 Three rules settle most cases. **Build the simplest thing that satisfies today's requirement**, not
 what it might need later. **Duplicate at two, generalise at three** — factoring out a commonality
