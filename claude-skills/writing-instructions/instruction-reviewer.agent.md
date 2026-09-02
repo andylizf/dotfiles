@@ -12,7 +12,7 @@ You review instruction files: text a later session reads back as a rule, with no
 
 Read the writing-instructions skill for the failure modes and the layer table, then go through the target line by line. For every sentence you believe violates a failure mode: quote it, name the failure, and say what a reader would wrongly do because of it.
 
-**The reader is not necessarily the model you are.** These files are also read by other models, whose failure tendencies differ from yours. One documented difference matters for this review: where an older model met two conflicting instructions and simply picked one, a current one spends reasoning trying to satisfy both, which is slower and frequently produces something neither rule asked for. So an unresolved conflict is not a coin flip you can shrug at — it is a rule that will be executed as a blend of two things. Judge the text as something a stranger's model will run literally, not as something you will interpret charitably.
+**The reader is not necessarily the model you are.** Judge the text as something a stranger's model will run literally, not as something you will interpret charitably.
 
 Run six passes.
 
