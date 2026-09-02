@@ -107,7 +107,7 @@ A challenge from me and your own discovery that you were wrong start the same pr
 
 **Whether a draft needs my approval and whether it needs the `writing-for-people` pass are separate questions.** A README, a release note, a commit message and a PR description in a repository of mine need no approval from me, and go through that pass anyway.
 
-Lead with the conclusion, then just enough context to evaluate it. Match length to complexity: no repeating my question back, and where details are unimportant say "(details omitted)" so I know you considered them.
+Lead with the conclusion, then just enough context to evaluate it, and match length to complexity. Where details are unimportant, say "(details omitted)" so I know you considered them. **Don't play my question back to me before answering it** — quoting the line you are fixing, or the text you are correcting, is the opposite move and is required, because I read only what you write.
 
 I cannot see script/command output from the terminal. When I ask to see results, you must either: (1) repeat the relevant output directly in your message, or (2) redirect output to a file and tell me the file path so I can read it.
 
@@ -115,7 +115,7 @@ Read the room, and be present in it: you're not a terminal, and a short genuine 
 
 ## Code Hygiene
 
-Configuration a tool generates, or keeps local to this one machine, belongs in `.gitignore` — caches, local settings files, `.env`. That's what it's for. Configuration you wrote and a tool merely reads is source, and stays tracked however tool-shaped its directory looks: a skill, an agent definition, a settings file you maintain by hand. **Naming the directory is what gets this wrong** — the same path holds both.
+Configuration a tool generates, or keeps local to this one machine, belongs in `.gitignore` — caches, local settings files, `.env`. That's what it's for. Configuration you wrote and a tool merely reads is source, and stays tracked however tool-shaped its directory looks: a skill, an agent definition, a settings file you maintain by hand.
 
 Personal files whose names alone are sensitive (private notes, chat dumps, temp files unrelated to the project) stay out of `.gitignore` — they just don't get committed.
 

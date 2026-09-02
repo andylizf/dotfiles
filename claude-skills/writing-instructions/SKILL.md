@@ -24,6 +24,13 @@ first changes nothing, that the commonest miss is the shape which does not feel 
 all. The body is read after that decision and holds what to do once you are here. A trigger rule
 written into the body cannot fire: whoever needed it never got that far.
 
+**A trigger a skill's description already carries is not written again in a higher layer.** Both are
+in context, so the second copy buys no coverage and drifts from the first the moment either is
+edited. The rule runs in two directions and the second is the one that gets missed: before writing
+a trigger anywhere, and **before accepting a report that some file never says when to load a
+skill**, open that skill's description and read it. A compaction drops the description listing while
+a `CLAUDE.md` is re-read from disk; that exposure is accepted rather than covered by a duplicate.
+
 **A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
 
 **A rule that must always hold goes in a skill or the global file, never only in a memory.** Memory gives a rule the worst combination there is: present only sometimes, and authoritative whenever it is. When a memory contradicts an instruction the instruction wins, and the memory is what to fix — in the same turn.
@@ -64,7 +71,7 @@ written into the body cannot fire: whoever needed it never got that far.
 
 Dispatch the `instruction-reviewer` subagent, giving it the path, everything that changed since the last review, and what it replaced.
 
-Its report is evidence, not a verdict: act on what you agree with, and say what you rejected.
+Its report is evidence, not a verdict: act on what you agree with, and say what you rejected. **It sees less of the reader's context than you do — skill descriptions are not in it**, so a finding that some file never says when to load a skill is unchecked until you have opened that description yourself.
 
 A subagent starts without this conversation, but not without your vocabulary: a word is jargon only relative to a reader, and one common in the text both of you were trained on reads as plain to both of you and as jargon to someone outside the field. Asked to audit their own writing, experts flag about a quarter of the terms that actually stop a newcomer, and a reviewer sharing the vocabulary flags no more. So route what survives to the person the file is for, and treat what they stumble on as the measurement. Every file gets a cold read-back of your own, reviewed or not. Name the higher-layer rule you checked it against and what it changed in the draft, or that it changed nothing; where the file is itself the top layer, say that instead. Name the memory that bears on it, or that a search found none, and fix a memory that contradicts the draft in the same turn.
 
