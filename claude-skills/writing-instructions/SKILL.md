@@ -70,7 +70,7 @@ and before believing a report that some file never says when to load a skill.
 
 Dispatch the `instruction-reviewer` subagent, giving it the path, everything that changed since the last review, and what it replaced.
 
-Its report is evidence, not a verdict: act on what you agree with, and say what you rejected. **It sees less of the reader's context than you do — skill descriptions are not in it**, so a finding that some file never says when to load a skill is unchecked until you have opened that description yourself.
+Its report is evidence, not a verdict: act on what you agree with, and say what you rejected.
 
 A subagent starts without this conversation, but not without your vocabulary: a word is jargon only relative to a reader, and one common in the text both of you were trained on reads as plain to both of you and as jargon to someone outside the field. Asked to audit their own writing, experts flag about a quarter of the terms that actually stop a newcomer, and a reviewer sharing the vocabulary flags no more. So route what survives to the person the file is for, and treat what they stumble on as the measurement. Every file gets a cold read-back of your own, reviewed or not. Name the higher-layer rule you checked it against and what it changed in the draft, or that it changed nothing; where the file is itself the top layer, say that instead. Name the memory that bears on it, or that a search found none, and fix a memory that contradicts the draft in the same turn.
 

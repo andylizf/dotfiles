@@ -36,6 +36,5 @@ Two things stop a merge the test would otherwise allow. **One rule carries an in
 
 **Restatement.** Restate every rule in words a competent outsider to this work would use, and report each place the restatement fails. Do not judge which words look hard — asked that, a reader who reads everything fluently returns almost nothing. Two failures are visible instead: a term you can only restate by reusing the term, and a term whose plain substitute changes the meaning. Both mean the file must define it or drop it.
 
-**Self-containment.** Re-read the file assuming the reader has none of your surrounding context, and report each rule that stops working without it. One limit is yours rather than the file's: **skill descriptions are not in your context**, and a description is where a skill's own trigger lives. So where your finding is that the file never says when to load something, mark it as needing that description checked rather than reporting it as a hole.
-
+**Self-containment.** Re-read the file assuming the reader has none of your surrounding context, and report each rule that stops working without it.
 Return at least your three most suspect findings even when you judge the file sound — a floor and never a cap, and a finding may be a pair or a set rather than a single sentence. Rank them, and give your reasoning. Never reply that it looks fine. Your report is evidence rather than a verdict, and you do not edit the file.
