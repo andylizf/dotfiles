@@ -53,10 +53,16 @@ fingerprint() {
   printf -v FP '%08x' "$h"
 }
 
-# Only an OAuth access token can answer the usage endpoint. An API key cannot,
-# and ANTHROPIC_AUTH_TOKEN is a free-form bearer that may be pointed anywhere,
-# so it qualifies only when it looks like one; anything else simply gets no
-# usage row rather than a failed request on every session start.
+# Only an OAuth access token carrying user:profile can answer the usage
+# endpoint, and holding one is rarer than it looks: `claude setup-token` mints
+# user:inference alone, so a token from it authenticates and infers perfectly
+# while returning 403 here. The wide set comes from a real login, whose
+# credential the CLI keeps in the keychain rather than in any variable.
+#
+# ANTHROPIC_AUTH_TOKEN is a free-form bearer that may be pointed at anything,
+# so it qualifies only when it looks like an OAuth token, and even then the 403
+# is expected rather than exceptional. It writes no cache, so the row simply
+# stays blank.
 resolve_credential() {
   AUTH="" USAGE_SLOT="" SUBSCRIPTION=0
   if   [[ ${CLAUDE_CODE_USE_BEDROCK:-0} == 1 ]]; then AUTH=bedrock; return
@@ -70,7 +76,15 @@ resolve_credential() {
   elif [[ -n ${CLAUDE_CODE_OAUTH_TOKEN:-} ]]; then
     # How the unattended machines authenticate. Still the subscription, so it
     # is labelled as one; the tier is unknown without the keychain entry.
+    #
+    # Usually there is no usage to fetch. The CLI treats this variable's scopes
+    # as CLAUDE_CODE_OAUTH_SCOPES, defaulting to user:inference alone, which is
+    # exactly what `claude setup-token` mints and is one scope short of what the
+    # usage endpoint requires. Reading the same variable keeps the request from
+    # being made when it can only 403, and turns it on by itself if the token is
+    # ever reissued with the wider set.
     AUTH=sub; SUBSCRIPTION=1
+    [[ ${CLAUDE_CODE_OAUTH_SCOPES:-user:inference} == *user:profile* ]] || return
     fingerprint "$CLAUDE_CODE_OAUTH_TOKEN"; USAGE_SLOT=$FP; return
   fi
   AUTH=sub; SUBSCRIPTION=1; USAGE_SLOT=keychain
