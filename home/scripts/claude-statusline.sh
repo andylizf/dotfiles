@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 # Claude Code status line. Two rows:
 #   claude-fable-5-1[1m] max · 5% ctx · sub:max
-#   5h: 0% (4h53m) · 7d: 53% (0h37m)
+#   5h: 0% (4h53m) · 7d: 53% (0h37m) · fable: 57%
 #
 # Claude Code pipes the session JSON to this script on stdin and renders each
 # line it prints. The full input schema is in the built-in statusline-setup
 # agent's prompt; the fields read here are model.id, effort.level,
 # context_window.used_percentage and rate_limits.{five_hour,seven_day}.
+#
+# That schema has no model-scoped window, so the third figure above cannot come
+# from stdin at all. A plan that meters one model separately — Fable draws on
+# its own weekly allowance, not the shared one — reports it only from the usage
+# endpoint, which is why the refresh below is what keeps that column alive.
 #
 # Every status-line row is rendered with ANSI dim applied. Bold cancels dim on
 # most terminals, so the bold prefixes below are load-bearing: without them the
@@ -21,11 +26,12 @@
 set -uo pipefail
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
-# Beyond this age the cached numbers are dropped rather than drawn. Nothing in
-# the render path refreshes them, so an old file means no session on this
-# credential has run the SessionStart hook or exchanged a message for a while,
-# and a stale percentage presented as current is worse than a blank row.
+# Beyond this age the cached numbers are dropped rather than drawn: a stale
+# percentage presented as current is worse than a blank row.
 STALE_MAX=1800
+# How old the scoped window may get before a redraw kicks a background refresh.
+# Well under STALE_MAX, so the column is renewed long before it would expire.
+SCOPED_TTL=300
 
 # ------------------------------------------------------------- credential ---
 # Which credential this session bills against. Claude Code prints this in its
@@ -177,32 +183,58 @@ if [[ ${1:-} == --refresh ]]; then
   # arrives from stdin as epoch seconds. Normalise to epoch so the render path
   # never has to parse a date.
   printf '%s' "$body" | python3 -c '
-import sys, json, datetime
+import sys, json, datetime, re
 try:
     d = json.load(sys.stdin)
 except Exception:
     sys.exit(1)
+def epoch(at):
+    if not at:
+        return -1
+    try:
+        return int(datetime.datetime.fromisoformat(at).timestamp())
+    except Exception:
+        return -1
 def one(key):
     v = d.get(key)
     if not isinstance(v, dict) or v.get("utilization") is None:
         return -1, -1
-    at = v.get("resets_at")
-    if not at:
-        return round(v["utilization"]), -1
-    try:
-        ts = int(datetime.datetime.fromisoformat(at).timestamp())
-    except Exception:
-        ts = -1
-    return round(v["utilization"]), ts
+    return round(v["utilization"]), epoch(v.get("resets_at"))
 a = one("five_hour"); b = one("seven_day")
-if a[0] < 0 and b[0] < 0:
+# The model-scoped weekly allowance. The top-level fields do not carry it:
+# seven_day_opus and its siblings come back null on a plan whose scoped window
+# belongs to another model, and the live figure sits in limits[] instead. The
+# label is read from the payload rather than hardcoded, so a plan scoping some
+# other model renders the name of that model. Highest utilisation wins when
+# several come back, that being the one nearest its ceiling.
+scoped = None
+for it in d.get("limits") or []:
+    if not isinstance(it, dict) or it.get("kind") != "weekly_scoped":
+        continue
+    if it.get("percent") is None:
+        continue
+    if scoped is None or it["percent"] > scoped["percent"]:
+        scoped = it
+label, spct, sat = "-", -1, -1
+if scoped:
+    m = (scoped.get("scope") or {}).get("model") or {}
+    name = m.get("display_name") or m.get("id") or "scoped"
+    # The label lands in a tab-separated field and then in a one-line row, so
+    # any whitespace in it would shift every field after it.
+    label = re.sub(r"\s+", "-", name).lower()
+    spct = round(scoped["percent"])
+    sat = epoch(scoped.get("resets_at"))
+if a[0] < 0 and b[0] < 0 and spct < 0:
     sys.exit(1)
-# Trailing field is when this was fetched. Keeping it in the file means the
-# render path can age the cache without shelling out to stat, whose mtime flag
-# is spelled differently by the BSD and GNU builds that both turn up in PATH
-# on this machine.
+# Both trailing fields are fetch times, letting the render path age the cache
+# without shelling out to stat, whose mtime flag is spelled differently by the
+# BSD and GNU builds that both turn up in PATH on this machine. The scoped
+# window needs its own because a redraw refreshes the four fields ahead of it
+# from stdin, which carries nothing scoped, and would otherwise keep marking a
+# figure fresh that no longer is. It is stamped even when nothing scoped came
+# back, so an account without one does not re-fetch on every single redraw.
 now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
-print("\t".join(str(x) for x in (*a, *b, now)))
+print("\t".join(str(x) for x in (*a, *b, now, label, spct, sat, now)))
 ' > "$CACHE.tmp" 2>/dev/null && [[ -s $CACHE.tmp ]] && mv "$CACHE.tmp" "$CACHE"
   rm -f "$CACHE.tmp"
   exit 0
@@ -259,19 +291,55 @@ fmt_left() {
   fi
 }
 
+# The cache is read before anything is drawn, whether or not stdin has figures
+# of its own: the scoped window is only ever read from here, so the write-back
+# below has to carry it forward or a live redraw would erase it. A short file
+# from an earlier revision leaves the scoped fields empty, which reads as absent.
+c_five=-1 c_five_at=-1 c_seven=-1 c_seven_at=-1 c_fetched=0
+c_label="-" c_spct=-1 c_sat=-1 c_sfetched=0
+if [[ -n $USAGE_SLOT && -r $CACHE ]]; then
+  IFS=$'\t' read -r c_five c_five_at c_seven c_seven_at c_fetched c_label c_spct c_sat c_sfetched < "$CACHE" 2>/dev/null
+  is_int "${c_fetched:-}"  || c_fetched=0
+  is_int "${c_sfetched:-}" || c_sfetched=0
+  is_int "${c_spct:-}"     || c_spct=-1
+  is_int "${c_sat:-}"      || c_sat=-1
+  [[ -n ${c_label:-} ]]    || c_label="-"
+fi
+
 # stdin carries rate_limits only after this session's first API response. The
 # cache covers the gap before it lands, and is written back from the live
 # figures so the next session on this credential starts with fresh numbers.
 if has "$five_pct" || has "$seven_pct"; then
   if [[ -n $USAGE_SLOT ]]; then
     mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
-    printf '%s\t%s\t%s\t%s\t%s\n' "$five_pct" "$five_at" "$seven_pct" "$seven_at" "$now" > "$CACHE.tmp" 2>/dev/null \
+    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+      "$five_pct" "$five_at" "$seven_pct" "$seven_at" "$now" \
+      "$c_label" "$c_spct" "$c_sat" "$c_sfetched" > "$CACHE.tmp" 2>/dev/null \
       && mv "$CACHE.tmp" "$CACHE" 2>/dev/null
   fi
-elif [[ -n $USAGE_SLOT && -r $CACHE ]]; then
-  IFS=$'\t' read -r five_pct five_at seven_pct seven_at fetched_at < "$CACHE" 2>/dev/null
-  is_int "${fetched_at:-}" || fetched_at=0
-  (( now - fetched_at > STALE_MAX )) && five_pct=-1 seven_pct=-1
+elif (( c_fetched > 0 )); then
+  five_pct=$c_five five_at=$c_five_at seven_pct=$c_seven seven_at=$c_seven_at
+  (( now - c_fetched > STALE_MAX )) && five_pct=-1 seven_pct=-1
+fi
+
+scoped_label=$c_label scoped_pct=$c_spct scoped_at=$c_sat
+(( now - c_sfetched > STALE_MAX )) && scoped_pct=-1
+
+# The one place the render path starts a subprocess, and it does so knowingly.
+# The scoped window has no live source — stdin carries five_hour and seven_day
+# alone — so between SessionStart and STALE_MAX it is the only figure here that
+# nothing renews, and the column would drop out of every session older than half
+# an hour, which is exactly when a weekly allowance is worth watching. The child
+# is detached with its output closed so no redraw ever waits on the network, and
+# the refresh's own lock directory collapses concurrent sessions into one call.
+#
+# Re-entered through the running interpreter rather than by executing $0, which
+# would need this file to carry its exec bit. It does once deployed and does not
+# in the checkout, and the failure is invisible: the exec error goes to the
+# /dev/null this line is careful to point everything at, so the column would
+# simply stop updating with nothing anywhere to say why.
+if [[ -n $USAGE_SLOT ]] && (( now - c_sfetched > SCOPED_TTL )) && [[ ! -d $LOCK ]]; then
+  ( "${BASH:-bash}" "$0" --refresh </dev/null >/dev/null 2>&1 & ) &
 fi
 
 # The tier is only known for a keychain login, where it was read alongside the
@@ -307,6 +375,22 @@ window() {  # $1=label  $2=percent  $3=resets_at
 line2=""
 window 5h "$five_pct" "$five_at"
 window 7d "$seven_pct" "$seven_at"
+
+# The scoped weekly window, drawn under the model's own name. It cannot go
+# through window(): its reset almost always coincides with the all-model weekly,
+# and printing the same countdown a second time costs width this row does not
+# have, so the time appears only when the two genuinely diverge.
+if has "$scoped_pct" && [[ $scoped_label != "-" ]]; then
+  usage_color "$scoped_pct"
+  [[ -n $line2 ]] && line2+="$SEP"
+  line2+="${YELLOW}${scoped_label}:${RESET} ${COLOR}${scoped_pct}%"
+  if has "$scoped_at" && { ! has "$seven_at" || (( scoped_at - seven_at > 60 || seven_at - scoped_at > 60 )); }; then
+    fmt_left "$scoped_at"
+    line2+=" (${LEFT})"
+  fi
+  line2+="$RESET"
+fi
+
 [[ -n $line2 ]] && printf '%s\n' "$line2"
 
 exit 0
