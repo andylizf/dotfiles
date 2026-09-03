@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code status line. Two rows:
-#   claude-fable-5-1[1m] max · 5% ctx
+#   claude-fable-5-1[1m] max · 5% ctx · sub:max
 #   5h: 0% (4h53m) · 7d: 53% (0h37m)
 #
 # Claude Code pipes the session JSON to this script on stdin and renders each
@@ -14,21 +14,72 @@
 # cyan 44) are not dimmed by the terminal at all, which is why they are written
 # as 256-colour rather than as bright basic colours.
 #
-# It runs on every redraw, so the render path stays at one jq call and no other
-# subprocess: jq rounds the percentages, and the helpers assign to globals
-# instead of being called through $(...).
+# The render path makes one jq call and starts no other subprocess: jq rounds
+# the percentages, the credential is resolved from environment variables alone,
+# and the helpers assign to globals instead of being called through $(...).
 
 set -uo pipefail
 
 CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/claude-statusline"
-CACHE="$CACHE_DIR/usage.tsv"
-TIER="$CACHE_DIR/tier.txt"
-LOCK="$CACHE_DIR/refresh.lock"
 # Beyond this age the cached numbers are dropped rather than drawn. Nothing in
-# the render path refreshes them, so an old file means no session has run the
-# SessionStart hook or exchanged a message for a while, and a stale percentage
-# presented as current is worse than a blank row.
+# the render path refreshes them, so an old file means no session on this
+# credential has run the SessionStart hook or exchanged a message for a while,
+# and a stale percentage presented as current is worse than a blank row.
 STALE_MAX=1800
+
+# ------------------------------------------------------------- credential ---
+# Which credential this session bills against. Claude Code prints this in its
+# header ("Claude Max", "API Usage Billing") but does not pass it in the
+# status-line JSON, so it is reconstructed from the environment the CLI reads,
+# in the CLI's own resolution order: the managed providers win, then a gateway
+# base URL, then an explicit key or token, and a session with none of them is
+# on the keychain login.
+#
+# AUTH is the label. USAGE_SLOT names the cache file, and is empty for a
+# credential that has no subscription usage to show at all. Usage is per
+# account, so each credential gets its own file: one shared file would let a
+# session display another account's figures, which look entirely plausible and
+# are simply wrong.
+#
+# 32-bit FNV-1a in pure bash. A hash rather than a slice of the token because
+# the slot name lands in a filename, and a filename should not carry any part
+# of a credential. ~110 iterations of integer arithmetic, no subprocess.
+fingerprint() {
+  local s=$1 i c h=2166136261
+  for ((i = 0; i < ${#s}; i++)); do
+    printf -v c '%d' "'${s:i:1}"
+    h=$(( ((h ^ c) * 16777619) & 0xFFFFFFFF ))
+  done
+  printf -v FP '%08x' "$h"
+}
+
+# Only an OAuth access token can answer the usage endpoint. An API key cannot,
+# and ANTHROPIC_AUTH_TOKEN is a free-form bearer that may be pointed anywhere,
+# so it qualifies only when it looks like one; anything else simply gets no
+# usage row rather than a failed request on every session start.
+resolve_credential() {
+  AUTH="" USAGE_SLOT="" SUBSCRIPTION=0
+  if   [[ ${CLAUDE_CODE_USE_BEDROCK:-0} == 1 ]]; then AUTH=bedrock; return
+  elif [[ ${CLAUDE_CODE_USE_VERTEX:-0}  == 1 ]]; then AUTH=vertex;  return
+  elif [[ -n ${ANTHROPIC_BASE_URL:-} ]];         then AUTH=gateway; return
+  elif [[ -n ${ANTHROPIC_API_KEY:-} ]];          then AUTH=api;     return
+  elif [[ -n ${ANTHROPIC_AUTH_TOKEN:-} ]]; then
+    AUTH=oauth
+    [[ $ANTHROPIC_AUTH_TOKEN == sk-ant-oat* ]] || return
+    fingerprint "$ANTHROPIC_AUTH_TOKEN"; USAGE_SLOT=$FP; return
+  elif [[ -n ${CLAUDE_CODE_OAUTH_TOKEN:-} ]]; then
+    # How the unattended machines authenticate. Still the subscription, so it
+    # is labelled as one; the tier is unknown without the keychain entry.
+    AUTH=sub; SUBSCRIPTION=1
+    fingerprint "$CLAUDE_CODE_OAUTH_TOKEN"; USAGE_SLOT=$FP; return
+  fi
+  AUTH=sub; SUBSCRIPTION=1; USAGE_SLOT=keychain
+}
+
+resolve_credential
+CACHE="$CACHE_DIR/usage-$USAGE_SLOT.tsv"
+TIER="$CACHE_DIR/tier.txt"
+LOCK="$CACHE_DIR/refresh-$USAGE_SLOT.lock"
 
 # ---------------------------------------------------------------- refresh ---
 # `--refresh` is what the SessionStart hook runs, never the render path: it
@@ -41,39 +92,31 @@ STALE_MAX=1800
 # which is read-only and consumes no quota, unlike the messages endpoint whose
 # response headers are the session's other source for these numbers.
 #
-# The subscription access token rotates about hourly and Claude Code writes the
-# fresh one back to the keychain, so this reads the keychain every time rather
-# than caching a token. On 401 it leaves the existing cache alone: refreshing
-# the token is a write, and racing Claude Code for it would be worse than
-# showing a number a few minutes old.
+# A keychain access token rotates about hourly and Claude Code writes the fresh
+# one back, so it is read at call time rather than cached. On 401 the existing
+# cache is left alone: refreshing the token is a write, and racing Claude Code
+# for it would be worse than showing a number a few minutes old.
 if [[ ${1:-} == --refresh ]]; then
-  mkdir -p "$CACHE_DIR"
-  # Atomic single-winner guard. Several sessions redraw at once, and without it
+  [[ -n $USAGE_SLOT ]] || exit 0
+  mkdir -p "$CACHE_DIR" && chmod 700 "$CACHE_DIR" 2>/dev/null
+  rm -f "$CACHE_DIR/usage.tsv"   # single-slot layout from an earlier revision
+  # Atomic single-winner guard. Several sessions start at once, and without it
   # each would fire its own request.
   mkdir "$LOCK" 2>/dev/null || exit 0
   trap 'rmdir "$LOCK" 2>/dev/null' EXIT
 
-  # Refresh only where the answer would describe this machine's subscription. A
-  # session pointed at another credential has its own, unrelated usage, and
-  # writing that account's figures into the shared cache would put a confident
-  # wrong number in front of every other session.
-  [[ -n ${ANTHROPIC_AUTH_TOKEN:-} || -n ${ANTHROPIC_API_KEY:-} || -n ${ANTHROPIC_BASE_URL:-} ]] && exit 0
-  [[ ${CLAUDE_CODE_USE_BEDROCK:-0} == 1 || ${CLAUDE_CODE_USE_VERTEX:-0} == 1 ]] && exit 0
-
-  # An env OAuth token is how the unattended machines authenticate; the Macs
-  # log in for real and keep the credential in the keychain.
-  tok="${CLAUDE_CODE_OAUTH_TOKEN:-}"
-  cred=$(security find-generic-password -s 'Claude Code-credentials' -w 2>/dev/null)
-  [[ -n $tok ]] || tok=$(printf '%s' "$cred" \
-        | python3 -c 'import sys,json;print(json.load(sys.stdin)["claudeAiOauth"]["accessToken"])' 2>/dev/null)
-
-  # The subscription tier is stored beside the token and changes almost never,
-  # so it is cached here too rather than shelling out to `security` on a redraw.
-  printf '%s' "$cred" \
-    | python3 -c 'import sys,json;print(json.load(sys.stdin)["claudeAiOauth"].get("subscriptionType") or "")' \
-      2>/dev/null > "$TIER.tmp" && [[ -s $TIER.tmp ]] && mv "$TIER.tmp" "$TIER"
-  rm -f "$TIER.tmp"
-
+  tok="${ANTHROPIC_AUTH_TOKEN:-${CLAUDE_CODE_OAUTH_TOKEN:-}}"
+  if [[ -z $tok ]]; then
+    cred=$(security find-generic-password -s 'Claude Code-credentials' -w 2>/dev/null)
+    tok=$(printf '%s' "$cred" \
+          | python3 -c 'import sys,json;print(json.load(sys.stdin)["claudeAiOauth"]["accessToken"])' 2>/dev/null)
+    # The tier sits beside the token and changes almost never, so it is cached
+    # here too rather than shelling out to `security` on a redraw.
+    printf '%s' "$cred" \
+      | python3 -c 'import sys,json;print(json.load(sys.stdin)["claudeAiOauth"].get("subscriptionType") or "")' \
+        2>/dev/null > "$TIER.tmp" && [[ -s $TIER.tmp ]] && mv "$TIER.tmp" "$TIER"
+    rm -f "$TIER.tmp"
+  fi
   [[ -n $tok ]] || exit 0
 
   body=$(curl -sS --max-time 10 \
@@ -167,40 +210,26 @@ fmt_left() {
   fi
 }
 
-# Which credential this session is actually billing against. Claude Code prints
-# this in its header ("Claude Max", "API Usage Billing") but does not pass it in
-# the status-line JSON, so it is reconstructed from the environment the CLI
-# reads. The order mirrors the CLI's own provider resolution: the managed
-# providers win, then a gateway base URL, then an explicit key or token, and
-# only a session with none of them is on the keychain subscription.
-#
-# It decides more than a label. rate_limits describes the subscription, so on
-# any other credential the cached figures would be a plausible wrong number
-# about a different account, and the usage row is left blank instead.
-subscription_session=0
-if   [[ ${CLAUDE_CODE_USE_BEDROCK:-0} == 1 ]]; then AUTH=bedrock
-elif [[ ${CLAUDE_CODE_USE_VERTEX:-0}  == 1 ]]; then AUTH=vertex
-elif [[ -n ${ANTHROPIC_BASE_URL:-} ]];         then AUTH=gateway
-elif [[ -n ${ANTHROPIC_API_KEY:-} ]];          then AUTH=api
-elif [[ -n ${ANTHROPIC_AUTH_TOKEN:-} ]];       then AUTH=oauth
-else
-  subscription_session=1
-  AUTH=sub
-  [[ -r $TIER ]] && read -r tier < "$TIER" 2>/dev/null && [[ -n ${tier:-} ]] && AUTH="sub:$tier"
-fi
-
+# stdin carries rate_limits only after this session's first API response. The
+# cache covers the gap before it lands, and is written back from the live
+# figures so the next session on this credential starts with fresh numbers.
 if has "$five_pct" || has "$seven_pct"; then
-  # Live values cost nothing and are the freshest available, so they also
-  # refresh the cache for whichever session redraws next.
-  mkdir -p "$CACHE_DIR" 2>/dev/null
-  printf '%s\t%s\t%s\t%s\t%s\n' "$five_pct" "$five_at" "$seven_pct" "$seven_at" "$now" > "$CACHE.tmp" 2>/dev/null \
-    && mv "$CACHE.tmp" "$CACHE" 2>/dev/null
-elif ((subscription_session)) && [[ -r $CACHE ]]; then
+  if [[ -n $USAGE_SLOT ]]; then
+    mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
+    printf '%s\t%s\t%s\t%s\t%s\n' "$five_pct" "$five_at" "$seven_pct" "$seven_at" "$now" > "$CACHE.tmp" 2>/dev/null \
+      && mv "$CACHE.tmp" "$CACHE" 2>/dev/null
+  fi
+elif [[ -n $USAGE_SLOT && -r $CACHE ]]; then
   IFS=$'\t' read -r five_pct five_at seven_pct seven_at fetched_at < "$CACHE" 2>/dev/null
   is_int "${fetched_at:-}" || fetched_at=0
-  if (( now - fetched_at > STALE_MAX )); then
-    five_pct=-1 seven_pct=-1
-  fi
+  (( now - fetched_at > STALE_MAX )) && five_pct=-1 seven_pct=-1
+fi
+
+# The tier is only known for the keychain login, where it was read alongside
+# the token; an env token authenticates fine without revealing which plan.
+if ((SUBSCRIPTION)) && [[ $USAGE_SLOT == keychain && -r $TIER ]]; then
+  read -r tier < "$TIER" 2>/dev/null
+  [[ -n ${tier:-} ]] && AUTH="sub:$tier"
 fi
 
 # `claude-fable-5-1[1m]`: the context-window suffix gets its own colour.
@@ -212,10 +241,10 @@ line1="${ORANGE}${base}${RESET}"
 [[ $effort != "-" ]] && line1+=" ${MAGENTA}${effort}${RESET}"
 has "$ctx" && line1+="${SEP}${CYAN}${ctx}% ctx${RESET}"
 # Green for the subscription, amber for everything else: the distinction worth
-# seeing at a glance is whether this session is spending against the plan or
-# against something metered.
-((subscription_session)) && line1+="${SEP}${GREEN}${AUTH}${RESET}" \
-                         || line1+="${SEP}${YELLOW}${AUTH}${RESET}"
+# seeing at a glance is whether this session spends against the plan or against
+# something metered.
+((SUBSCRIPTION)) && line1+="${SEP}${GREEN}${AUTH}${RESET}" \
+                 || line1+="${SEP}${YELLOW}${AUTH}${RESET}"
 printf '%s\n' "$line1"
 
 window() {  # $1=label  $2=percent  $3=resets_at
