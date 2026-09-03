@@ -471,6 +471,17 @@ PYPIRC
           "refreshInterval": 60
         },
         "hooks": {
+          "SessionStart": [
+            {
+              "hooks": [
+                {
+                  "type": "command",
+                  "command": "~/.claude/statusline.sh --refresh",
+                  "timeout": 10
+                }
+              ]
+            }
+          ],
           "Stop": [
             {
               "matcher": "",
