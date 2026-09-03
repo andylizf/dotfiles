@@ -65,14 +65,24 @@ fingerprint() {
 # stays blank.
 resolve_credential() {
   AUTH="" USAGE_SLOT="" SUBSCRIPTION=0 STORE_DIR=""
+  # Order per the documented precedence list (docs/en/authentication, "Authentication
+  # precedence"): cloud providers, then ANTHROPIC_AUTH_TOKEN, then ANTHROPIC_API_KEY,
+  # then CLAUDE_CODE_OAUTH_TOKEN, and the /login credential last. The bearer token
+  # outranks the API key, so testing for the key first would label a session `api`
+  # while the CLI was authenticating with the token.
+  #
+  # ANTHROPIC_BASE_URL is not itself a credential; it redirects the requests. It is
+  # checked first anyway, because it means this session is not billing against
+  # Anthropic at all, which is the one thing worth seeing before the credential name.
   if   [[ ${CLAUDE_CODE_USE_BEDROCK:-0} == 1 ]]; then AUTH=bedrock; return
   elif [[ ${CLAUDE_CODE_USE_VERTEX:-0}  == 1 ]]; then AUTH=vertex;  return
+  elif [[ ${CLAUDE_CODE_USE_FOUNDRY:-0} == 1 ]]; then AUTH=foundry; return
   elif [[ -n ${ANTHROPIC_BASE_URL:-} ]];         then AUTH=gateway; return
-  elif [[ -n ${ANTHROPIC_API_KEY:-} ]];          then AUTH=api;     return
   elif [[ -n ${ANTHROPIC_AUTH_TOKEN:-} ]]; then
     AUTH=oauth
     [[ $ANTHROPIC_AUTH_TOKEN == sk-ant-oat* ]] || return
     fingerprint "$ANTHROPIC_AUTH_TOKEN"; USAGE_SLOT=$FP; return
+  elif [[ -n ${ANTHROPIC_API_KEY:-} ]];          then AUTH=api;     return
   elif [[ -n ${CLAUDE_CODE_OAUTH_TOKEN:-} ]]; then
     # How the unattended machines authenticate. Still the subscription, so it
     # is labelled as one; the tier is unknown without the keychain entry.
