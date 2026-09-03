@@ -64,7 +64,7 @@ fingerprint() {
 # is expected rather than exceptional. It writes no cache, so the row simply
 # stays blank.
 resolve_credential() {
-  AUTH="" USAGE_SLOT="" SUBSCRIPTION=0
+  AUTH="" USAGE_SLOT="" SUBSCRIPTION=0 STORE_DIR=""
   if   [[ ${CLAUDE_CODE_USE_BEDROCK:-0} == 1 ]]; then AUTH=bedrock; return
   elif [[ ${CLAUDE_CODE_USE_VERTEX:-0}  == 1 ]]; then AUTH=vertex;  return
   elif [[ -n ${ANTHROPIC_BASE_URL:-} ]];         then AUTH=gateway; return
@@ -87,12 +87,25 @@ resolve_credential() {
     [[ ${CLAUDE_CODE_OAUTH_SCOPES:-user:inference} == *user:profile* ]] || return
     fingerprint "$CLAUDE_CODE_OAUTH_TOKEN"; USAGE_SLOT=$FP; return
   fi
-  # A real login. CLAUDE_CONFIG_DIR gives it its own keychain entry, which is
-  # how a second account is kept alongside the default one, so the slot follows
-  # the config dir or there would be one cache for two accounts.
+  # A real login, whose credential sits in a keychain entry named after the
+  # store directory. Two accounts are kept side by side by pointing one session
+  # at a different directory, so the cache follows the same rule or there would
+  # be one file for two accounts.
+  #
+  # The CLI picks that directory as CLAUDE_SECURESTORAGE_CONFIG_DIR when set,
+  # else CLAUDE_CONFIG_DIR, and treats the entry as the unsuffixed default when
+  # neither is. Set-but-empty means the default too, which is why this tests for
+  # the variable being defined rather than for a value. Prefer the first: it
+  # moves the credential alone, while CLAUDE_CONFIG_DIR moves the whole config
+  # home, transcripts, settings and plugins included.
   AUTH=sub; SUBSCRIPTION=1; USAGE_SLOT=keychain
-  if [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
-    fingerprint "$CLAUDE_CONFIG_DIR"; USAGE_SLOT="cfg-$FP"
+  if [[ -n ${CLAUDE_SECURESTORAGE_CONFIG_DIR+set} ]]; then
+    STORE_DIR=$CLAUDE_SECURESTORAGE_CONFIG_DIR
+  elif [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
+    STORE_DIR=$CLAUDE_CONFIG_DIR
+  fi
+  if [[ -n $STORE_DIR ]]; then
+    fingerprint "$STORE_DIR"; USAGE_SLOT="cfg-$FP"
   fi
 }
 
@@ -128,13 +141,11 @@ if [[ ${1:-} == --refresh ]]; then
   tok="${ANTHROPIC_AUTH_TOKEN:-${CLAUDE_CODE_OAUTH_TOKEN:-}}"
   if [[ -z $tok ]]; then
     # Same service name the CLI derives: the default entry, suffixed with the
-    # first 8 hex of sha256(config dir) whenever CLAUDE_CONFIG_DIR is set. That
-    # suffix is what keeps a second account's credential from overwriting the
-    # first, and reading the wrong entry here would report the wrong account.
+    # first 8 hex of sha256 over the store directory resolved above. That suffix
+    # is what keeps a second account's credential from overwriting the first, so
+    # reading the wrong entry here would report the wrong account's usage.
     svc='Claude Code-credentials'
-    if [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
-      svc+="-$(printf '%s' "$CLAUDE_CONFIG_DIR" | shasum -a 256 | cut -c1-8)"
-    fi
+    [[ -n $STORE_DIR ]] && svc+="-$(printf '%s' "$STORE_DIR" | shasum -a 256 | cut -c1-8)"
     cred=$(security find-generic-password -s "$svc" -w 2>/dev/null)
     tok=$(printf '%s' "$cred" \
           | python3 -c 'import sys,json;print(json.load(sys.stdin)["claudeAiOauth"]["accessToken"])' 2>/dev/null)
