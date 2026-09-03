@@ -87,12 +87,18 @@ resolve_credential() {
     [[ ${CLAUDE_CODE_OAUTH_SCOPES:-user:inference} == *user:profile* ]] || return
     fingerprint "$CLAUDE_CODE_OAUTH_TOKEN"; USAGE_SLOT=$FP; return
   fi
+  # A real login. CLAUDE_CONFIG_DIR gives it its own keychain entry, which is
+  # how a second account is kept alongside the default one, so the slot follows
+  # the config dir or there would be one cache for two accounts.
   AUTH=sub; SUBSCRIPTION=1; USAGE_SLOT=keychain
+  if [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
+    fingerprint "$CLAUDE_CONFIG_DIR"; USAGE_SLOT="cfg-$FP"
+  fi
 }
 
 resolve_credential
 CACHE="$CACHE_DIR/usage-$USAGE_SLOT.tsv"
-TIER="$CACHE_DIR/tier.txt"
+TIER="$CACHE_DIR/tier-$USAGE_SLOT.txt"
 LOCK="$CACHE_DIR/refresh-$USAGE_SLOT.lock"
 
 # ---------------------------------------------------------------- refresh ---
@@ -121,7 +127,15 @@ if [[ ${1:-} == --refresh ]]; then
 
   tok="${ANTHROPIC_AUTH_TOKEN:-${CLAUDE_CODE_OAUTH_TOKEN:-}}"
   if [[ -z $tok ]]; then
-    cred=$(security find-generic-password -s 'Claude Code-credentials' -w 2>/dev/null)
+    # Same service name the CLI derives: the default entry, suffixed with the
+    # first 8 hex of sha256(config dir) whenever CLAUDE_CONFIG_DIR is set. That
+    # suffix is what keeps a second account's credential from overwriting the
+    # first, and reading the wrong entry here would report the wrong account.
+    svc='Claude Code-credentials'
+    if [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
+      svc+="-$(printf '%s' "$CLAUDE_CONFIG_DIR" | shasum -a 256 | cut -c1-8)"
+    fi
+    cred=$(security find-generic-password -s "$svc" -w 2>/dev/null)
     tok=$(printf '%s' "$cred" \
           | python3 -c 'import sys,json;print(json.load(sys.stdin)["claudeAiOauth"]["accessToken"])' 2>/dev/null)
     # The tier sits beside the token and changes almost never, so it is cached
@@ -239,9 +253,9 @@ elif [[ -n $USAGE_SLOT && -r $CACHE ]]; then
   (( now - fetched_at > STALE_MAX )) && five_pct=-1 seven_pct=-1
 fi
 
-# The tier is only known for the keychain login, where it was read alongside
-# the token; an env token authenticates fine without revealing which plan.
-if ((SUBSCRIPTION)) && [[ $USAGE_SLOT == keychain && -r $TIER ]]; then
+# The tier is only known for a keychain login, where it was read alongside the
+# token; an env token authenticates fine without revealing which plan.
+if ((SUBSCRIPTION)) && [[ -r $TIER ]]; then
   read -r tier < "$TIER" 2>/dev/null
   [[ -n ${tier:-} ]] && AUTH="sub:$tier"
 fi
