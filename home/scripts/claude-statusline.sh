@@ -129,6 +129,8 @@ resolve_credential
 CACHE="$CACHE_DIR/usage-$USAGE_SLOT.tsv"
 TIER="$CACHE_DIR/tier-$USAGE_SLOT.txt"
 LOCK="$CACHE_DIR/refresh-$USAGE_SLOT.lock"
+# When a refresh was last attempted, successful or not. See the spawn below.
+ATTEMPT="$CACHE_DIR/attempt-$USAGE_SLOT.txt"
 
 # ---------------------------------------------------------------- refresh ---
 # `--refresh` is what the SessionStart hook runs, never the render path: it
@@ -306,20 +308,27 @@ if [[ -n $USAGE_SLOT && -r $CACHE ]]; then
   [[ -n ${c_label:-} ]]    || c_label="-"
 fi
 
-# stdin carries rate_limits only after this session's first API response. The
-# cache covers the gap before it lands, and is written back from the live
-# figures so the next session on this credential starts with fresh numbers.
-if has "$five_pct" || has "$seven_pct"; then
-  if [[ -n $USAGE_SLOT ]]; then
-    mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
-    printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-      "$five_pct" "$five_at" "$seven_pct" "$seven_at" "$now" \
-      "$c_label" "$c_spct" "$c_sat" "$c_sfetched" > "$CACHE.tmp" 2>/dev/null \
-      && mv "$CACHE.tmp" "$CACHE" 2>/dev/null
-  fi
-elif (( c_fetched > 0 )); then
+# The fetched figures outrank the ones on stdin, and stdin is never written
+# into the cache.
+#
+# What arrives on stdin is not the account's current usage. Claude Code fills
+# rate_limits from the headers of this session's own last API response, so a
+# window left idle for an hour keeps presenting the figure from an hour ago,
+# and it presents it on every redraw. One cache file serves every session on a
+# credential, so writing those figures back made the file oscillate between
+# whichever sessions happened to redraw, each stamping an old snapshot with the
+# current time. Three sessions produced 76%, 68% and 46% for one five-hour
+# window inside a minute, against 77% at the endpoint.
+#
+# The fetch has neither problem: it asks for the account, not for a session,
+# and every session on the credential then draws the same figure.
+#
+# stdin still stands where nothing better exists. A credential that cannot
+# answer the usage endpoint has no slot and no cache, which is how an
+# unattended machine on a setup-token is authenticated, and there the
+# session's own snapshot is the only source there has ever been.
+if (( c_fetched > 0 && now - c_fetched <= STALE_MAX )); then
   five_pct=$c_five five_at=$c_five_at seven_pct=$c_seven seven_at=$c_seven_at
-  (( now - c_fetched > STALE_MAX )) && five_pct=-1 seven_pct=-1
 fi
 
 scoped_label=$c_label scoped_pct=$c_spct scoped_at=$c_sat
@@ -338,8 +347,27 @@ scoped_label=$c_label scoped_pct=$c_spct scoped_at=$c_sat
 # in the checkout, and the failure is invisible: the exec error goes to the
 # /dev/null this line is careful to point everything at, so the column would
 # simply stop updating with nothing anywhere to say why.
+#
+# The interval is held down by the attempt, not by the last success. A refresh
+# that fails writes no cache, so gating on the success alone would leave the
+# condition true and fire a fresh attempt on every redraw, once a minute per
+# open session, for as long as the endpoint kept refusing. That turns a server
+# asking to be left alone into sixty requests an hour, which is the one way
+# this row could earn a credential any trouble. Stamping before the spawn holds
+# the floor at one attempt per interval whether or not it works.
+#
+# A constant floor, not a widening backoff: a failed fetch costs a blank column
+# and nothing else, and five minutes is already far below any rate this
+# endpoint is likely to object to.
 if [[ -n $USAGE_SLOT ]] && (( now - c_sfetched > SCOPED_TTL )) && [[ ! -d $LOCK ]]; then
-  ( "${BASH:-bash}" "$0" --refresh </dev/null >/dev/null 2>&1 & ) &
+  attempted=0
+  [[ -r $ATTEMPT ]] && read -r attempted < "$ATTEMPT" 2>/dev/null
+  is_int "${attempted:-}" || attempted=0
+  if (( now - attempted > SCOPED_TTL )); then
+    mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
+    printf '%s\n' "$now" > "$ATTEMPT" 2>/dev/null
+    ( "${BASH:-bash}" "$0" --refresh </dev/null >/dev/null 2>&1 & ) &
+  fi
 fi
 
 # The tier is only known for a keychain login, where it was read alongside the
