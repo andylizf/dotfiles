@@ -8,9 +8,10 @@ default -- producing half-width takes an extra IME switch. So the artifact is
 below the level of intent and eyeballing does not catch it reliably; count it.
 
 Protected spans are never touched or reported: fenced code blocks, inline
-code, URLs, markdown link targets, HTML/XML tags, and a quotation whose content
-has no Chinese in it -- an English sentence quoted inside Chinese prose keeps
-its own punctuation, `「can you say which answer you expect?」` included.
+code, URLs, markdown link targets, and HTML/XML tags. A mark is judged by the
+text on its two sides: only a Chinese neighbour makes it Chinese punctuation.
+A quotation mark next to it says nothing about the language, so the colon in
+`「attach a lane, then:」` stays half-width -- it closes an English clause.
 
 Usage:
     cjk-punct.py FILE...            # report only
@@ -24,10 +25,6 @@ import sys
 # CJK ideographs + CJK punctuation (、。《》「」…) + full-width forms (，：？！（）).
 CJK = r"㐀-䶿一-鿿　-〿＀-￯‘’“”"
 CJK_RE = re.compile(f"[{CJK}]")
-# Ideographs alone, for deciding what language a quotation is in: its closing
-# 」 is CJK punctuation, so testing the whole span against CJK would call every
-# quotation Chinese.
-HAN_RE = re.compile(r"[㐀-䶿一-鿿]")
 
 # Unambiguous swaps: same meaning, only the width is wrong.
 SIMPLE = {",": "，", ";": "；", ":": "：", "?": "？", "!": "！"}
@@ -54,20 +51,15 @@ PROTECT_PATTERNS = [
     re.compile(rf"^ {{4,}}(?![^\n]*[{CJK}])\S[^\n]*$", re.M),
 ]
 
-# A quotation with no ideograph inside is an English sentence quoted in Chinese
-# prose, and its `:` `?` `,` belong to that sentence. Without this, the mark
-# before the closing 」 sits next to a CJK character and gets "corrected":
-# `「attach a lane, then:」` became `「attach a lane, then：」`. Same line only.
-QUOTE_SPANS = [
-    re.compile(r"「[^「」\n]{0,300}」"),
-    re.compile(r"『[^『』\n]{0,300}』"),
-    re.compile(r"“[^“”\n]{0,300}”"),
-    re.compile(r"‘[^‘’\n]{0,300}’"),
-]
-
 # Markup that sits between a mark and the Chinese it belongs to: `**粗体**：中文`
 # still needs a full-width colon.
 TRANSPARENT = "*_ "
+
+# Quotation marks are in the CJK range but carry no language of their own. A
+# mark next to one is judged as if that side were empty: `then:」` closes an
+# English clause and keeps its colon; `用这个」: 因为` still gets a full-width one
+# from the Chinese on its other side.
+QUOTE_MARKS = "「」『』“”‘’"
 
 
 def protected_mask(text):
@@ -75,12 +67,6 @@ def protected_mask(text):
     mask = [False] * len(text)
     for pat in PROTECT_PATTERNS:
         for m in pat.finditer(text):
-            for i in range(m.start(), m.end()):
-                mask[i] = True
-    for pat in QUOTE_SPANS:
-        for m in pat.finditer(text):
-            if HAN_RE.search(m.group(0)):
-                continue
             for i in range(m.start(), m.end()):
                 mask[i] = True
     return mask
@@ -92,7 +78,7 @@ def near_cjk(text, i):
         j = i + step
         while 0 <= j < len(text) and text[j] in TRANSPARENT:
             j += step
-        if 0 <= j < len(text) and CJK_RE.match(text[j]):
+        if 0 <= j < len(text) and text[j] not in QUOTE_MARKS and CJK_RE.match(text[j]):
             return True
     return False
 

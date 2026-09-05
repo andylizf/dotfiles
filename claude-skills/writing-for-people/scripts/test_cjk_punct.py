@@ -23,6 +23,11 @@ CASES = [
     # Inline code and ASCII-quoted English were already protected and stay so.
     ("参数写成 `--wait-for domcontentloaded`, 不是别的。", "参数写成 `--wait-for domcontentloaded`， 不是别的。"),
     ('英文引文 "it counts, always" 保持原样。', '英文引文 "it counts, always" 保持原样。'),
+    # A mark after a closing quote is judged by the Chinese on its other side.
+    ("他说「ok」, 然后继续。", "他说「ok」， 然后继续。"),
+    ("他说：「用这个」: 因为快。", "他说：「用这个」： 因为快。"),
+    # A Chinese quotation's own mark is still Chinese.
+    ("她问“真的吗?”然后走了。", "她问“真的吗？”然后走了。"),
 ]
 
 
