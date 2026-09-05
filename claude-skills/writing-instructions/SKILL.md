@@ -42,7 +42,7 @@ the task in hand — and they are the only place triggering is governed from.**
 
 **Accretion.** One paragraph added per new instance, until a single item carries five sub-headings. The cause is that patterns were being collected instead of the shape underneath them being found. **Before adding the Nth pattern, look for what makes them one thing.** A rule that takes five costumes to recognise will miss the sixth.
 
-**Scoping to a category.** Naming the important-looking half invites the reading that the other half is exempt, and the next instance lands there. An unqualified rule is already universal; a qualifier is a hole.
+**Scoping a rule to the vivid half.** Naming the important-looking half invites the reading that the other half is exempt, and the next instance lands there. **Test: does the failure this rule prevents also happen outside the named set?** If it does, the naming is a hole — cut it and let the rule stand universal, which it already was. If it genuinely does not, that is the rule's scope: keep it, inside the sentence that states the rule.
 
 **Forced parallelism.** Constructing a symmetry the facts do not have, producing a clause that is neat and meaningless. If the parallel needs a wrong word to close, drop the parallel.
 
@@ -52,11 +52,11 @@ the task in hand — and they are the only place triggering is governed from.**
 
 **A step that leaves no trace when skipped.** A step gets reasoned around at the moment it applies: this case does not need the check, it looks done already, a "must" reread as "consider". Nothing in the output shows it happened, so nothing shows it did not. Name what the step produces — a sentence, a file, a named reader — so skipping it leaves a hole rather than a private judgement. The named product has to depend on the step having run: one that appears whether or not it did is not a trace but a reassurance, and it is read as evidence the rule held while the rule is being broken.
 
-**Contradiction, resolved by proximity or by blending rather than by reasoning.** Meeting two rules that conflict, a reader follows whichever it saw first or sits nearest the task in hand, and reports having honoured both. A capable one does something worse: it spends effort trying to satisfy both and produces something neither rule asked for. Neither outcome is visible in the result, so the conflict has to be found in the text. **The commonest shape is not a flat contradiction but a rule whose qualifier lives in a different sentence**, so it reads as unconditional where it sits — the fix is to write the scope into that sentence rather than leaving it to position. Find the collision before saving and cut one side, or scope it.
+**Contradiction, resolved by proximity or by blending rather than by reasoning.** Meeting two rules that conflict, a reader follows whichever it saw first or sits nearest the task in hand, and reports having honoured both. A capable one does something worse: it spends effort trying to satisfy both and produces something neither rule asked for. Neither outcome is visible in the result, so the conflict has to be found in the text. **The commonest shape is not a flat contradiction but a rule whose scope lives in a different sentence**, so it reads as unconditional where it sits — the fix is to write that scope into the rule's own sentence rather than leaving it to position. Find the collision before saving and cut one side, or scope it.
 
 **Unenforceable instructions.** A skill body cannot order its own invocation — by the time it loads, it has been invoked. Check that whoever reads the line is positioned to act on it.
 
-**Language.** English throughout. Quote verbatim only where the phrase itself is the artifact — something that has to be recognised word for word. Otherwise paraphrase; a file thick with quotes is an incident log wearing a rulebook's cover.
+**Language.** Write an instruction file in the language it is already in, description included; a new one is English. Quote verbatim only where the phrase itself is the artifact — something that has to be recognised word for word. Otherwise paraphrase; a file thick with quotes is an incident log wearing a rulebook's cover.
 
 ## Before saving
 
