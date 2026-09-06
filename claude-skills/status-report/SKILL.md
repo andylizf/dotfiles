@@ -91,7 +91,7 @@ clock.
    a command. Where more than one thing is in flight: what is live, what is next, the single
    blocker, and whether anything else is running at all (「除此之外没有别的在飞了」).
 
-## Every noun he must act on is defined where it appears
+## Every word he must act on is decodable where it appears
 
 The words he cannot decode are, overwhelmingly, names you coined during the work for things you
 built: a pool, a gate, a handle, a mode, a marker, a phase letter. To you each is the thing; to him
@@ -103,10 +103,9 @@ subagent's, a tool's — is one he used himself, or one defined in the line that
 the machine, the script — use it unchanged and do not explain it back to him. Call this the noun
 check; it is referred to below.
 
-**A quotation in another language carries a Chinese translation right after it**, in parentheses,
-however long the quote — a line from a file, a reviewer's sentence, a rule you are proposing. He
-reads the report in Chinese, and an English line he has to translate himself stands where the
-meaning has to be. Identifiers, commands and paths are not quotations and stay as they are.
+**A quotation not in Chinese carries a Chinese translation right after it** — a line from a file, an
+error message, a reviewer's sentence, a rule you are proposing — in full; the quotation keeps its own
+words, and identifiers, commands and paths are not quotations.
 
 **An identifier is fine riding along and never fine load-bearing.** A ticket or PR number in
 parentheses at the end of an item he can already understand costs him nothing and lets him open it.
@@ -251,6 +250,8 @@ Each line here is the short form of a rule above; where they differ, the rule ab
 - No word that points outside the message — including 「那行」, which is a subject and passes the
   line above.
 - Every abstraction has one real instance beside it, and every instance a word he can map it to.
+- Every quotation not in Chinese carries its Chinese translation; identifiers, commands and paths
+  are not quotations.
 - Where rounds have accumulated: the whole state, and every count says which total.
 - Organised around his question, not around the work.
 - Anything needing him is one collapsed decision with a leaning and its reason; the blocker first
@@ -266,7 +267,7 @@ Each line here is the short form of a rule above; where they differ, the rule ab
 - Names he made you replace stay replaced as the item's name; the identifier still rides in
   parentheses.
 - Chinese punctuation full-width: `，。：；？！、` and `……`, 「」 for quotes. Half-width stays inside
-  code, paths, parameter names and numbers, the `[08-12 18:40]` stamp included. For anything that
+  code, paths, parameter names, numbers and a verbatim quotation, the `[08-12 18:40]` stamp included. For anything that
   lands in a file, `~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix` does it
   mechanically.
 
