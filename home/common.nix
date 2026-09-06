@@ -472,9 +472,6 @@ PYPIRC
         "alwaysThinkingEnabled": true,
         "skipDangerousModePermissionPrompt": true,
         "cleanupPeriodDays": 365,
-        "env": {
-          "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
-        },
         "statusLine": {
           "type": "command",
           "command": "~/.claude/statusline.sh",
