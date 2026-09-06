@@ -61,7 +61,8 @@ clock.
    what (「复现脚本从 403 变成 200」 is verified; 「应该好了」 is not). **Each item is named by what
    broke or what a user now sees, never by an identifier** — a PR number is the usual one. The unit
    of the report is never the unit you kept your own books in while working, whatever you were
-   counting or ticking off. An item is what now happens differently, said in the situation he would
+   counting or ticking off — and when the work is editing text, word counts and sections moved
+   feel like content rather than books. An item is what now happens differently, said in the situation he would
    meet it; where nothing he does behaves differently, it is what the rule or the code now requires
    that it did not. The file, the ticket and the count ride in parentheses. Only where he asked in
    that unit (「哪几个文件动了」) is the unit his.
@@ -256,7 +257,7 @@ Each line here is the short form of a rule above; where they differ, the rule ab
   lands in a file, `~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix` does it
   mechanically.
 
-## Three reports, as sent and as they should have read
+## Reports, as sent and as they should have read
 
 **A batch of fixes, as it went out.** He asked for it again in plain words: what was actually done.
 
@@ -324,3 +325,30 @@ counts over three different denominators side by side.
 只有右上角那 25 条要你上心：判成「对方的、要删」，而判断是我猜的。
 所以你现在只剩一件事：过一遍那 25 条。
 ```
+
+**A change to rules, as it went out.** He said he still could not read it.
+
+```
+（时间戳和定位行略）
+1. explain.md（a1b2c3d + b2c3d4e）：根文件 3,798 → 1,600 词，描述 1,117 → 746 字符。路由表挪到七条规则下面；「一次讲解的形状」并入 references/structure.md；三十项发送前清单搬进新建的 references/checklist.md，四件「递把手不递东西」的马甲合成一项。三处冲突各在规则自己那句里收口：只定义他没用过的词、机制操作的原语从不算可推迟的空缺、重写是重组不是加长。已验证：部署后逐字节与源码相同。
+2. writing.md（c3d4e5f）：952 → 613 词……
+```
+
+The stamp and orientation line were there; the body is the work's own books — one item per file,
+word counts before and after, which section moved where — in a subagent's vocabulary (马甲、原语、
+收口), and nothing says what he will meet next time.
+
+**The same change, rewritten.** He read it and moved on.
+
+```
+我上一条报的是文件内部搬了什么、字数变了多少，通篇是我自己造的词，没说你以后会看到什么不一样，从头说，三条。
+
+[09-06 11:07] 三份规则文件的整改：改完、已部署，装出来的文件和仓库逐字节相同，不需要你做什么。
+1. 讲东西的规则。以后我给你讲一个机制时，你自己用过的词我直接用，不再解释；只有你没用过的词才定义，你贴给我的报错、论文里的词不算「你用过」。你说「没懂」让我重讲时，我重新组织，不会越写越长。（explain.md，a1b2c3d）
+2. 对外写作的规则。「我看行」这类说法要不要改成「我觉得可以」，以前两处规则给的答案相反，现在只有一个。你以后会看到：我替别人写东西之前，回复里先有一行「读者是谁、他拿去做什么、落在哪、多正式」；你问「这封邮件怎么回」，草稿进文件供你改，整段也贴在回复里。（writing.md，c3d4e5f）
+3. 要不要问你的规则。你能直接 push 的仓库里，commit、push、开 issue、开 PR、合并都不问；对着某个人的评论、回复，或 at 了人的文字，才要令牌。你回「SEND x，另外把第二段口气放软」这种带话的令牌，以前没有出口；现在旁边的话就是你的下一条指令，改了稿就作废重发。（gate.md，d4e5f6a）
+接下来没有在跑的东西。(details omitted)
+```
+
+An item whose object is a rule file is named by what the rule now makes happen, in words he uses;
+the file name is demoted to the parenthesis exactly as a ticket number would be.
