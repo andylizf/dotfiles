@@ -103,8 +103,9 @@ subagent's, a tool's — is one he used himself, or one defined in the line that
 the machine, the script — use it unchanged and do not explain it back to him. Call this the noun
 check; it is referred to below.
 
-**A quotation not in Chinese carries a Chinese translation right after it** — a line from a file, an
-error message, a reviewer's sentence, a rule you are proposing — in full; the quotation keeps its own
+**In a report written in Chinese, a quotation not in Chinese carries a Chinese translation right
+after it** — a line from a file, an error message, a reviewer's sentence, a rule you are proposing —
+in full; the quotation keeps its own
 words, and identifiers, commands and paths are not quotations.
 
 **An identifier is fine riding along and never fine load-bearing.** A ticket or PR number in
@@ -266,10 +267,6 @@ Each line here is the short form of a rule above; where they differ, the rule ab
   tool or a log included.
 - Names he made you replace stay replaced as the item's name; the identifier still rides in
   parentheses.
-- Chinese punctuation full-width: `，。：；？！、` and `……`, 「」 for quotes. Half-width stays inside
-  code, paths, parameter names, numbers and a verbatim quotation, the `[08-12 18:40]` stamp included. For anything that
-  lands in a file, `~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix` does it
-  mechanically.
 
 ## Reports, as sent and as they should have read
 
