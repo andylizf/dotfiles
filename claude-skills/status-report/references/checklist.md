@@ -6,8 +6,9 @@ file, and where a line here and a rule there differ, the rule there governs.
 
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
-- First line names the task and one of the three states — in a rewrite, the second line does,
-  after the sentence naming what was wrong.
+- First line names the task, one of the three states, and — where the report answers a question
+  of his — which question, in his vocabulary; in a rewrite the second line does, after the sentence
+  naming what was wrong.
 - Phenomenon before cause; cause before fix.
 - Every item named by what broke, what he sees, or what now holds that did not; files, tickets and
   counts ride in parentheses and carry nothing.

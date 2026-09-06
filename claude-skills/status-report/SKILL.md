@@ -34,9 +34,11 @@ finished.
 
 ## The shape, in the order he needs it
 
-1. **Where we are.** Project and task, in his name for it wherever he named it, then one of three
-   states: done, blocked on him, still running. One line. After a long detour it also restates
-   which of his questions is being answered.
+1. **Where we are.** One line holding the project and task in his name for them, one of three
+   states — done, blocked on him, still running — and, where this report is the answer to a
+   question of his about the work, which question, in his vocabulary, inside that same line and
+   never as a line of its own ahead of the answer: he does not remember what he asked by the time
+   the answer comes. Where the task name and his question are the same words, say them once.
 2. **Seen, then why, then done.** For a fix: the phenomenon (what a user saw, what a command
    printed, what failed), in terms that need no code to picture; then the cause; then the change.
    For other work: what he would have met before and what he meets now — never the file before
