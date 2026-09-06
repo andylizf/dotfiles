@@ -32,7 +32,9 @@ sentence breaking, so the fault survives a re-read.
 
 **An abstraction arrives with one real instance beside it**: the actual row, the actual warning
 text, the actual value. A category names where its instances live; he cannot act on that, so hand
-him one. This instance is never what the length rules cut.
+him one. And the instance says what it is an instance of, in a word he has used or one the same
+line defines — the row, the warning text, the value, each named by what it shows; a bare example is
+as unusable as a bare category, because he cannot map it. Neither half is what the length rules cut.
 
 ## Where he can point
 
@@ -237,7 +239,7 @@ Each line here is the short form of a rule above; where they differ, the rule ab
 - Every sentence has a subject that names something.
 - No word that points outside the message — including 「那行」, which is a subject and passes the
   line above.
-- Every abstraction has one real instance beside it.
+- Every abstraction has one real instance beside it, and every instance a word he can map it to.
 - Where rounds have accumulated: the whole state, and every count says which total.
 - Organised around his question, not around the work.
 - Anything needing him is one collapsed decision with a leaning and its reason; the blocker first

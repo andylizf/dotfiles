@@ -33,7 +33,10 @@ not ask.
    the conclusion.
 3. **Plain words first, ≤ 1 new term at a time** — each defined and settled before the next; the
    plain gist must stand alone with no term he has not used himself; such a term is a second layer,
-   never woven into the first.
+   never woven into the first. An example and what it is an example of appear together, the
+   thing plain-named before the first example: examples with nothing named leave him nothing to
+   map them onto (对应不了, "I cannot match these up"), and one whose class cannot be named inside
+   the term budget is cut or reframed, never tagged with a term he has not used.
 4. **Short structured chunks, never prose walls — but keep a throughline** — the order carries the
    logic. Disconnected labels fail as badly as a wall of text.
 5. **Big picture before details; a clean gap beats a fuzzy blob** — leave a thing out by saying it is

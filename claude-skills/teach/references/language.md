@@ -18,6 +18,11 @@ themselves — the term, the exact formula, the precise spec — ideally as a tr
 doesn't hurt your understanding"), never as the opening. A name they use themselves goes straight
 into the sentence.
 
+The same order holds for examples: say in plain words what they are examples of *before* the
+first one, so each lands on something. A run of examples with the name at the end, or with no name,
+reads fluently and leaves him holding instances he cannot place; where the only name is a term he
+has not used, the plain description carries the pairing and the term rides as the trailing aside.
+
 Opening with a bare formula or a dense identifier loses them instantly, because it assumes the very
 mental model it's supposed to build.
 

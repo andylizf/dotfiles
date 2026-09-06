@@ -40,6 +40,8 @@ differ, the rule governs.
   define what it *is* before the mechanism.
 - Invented a plain-sounding compound noun and left it undefined? → one sentence on what it
   measures, in what unit.
+- Examples with nothing named as what they are examples of, or named only at the end? → say in
+  plain words what they instance, before the first one.
 - Does the analogy use a term he has not used himself? → define it, or change the analogy.
 - Analogy with no stated stopping point? → say where it stops: same shape ≠ same cause, and he
   will assume both transfer unless told.
