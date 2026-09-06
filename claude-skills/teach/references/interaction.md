@@ -47,16 +47,31 @@ Not their foundation. This is the most important recovery move and the easiest t
 When they say they don't follow, the instinct to **restart at fundamentals is almost always exactly
 wrong**. They have studied the field; re-explaining basics reads as condescension while missing the
 real gap. The confusion is usually one specific subtle point buried in a bad ordering, not a hole in
-their foundation. Find *that* point. Do not lower the level.
+their foundation. Find *that* point. Do not lower the level — where "the level" means the field
+around the explanation. A primitive *this* explanation stands on and never defined, the noun the
+mechanism acts on, is the commonest cause of a second miss, and supplying it is not lowering the
+level.
 
 **Often the sharpest move is to step up and name the conceptual boundary they're straddling** rather
 than push more detail — e.g. "你卡的不是 CUDA，是 CUDA 底下那一层——GPU 微架构，这是两套不同的知识。"
 Diagnosing which layer the question actually lives on unsticks them faster than any amount of
 re-explanation.
 
-**Piling on more text is itself usually wrong.** If two attempts haven't landed, the problem is the
-framing or the ordering, not insufficient volume. Step back and re-aim; don't write a third, longer
-wall.
+**When the whole explanation did not land, the rewrite re-orders; it does not pile on.** This is the
+reply to 没看懂 about an explanation as a whole — and a bare 没看懂 with no piece named means the whole. A
+question about one named piece is answered first, then told where in the explanation it sits; a
+critique that did not land is stripped down to only the errors, not rebuilt. Where the diagnosis is
+that the question lives on another layer, name that layer instead — that reply is not a rewrite.
+Otherwise find what was missing and rebuild from the first sentence around it, or cut the second
+mechanism that was shown in the same breath and rebuild around the one that remains — at the same
+level, with the same things in and out plus the primitive it stood on and never defined, every piece
+that landed put back in position. What is banned is volume as the fix: nothing goes in that the
+explanation did not need the first time. An opening line saying what went wrong with the first
+attempt is not volume. Resuming from where you stopped carries forward whatever went wrong in the
+order; answering only the fragment they pointed at, when it was the whole that missed, leaves them
+holding two pieces and joining them. If two attempts haven't landed, the problem is usually the
+framing or the ordering — or, on an empirical point, the missing measurement — not insufficient
+volume. Don't write a third, longer wall.
 
 ## Answer the exact question, as a peer
 

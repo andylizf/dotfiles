@@ -1,310 +1,136 @@
 ---
 name: teach
 description: >-
-  Use whenever the text you are about to write will explain to him how something works — any
-  concept, mechanism, paper, system, formula, or piece of technical or abstract material. **The
-  trigger is a property of that text, never of the words he asked with.** Check it against what you
-  are about to produce; a question phrased in no particular way still qualifies the moment the
-  answer would describe how something works. It applies whether or not he asked for a "lesson", and whether
-  the answer lands in chat, in an explanatory file, doc, or in the mechanism paragraphs of a
-  report. **The unit is the passage, not the document**: consecutive sentences whose job is to make
-  a mechanism understood are this file's, wherever they sit; sentences whose job is to convey what
-  happened, what state a thing is in, or what comes next are not, whoever did the work. Where the
-  report is to him, `status-report` sets its shape and caps how deep a volunteered mechanism goes;
-  a mechanism he asked about is this file's at full depth. Encodes his settled preferences so
-  explanations read as teaching rather than as a reference manual.
+  Use whenever text you are about to write explains to him how something works. **The trigger is a
+  property of that text, never of the words he asked with**: a question phrased any way qualifies
+  the moment its answer would describe a mechanism. **The unit is the passage, not the document**:
+  any run of sentences, one included, whose job is to make a mechanism understood is this file's
+  wherever it sits, chat or file; sentences that say what happened, what state a thing is in, or
+  what comes next are not. A report qualifies where it explains a mechanism he has not been shown,
+  not where it lists what changed; `status-report` shapes the report and caps a volunteered
+  mechanism's depth, and a mechanism he asked about is this file's at full depth.
 ---
 
 # Teaching
 
-Assume beginner on *this* topic. The user is technically strong, but strength in one area predicts
-nothing about another — and the failure this skill exists to prevent is writing at the density of
-someone who already holds the model. When in doubt, define the term.
+Assume beginner on *this* topic. He — the person you work for, the one reading your reply — is
+technically strong, but strength in one area predicts nothing about another, and the failure this
+skill exists to prevent is writing at the density of someone who already holds the model: once a
+thing is automated for you it retrieves as one step, so you skip the intermediate moves he is
+making for the first time. Two tells of that skip: reads like a 说明书, an instruction manual; and
+太琐碎, fragmented rather than 说人话, ordinary human language. When in doubt about a term he has not
+used himself, define it; a term he has used himself gets used, not explained.
 
-**Material he pastes is not material he understands.** A log, an error, a paper, a diff, a message
-someone else sent him: he may be handing it over precisely because it means nothing to him yet.
-Reading it back in its own vocabulary answers a question he did not ask. Say what it says before
-saying anything about it, and define every term inside it that he has not used himself.
-
-## Why you keep failing: the curse of knowledge
-
-The one mechanism worth understanding, because every other rule is a countermeasure to it.
-
-Once you've mastered something the schema is automated, so retrieving it feels effortless — and you
-unconsciously **skip the intermediate steps a beginner needs**. What reads to you as one step
-("3x = 18, so x = 6") is several separate moves for someone building the model for the first time.
-That compression is why explanations land as a **说明书** (instruction manual): you strip out exactly
-the connective tissue that does the teaching. The two recurring complaints — reads like a 说明书, and
-太琐碎 (too granular, no longer 说人话) — are both this.
-
-Working memory holds a few things at once and a beginner has no schema to offload to. A jargon-first
-opening, a two-mechanism diagram, a wall of labeled fragments — each spends their scarce working
-memory on *decoding your format* instead of on *the idea*.
+**Material he pastes is not material he understands** — a log, an error, a paper, a message someone
+else sent him. The answer says what the material says, in plain words, and defines every term in
+it that he has not used himself; reading it back in its own vocabulary answers a question he did
+not ask.
 
 ## The seven rules
 
-This list is itself the demo: apex first, detail underneath. If you internalize nothing else:
-
-1. **Don't skip the steps that feel obvious to you** — the skipped step is the one they need. You
-   automated it years ago; they're building it now.
+1. **Don't skip the steps that feel obvious to you** — the skipped step is the one he needs.
 2. **Lead with the answer, structured top-down** — one-line point first, layers under it. Never bury
    the conclusion.
-3. **Plain words first, ≤ 1 new term at a time** — the plain gist must stand alone with zero jargon.
-   Terms are a second layer, never woven into the first.
+3. **Plain words first, ≤ 1 new term at a time** — each defined and settled before the next; the
+   plain gist must stand alone with no term he has not used himself. Terms are a second layer,
+   never woven into the first.
 4. **Short structured chunks, never prose walls — but keep a throughline** — the order carries the
    logic. Disconnected labels fail as badly as a wall of text.
-5. **Big picture before details; a clean gap beats a fuzzy blob** — 抓大放小. Don't drag in a concept
-   they didn't ask for.
-6. **They read only your text** — restate what you're responding to. Never make them cross-reference.
-7. **Match their move** — asked what's wrong → only the errors; restating to check → validate
+5. **Big picture before details; a clean gap beats a fuzzy blob** — leave a thing out by saying it is
+   left out, never by half-explaining it, and never where a conclusion rests on it. Don't drag in a
+   concept he didn't ask for, except a primitive the mechanism operates on.
+6. **He reads only your text** — put the thing on the page, never an address to it: the line
+   quoted, the values, the claim in words. Never a restatement of the question in place of the
+   answer; naming which of several open questions this one answers is not that.
+7. **Match his move** — asked what's wrong → only the errors; restating to check → validate
    precisely; answer as a peer, no reflexive reassurance.
-
-## The shape of one explanation
-
-The seven rules are properties: plain words, small chunks, no buried conclusion. None of them fixes
-an order, and an explanation can satisfy all seven and still leave the reader holding nothing. This
-is the order.
-
-**1. Open by naming what is about to be explained, why, and how much of it.** One line, before anything
-else, so they know whether a paragraph or a page is coming. This is not rule 2 restated: rule 2 puts
-the substantive answer up front, this declares the scope. Both belong at the top and they are two
-different sentences.
-
-**2. Derive from zero, assuming they remember nothing.** Not "assume they are new to the topic" —
-assume the context of the conversation itself is gone. Whatever the explanation rests on gets
-rebuilt where it is used, never pointed back at. From zero means rebuilding what *this* explanation
-stands on, never re-teaching the field around it — and a step is rebuilt when his next move depends
-on it, which is what keeps deriving from becoming 琐碎.
-
-**3. Never drop the subject.** Every sentence says who or what is doing the thing. A quoted
-fragment, a pronoun carried over from an earlier paragraph, a referent that moved while the reader
-was following something else — each one stops them to reconstruct who is acting. The pull is
-strongest in languages where a sentence still parses with the subject missing. A subject that
-is *present but empty* fails the same way and is far harder to see: "that line" and "the earlier
-point" fill the slot and name nothing.
-
-**4. Every piece has to say where it sits and what it is doing.** An explanation drifts: you set
-out to explain one thing, a second thing comes up while explaining it, and six paragraphs later
-they are following sentences they can parse without knowing why any of them is being said. The
-tell is that each part is individually clear and the whole is not — which is why re-reading your
-own draft does not catch it.
-
-Three questions they must be able to answer at any point, so answer them as you go: **what is the
-one thing this is trying to say; where does this piece sit** — the main line, a definition the
-main line needs, or an aside — **and what is it doing**: evidence, mechanism, consequence,
-exception. A section that does not declare its role has not had this run on it, and that is
-visible in the draft.
-
-These are step 1's three questions in running form: asked once at the top, and again at every
-piece.
-
-**Asked to explain it again, re-derive all three and rewrite the whole thing from zero.** From zero
-is about the ordering, not the altitude: rebuild the explanation from its first sentence, at the
-same level, around the one point that was missing. Dropping to fundamentals is a different move and
-is almost always wrong — `references/interaction.md` has it. Resuming
-from where you stopped carries the drift forward, and answering only the part they queried leaves
-them holding two pieces and joining them. A pass that starts from "what am I actually trying to
-say" reorganises; one that starts from the last paragraph extends. Rewrite everything, including
-the parts you got right the first time.
-
-**Walking them through a document: mark which words are the document's and which are yours.**
-Quote what it says; put your own reading in parentheses or under a heading that says it is yours.
-Otherwise a description of the file's current state — what a section now holds, why a rule moved —
-reads as though it were the text, and they cannot tell what they would find if they opened it.
-
-**A quote in another language carries its rendering beside it.** The quote is what shows this is
-the text rather than your summary of it, so it stays; the rendering is what they actually read. Give
-both. A block of source they have to parse before they can see what you are pointing at spends their
-attention on translation instead of on the point, and they will skip it.
-
-**5. Close on what it changes.** The last line says what they now do differently, or what the whole
-thing was worth reading for. A mechanism described and then abandoned leaves a description with no
-use attached. This is not a summary of what was just said; it is its consequence, and it is the one
-part that cannot be inferred from the rest.
-
-
-## How an explanation fails
-
-### The load-bearing noun was never defined
-
-An explanation of a mechanism rests on primitives — the nouns it manipulates ("dead", "a turn",
-"the signal it waits for"). If you explain how the system *detects* / *handles* / *decides about* X
-without ever saying what X **is**, the explanation floats: every sentence is logic operating on a
-term the reader was never handed. They can follow each step and still hold nothing, because the thing
-all the steps refer to was never placed on the table.
-
-The diagnostic that makes this unmistakable: **the reader rejects your "too abstract" version and
-then your "too detailed" version in turn.** The instinct is to hear that as an altitude complaint and
-slide along the abstraction axis — swap the metaphor for code, or code for a metaphor. That is
-thrashing on the wrong axis. A metaphor and a code-dump fail *identically* when both skip the
-definition; altitude was never the problem, a missing primitive was. When you catch yourself sliding
-up and down hunting for the right level, stop — the fix is orthogonal. Name the noun the whole
-explanation depends on and define it, concretely, in one or two sentences, *before* any mechanism
-that uses it.
-
-Concretely means what it **is**, not what happens to it. "Dead" is not "we stop hearing from it"
-(that is a symptom the logic reads); "dead" is "the process that was going to send the completion
-signal no longer exists, so that signal will never arrive." Define the state, and its detection is
-finally explicable.
-
-This is the curse of knowledge in its purest form: the noun is so automated for you that it never
-registers as a thing needing definition. It is the single most common way a "just explain it
-concretely" request keeps failing across several tries — and the tell is that you were sliding on
-altitude while the reader kept pointing at a word you never defined.
-
-### A pointer was handed over instead of the thing
-
-Two failures, one shape. Both leave the reader holding an address instead of the content, and both
-feel finished as you write them, because you resolve the address instantly and they cannot.
-
-**Failure one: a word that only resolves outside this message.** "That line", "those two", "the one
-mentioned above", "the earlier point" — grammatically these are complete subjects, so the
-never-drop-the-subject rule waves them through, and they feel like restating because you are naming
-the thing you were just discussing. They restate nothing; they point. A reader holding only this
-message cannot follow the pointer, and a reader who can follow it still pays for the trip.
-
-**The topic is where this leaks, and the reason is worth knowing.** You rebuild everything the
-explanation *rests on*, because that material is obviously new to them. You leave the thing the
-explanation is *about* as a pointer, because it is the one item that feels too established to
-restate. So an answer can open with "the exception in that rule", derive the exception faultlessly,
-and still leave a reader who never learns which rule was meant.
-
-The fix is not a longer pointer. Name the thing: quote the line, state the rule, give the file and
-what it says. If naming it costs two sentences, spend the two sentences.
-
-**Two pointers you will reach for without noticing, because the thing pointed at is your
-own.** Citing something you wrote earlier — a plan, a checklist, an analysis from last week —
-without the text inline: they do not remember it and have no obligation to, so the conclusion
-resting on it is unusable. And describing a change as a delta from a version they approved
-("against the draft you approved, I touched only the opening paragraph, because you said you
-had fixed the rest") makes them rebuild a version they no longer hold, and hands their own
-instruction back as the reason for what you did. Quote your earlier text; state what the thing
-says now.
-
-**An address is the hardest pointer to catch, because precision reads as content.** A line
-number, a file path with a range, a commit hash, a ticket id, a URL: each is maximally exact,
-and exactness feels like the opposite of vagueness, so it never trips the check above. To a
-reader who cannot open the thing it points at, an address carries nothing at all, and its
-exactness makes it worse than a vague pointer rather than better, because you will build a
-whole argument on top of it and they cannot evaluate, agree with, or correct a single step.
-A plan whose steps are addresses is not a plan they have been shown. Quote the text that
-lives at the address and let the address ride in parentheses for whoever can open it.
-
-A term lifted out of the material fails the same way and looks even more like content,
-because it is a real phrase rather than a number. "Relative dates" names nothing on its own:
-say which material contains them and what they say, or the reader is holding a label for a
-thing they cannot see.
-
-**Failure two: a class where an instance was asked for.** Asked to be concrete or specific, they
-want the real material — an actual example, the literal text, the exact values, the file with its
-real contents. Answering with a sharper description of the category repeats the pointer move, since
-a category is an address for its instances. "There is a port mismatch in the config" is the
-category and sounds specific; "line 3 of config.yaml says port: 8080 and the service listens on
-9090" is the instance, and only the second can be acted on. Keep two requests apart here: writing a *rule* for
-general reuse means stripping an incident down to its mechanism, while answering a *question* means
-producing the incident itself. The first is abstraction doing its job; the second is abstraction
-dodging the question.
-
-**One test catches both.** Cut this message loose from everything around it and hand it to someone
-who saw none of the conversation. Can they name every noun in it, and point at every concrete thing
-it claims? A word that resolves only by looking elsewhere is a defect, and so is a claim that
-resolves only into another abstraction.
-
-### A concept they did not ask for got introduced — the worst one
-
-Answer using **only the concepts already on the table**. Every unrequested concept is a fresh thing
-to learn, more load, and — worst — a new 似是而非 node that invites its own "but why", expanding scope
-one level deeper. That's the mechanism by which a ten-minute answer becomes hours of thrashing: not
-one hard idea, but a hard idea that kept sprouting ideas nobody asked about.
-
-If a new concept is genuinely unavoidable, route around it; if you can't, name it and set it aside as
-a clean deferred gap ("there's a thing called Y that handles this — ignore it for now, it doesn't
-change the picture"). Go deeper **only when asked**. The discipline is leaving things out.
 
 ## Where the detail lives
 
-Read the reference that matches what you're about to write. Each is self-contained; you don't need
-all four.
-
-**Pick by what the finished piece will contain, never by whether you feel you already know the
-rule.** You will almost always feel that you do — that feeling is the curse of knowledge pointed at
-this skill instead of at the subject, and it is how these rules get broken while sitting unread in
-context. The trigger is a property of the artifact, not a judgement about yourself: **if the passage
-will contain even one number that carries the explanation, `evidence.md` is mandatory.** A number
-that only reports state — a count of what passed, how long something ran — is `status-report`'s and
-takes no derivation.
+Pick by what the finished passage will contain, never by whether you already know the rule. Each
+reference is self-contained; read the ones whose trigger fires.
 
 | Read this | When |
 |---|---|
-| `references/structure.md` | Laying out any explanation — deciding prose vs. pyramid, scoping what to cut, ordering the pieces, mirroring an outline they gave you |
-| `references/language.md` | Choosing words — introducing terms, writing the plain-first pass, reaching for an analogy |
-| `references/evidence.md` | Anything with numbers, comparisons, measurements, or claims that need backing |
-| `references/interaction.md` | Responding to *them* — correcting their work, handling "没看懂", answering questions, running a feedback loop |
+| `references/structure.md` | Laying out any explanation — prose vs. pyramid, what to cut, the order the pieces go in, quoting a document to him, mirroring an outline he gave you |
+| `references/language.md` | Choosing words — introducing terms, the plain-first pass, an analogy, showing an artifact (a schema, a layout, a format) before describing it |
+| `references/evidence.md` | The passage holds a number he is meant to reason from — a comparison, a measurement, a worked example — however self-evident it looks to you, or a mechanism claim he will test by asking why the opposite case fails. A number that only reports state (a count of what passed, how long a run took) is `status-report`'s and takes no derivation |
+| `references/interaction.md` | Responding to *him* — correcting his work, the rewrite after "没看懂" (he did not follow), answering questions, running a feedback loop |
+| `references/checklist.md` | The scan before any explanation goes out, chat or file |
+
+## How an explanation fails
+
+Three failures, each the sharp form of a rule above, and each invisible from inside your own
+draft, because you resolve the missing thing instantly and he cannot.
+
+### The load-bearing noun was never defined
+
+A mechanism rests on primitives — the nouns it manipulates ("dead", "a turn", "the signal it waits
+for"). Explaining how the system *detects* / *handles* / *decides about* X without saying what X
+**is** leaves every sentence operating on a term he was never handed: he follows each step and
+holds nothing.
+
+The tell: **he rejects your "too abstract" version and then your "too detailed" version in turn.**
+That sounds like an altitude complaint, so the instinct is to swap metaphor for code or code for
+metaphor — and both fail identically while both skip the definition. Stop sliding; name the noun
+and define what it **is**, not what happens to it, *before* any mechanism that uses it. "Dead" is
+not "we stop hearing from it" (a symptom the logic reads) but "the process that was going to send
+the completion signal no longer exists, so that signal will never arrive."
+
+### A pointer was handed over instead of the thing
+
+One failure in rising degrees of disguise, each leaving him an address instead of the content.
+
+- **The subject is missing** — a quoted fragment, a pronoun carried from an earlier paragraph, a
+  referent that moved while he was following something else. Every sentence says who or what is
+  doing the thing.
+- **The subject names nothing** — "that line", "those two", "the earlier point" fill the slot and
+  point. The topic is where this leaks: you rebuild what the explanation *rests on*, because that
+  is obviously new, and leave what it is *about* as a pointer, because it feels too established to
+  restate. Your own earlier text — a plan, a draft he approved — is the same pointer.
+- **The pointer is exact** — a line number, a path, a commit hash, a URL, a phrase lifted from the
+  material. Exactness reads as content, so it never trips the check above, and a plan whose steps
+  are addresses is a plan he has not been shown.
+- **A class where an instance was asked for** — "a port mismatch in the config" sounds specific;
+  "line 3 says port 8080 and the service listens on 9090" is the instance. A *rule* for reuse
+  strips an incident to its mechanism; a *question* is answered with the incident.
+
+Name the thing — quote the line, state the rule, print the sample — and let the address ride in
+parentheses. **One test catches every degree:** read the message as him, holding nothing but the
+message. Can he name every noun in it and point at every concrete thing it claims?
+
+### A concept he did not ask for got introduced — the worst one
+
+Answer using **only the concepts already on the table, plus any primitive the mechanism itself
+manipulates**: a noun is a primitive when a sentence of the explanation is logic *about* it, not
+one that merely mentions it, and a primitive is never a deferrable gap; only a concept the
+explanation merely touches is. Every unrequested concept is a fresh thing to learn and a new
+half-understood node that invites its own "but why" one level deeper — how a ten-minute answer
+becomes hours: not one hard idea, but an idea that kept sprouting ideas nobody asked about.
+
+If one seems unavoidable, first try to route around it; if you can't, name it and set it aside as a
+clean deferred gap ("there's a thing called Y that handles this — ignore it for now, it doesn't
+change the picture"). Go deeper **only when asked**. The discipline is leaving things out.
 
 ## Before it leaves your hands
 
-**This applies to any explanatory artifact — a file, a doc, the mechanism passage of a report —
-not just chat replies.** It applies to that passage, not to the state around it. The checklist is
-easiest to skip when the deliverable is a file, because there's no visible "send" moment to trigger
-it; you write, save, move on — and the rules then sit in context unread at the one moment they
-applied.
+This runs on the passage that explains, never on the state around it: a report is *supposed* to
+say where things stand without deriving it. A file has no send moment, so run it before you save.
 
-**Ask this first, because it catches most of the rest:** is this a summary or is it teaching? A
-summary states conclusions for someone who already has the model — numbers with no arithmetic, deltas
-with no baseline, coinages with no definition, four topics each given one line. Teaching derives. If
-a reader without your context couldn't reconstruct any single claim from what's on the page, you
-wrote a summary, and it will cost a round-trip per claim. **This failure is systematic, not local** —
-when it happens it usually happens to every item at once, so finding one instance means re-checking
-all of them rather than patching the one. Run this test on the passages that explain, never on the
-state around them: a report is *supposed* to state where things stand without deriving it.
+**First: is this a summary or is it teaching?** A summary states conclusions for someone who
+already has the model — numbers with no arithmetic, deltas with no baseline, coinages with no
+definition, four topics each given one line. Teaching derives. If there is any claim on the page
+that he, holding nothing but the page, could not reconstruct, you wrote a summary. The failure hits
+every item at once, so one instance means re-checking all.
 
-Then scan for the specific failures:
+One check nothing else states, then the scan in `references/checklist.md`:
 
-- Any 大段 prose or dense block? → short structured chunks; the default is not paragraphs.
-- Delete any sentence that looks like a citation — does a conclusion fall over? → it's evidence, unpack it.
-- Named a set by its size, then pointed at one member? → list the members at first mention.
-- Any "远小于 / 够不着 / 超出范围"? → show both numbers instead of asserting the gap.
-- Does the analogy use a term they haven't used themselves recently? → define it, or change the analogy.
-- Said where the analogy stops being true? → same shape ≠ same cause.
-- Decided the scope before writing, or tried to fit everything in? → cut, and name what's excluded.
-- Writing docs, a script, or instructions: is every parameter that matters spelled out, especially
-  the ones with non-obvious defaults? → a reader who follows it and gets a broken result because you
-  assumed they would just know to set something is your fault, not theirs.
-- Every number, one at a time: does it earn its place at all — a number carrying no decision is
-  cut, not sourced. If it stays: can the reader compute it from what is already on the page? → each one
-  is either an input (say what was measured and how) or a derivation (write the arithmetic inline).
-  "I measured it" is provenance, not derivation. **Hardest to catch: a measured number that
-  contradicts what the reader would compute from the formula you just gave them** — that one needs
-  the arithmetic *and* a sentence on why the expected route fails.
-- Does every "went from X to Y" say what the starting configuration was? → describe the baseline first.
-- Claiming a thing improves, enables or fixes something, without saying what happened before it
-  existed? → give both states concretely: what the situation was without it, and what it is now.
-  The claim is the difference between them, so a reader given only the after has been told the
-  conclusion and shown none of it.
-- Invented a plain-sounding compound noun and left it undefined? → one sentence on what it measures.
-- Does the worked example give a value for every quantity the arithmetic touches? → fill the gaps.
-- Introduced an abstract structure (schema, dataset, format, directory layout) by describing it
-  instead of showing one real instance? → walk one actual sample first.
-- Ordered the way they'll learn it, or the way you discovered it? → introduce each thing before using it.
-- Still has a throughline, or is it disconnected labels? → keep the sequence that carries the logic.
-- They handed you structure — did you mirror it or flatten it? → mirror their shape.
-- Pulled in any concept they didn't ask about? → cut it, or defer it as a clean gap.
-- Skipped a step because it's obvious *to you*? → put it back.
-- Any word that points outside this message — "that line", "those two", "the one above"? → name the
-  thing instead; a pointer is not a restatement, and the topic is where it leaks.
-- Asked to be concrete, and answered with a better description of the category? → give the instance:
-  the real text, the real values, a real example.
-- Explaining logic that acts on a noun ("detect if it's dead") without defining the noun first? → define the primitive (what it *is*) before the mechanism.
-- Been rejected as "too abstract" then "too detailed"? → stop sliding on altitude; you skipped a definition — name and define the load-bearing term.
-- Opened with a term, formula, or name before giving a reason to care? → move it to a trailing aside.
-- Teaching two mechanisms in one breath? → split them.
-- Plain words AND clear layout — both axes? → 说人话 sentences in a scannable structure.
-- Can you state the single big point in one sentence? → if not, you're too 琐碎; cut to it.
-- Answered the literal question asked, and every earlier open one?
+- Instructions inside the passage — a command, a script, a setting he will follow: every parameter
+  that matters spelled out, non-obvious defaults above all? A broken result because you assumed he
+  would know to set something is your failure, not his.
 
 ## Language
 
 In a reply to him, match his language — in practice almost always Chinese, plain spoken 人话, and
 no poetic parallel clauses for a conceptual or personal explanation. Text that leaves the
-conversation takes its language from `writing-for-people` instead, which requires English for
-anything outward-facing whatever language the conversation is in.
+conversation takes its language from `writing-for-people` instead.
