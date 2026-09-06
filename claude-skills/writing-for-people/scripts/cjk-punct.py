@@ -151,8 +151,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("files", nargs="+")
     ap.add_argument("--fix", action="store_true",
-                    help="rewrite the unambiguous cases in place (parens and "
-                         "apostrophes are still only reported)")
+                    help="rewrite the unambiguous cases in place (the , ; : ? ! marks and "
+                         "bracket/quote pairs; full stops and ellipses are never touched)")
     args = ap.parse_args()
 
     total = 0

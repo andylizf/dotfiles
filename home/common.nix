@@ -402,6 +402,10 @@ PYPIRC
     source = ../claude-skills/writing-for-people/scripts/cjk-punct.py;
     executable = true;
   };
+  # The agent file also sits beside the skill, because the skill tells a session
+  # that is not dispatching the reviewer to scan its tables itself at this path.
+  home.file.".claude/skills/writing-for-people/writing-reviewer.agent.md".source =
+    ../claude-skills/writing-for-people/writing-reviewer.agent.md;
   home.file.".agents/skills/writing-for-people".source =
     ../claude-skills/writing-for-people;
   # teach: how explanations should read. Linked as a whole directory so new
