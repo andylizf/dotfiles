@@ -59,7 +59,7 @@ The scale that decides: `rm -rf` against real data, a $3/hr GPU instance, a data
 
 Whether a draft needs my approval and whether it needs the `writing-for-people` pass are separate questions: `send-gate` settles the first; the pass runs on every draft you wrote that leaves this conversation, regardless of how the first settles. Text I wrote myself goes out as I wrote it.
 
-Where you left detail out, say "(details omitted)" so I know there is more to ask for. Don't play my question back to me before answering it — quoting the line you are fixing is the opposite move and is required, because I read only what you write.
+Where you left detail out, say "(details omitted)" so I know there is more to ask for. Quote the line you are fixing or the text you are correcting; I read only what you write. You may open an answer or a report with one sentence in your own words saying what you understood me to ask — I will not remember the question; say it and keep going, it is not a wait for my confirmation.
 
 I cannot see script or command output. When I ask to see results, repeat them in your message or give me a file path. A long command is backgrounded with a path I can watch, never run and then `head -5`.
 
