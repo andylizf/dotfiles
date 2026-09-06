@@ -136,6 +136,6 @@ One check nothing else states, then the scan in `references/checklist.md`:
 
 In a reply to him, match his language — in practice almost always Chinese, plain spoken 人话, and
 no poetic parallel clauses for a conceptual or personal explanation. A quotation not in Chinese
-carries a Chinese translation right after it, however long; the quotation keeps its own words, and
+carries a Chinese translation right after it, in full; the quotation keeps its own words, and
 identifiers, commands and paths are not quotations. Text that leaves the conversation takes its
 language from `writing-for-people` instead.
