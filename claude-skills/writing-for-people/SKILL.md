@@ -3,7 +3,7 @@ name: writing-for-people
 description: 写或改任何会离开这个对话的字之前加载：落成文件的、发给别人的、进仓库或文档的。评论、code review、给别人的回复、帖子、邮件、文章、个人陈述、发言稿、给评审看的材料、README、release note、文档、代码注释、commit message、PR 描述都在内。**他会转手发出去的字在内，哪怕写在给他的回复里**：他问「这封邮件我该怎么回」，要的那句就是本 skill 的活。真正不在内的只有两种：说完就停在这个对话里、他不会转发的话；给后来的 session 当规则读的指令文件（skill、CLAUDE.md），那归 writing-instructions。**最容易漏的是应答式写作**：回评论、回 issue、回邮件、在聊天软件里回别人，被人问一句答一句，感觉像在说话不像在写东西，检查根本不会触发。**短不豁免**，一句话的回复也要过，越短的字 AI 腔越集中（"Happy to"、"Let me know"、"Feel free to" 全长在短回复里）。**被动不豁免**，别人先开口不改变性质，发出去的仍然是署他名字的字。Use before writing or editing any text that leaves this conversation for a file, a repository, a document or another person, including a line he asked for so that he can send it on. Only what stops inside the conversation is outside it.
 ---
 
-<!-- 本文件里 「」 是自指标记（章节名、要照抄的模板、句式术语），“” 才是普通引语。往本文件加中文时照这个分工走，别把既有的 「」 统一成 “”。 -->
+<!-- 本文件和 writing-reviewer.agent.md 里 「」 是自指标记（章节名、要照抄的模板、句式术语），“” 才是普通引语。往这两份文件加中文时照这个分工走，别把既有的 「」 统一成 “”。 -->
 
 # 写给人看的字：先定读者，再去痕迹
 
@@ -11,7 +11,7 @@ description: 写或改任何会离开这个对话的字之前加载：落成文�
 
 全文三个代词各指一个人：「他」是署名的那个人，你替他写；「读者」是收这段字的人；「你」是你，写字的模型。
 
-成稿之后逐条数的表（英文换词表和套路清单、中英文 tell、字频上限、重写阈值、写他自己时的扫词和扫人名）不在这份文件里，在 `~/.claude/skills/writing-for-people/writing-reviewer.agent.md`。这里放的是写的时候就要定的判断，其中几条成稿后还会被那边再数一遍。
+成稿之后逐条数的表（英文换词表和套路清单、按形状认的、中英文 tell、字频上限、标点、重写阈值、写他自己时的扫词和扫人名）不在这份文件里，在 `~/.claude/skills/writing-for-people/writing-reviewer.agent.md`。这里放的是写的时候就要定的判断，其中几条成稿后还会被那边再数一遍。
 
 ## 动笔前：先定读者和文体
 
@@ -120,7 +120,8 @@ couple of directions and want your read on them."
 
 **元规则不推翻明令。** 限定词回填和下面的「警惕更严谨」都只管新出现的判断；凡是本 skill
 或 `writing-reviewer` 表上点名要删的（稻草人的 X 半句、段尾升华、换词表里的词、写他自己时
-自我缩小的限定词）和点名要核的（「发之前」那些）已经判过，照删照做，别拿这两条把它们捞回来或绕开。
+自我缩小的限定词）和点名要核的（「发之前」那些）已经判过，照删照做，别拿这两条把它们捞回来或绕开；
+reviewer 标为「可能命中」的除外，那一条要你自己判。
 
 ## 警惕每一次“变得更严谨”
 
@@ -215,7 +216,7 @@ python3 ~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix <文件>
 一起交**，它的扫人名和加粗判断靠这行才知道读者和档位：评论、邮件、帖子、README、release note、
 文档、给评审看的材料、公开仓库里的 PR 描述，以及任何 at 了某个人或整段写给某个 reviewer 的字
 （一句话的除外，见下）。它手上有穷举用的东西：英文换词表、
-英文套路清单、中英文 tell、字频上限、标点、写他自己时的扫词和扫人名。
+英文套路清单、按形状认的、中英文 tell、字频上限、标点、写他自己时的扫词和扫人名。
 
 它返回命中位置和改法，不改稿。**判据类的不派给它**：读者是谁、姿态、承重测试、限定词
 有没有被删掉，那些要在写的时候就定，事后没人替得了。**同一版草稿只派一次**：它返回的改法
@@ -227,8 +228,8 @@ python3 ~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix <文件>
 .private`，不凭感觉；这条只看 `.private`，和 `send-gate` 的隐私审计（按谁能打开这个仓库算）
 不是同一条判据。tag 正文里写了发布说明，就是给人读的，照派。
 一句话的即时回复也不派，at 了人也不派：短不豁免检查，只豁免这一趟往返。
-**不派不等于不查。** 不派的时候，那几张穷举表要自己过：英文换词表、英文套路清单、
-中英文 tell、字频上限、标点、扫词和扫人名，都在 `~/.claude/skills/writing-for-people/writing-reviewer.agent.md` 里，照着扫一遍再写。
+**不派不等于不查。** 不派的时候，那几张穷举表要自己过：它们都在
+`~/.claude/skills/writing-for-people/writing-reviewer.agent.md` 里，逐节过一遍再写。
 扫完在回复里写一行：过了哪几张表、命中几处，零处也写；没有这一行，这一步就没做。
 
 **第二步，读者要照着做的，才核。**
