@@ -112,12 +112,17 @@ analogy; it is a way of not answering.
 
 This covers the work and the writing alike: no account of what you tried, which approach failed,
 which git operation you chose, no 「改之前 / 改之后」 of your own text, no narration of the report's
-own structure. **One exception, and it is mandatory where it applies: a rewrite after he says he
-did not understand opens by naming what was wrong with the previous message.**
+own structure. A rewrite after he says he did not understand opens by naming what was wrong with
+the previous message; that line is required, and it is the only sentence about the writing a report
+carries.
 
-An issue you hit is not route. Where something you ran into still constrains him — a limit you are
-now under, a thing that will break next time, a decision the failure forces — it is a finding and it
-belongs in item 3 or item 4, said as the constraint rather than as the story of meeting it.
+The test for what is route and what is not: a sentence asserting something now true that he has to
+work with is state; a sequence of your actions is route. A limit you are now under, a thing that
+will break next time, a decision a failure forces, a tool you looked for and found missing, a
+package you installed, where a backup landed, why a retry or a check was put in or left out, the
+file and line that made you stop — each is state, stated as the constraint rather than as the story
+of meeting it. **Anything another instruction file requires a report to carry is in this class and
+stays**, in item 3 or item 4, at one clause each, and the length rules below do not cut it.
 
 ## Details stay out unless they change his decision
 
@@ -212,8 +217,9 @@ Each line here is the short form of a rule above; where they differ, the rule ab
   and alone.
 - Anything still running names where he can watch it.
 - Length matches what changed, not how long it took; what was cut is marked "(details omitted)".
-- No route: not what you tried, not what you rewrote — except a rewrite's opening line, which must
-  name what was wrong.
+- No route: no sequence of your actions, no history of your text. What another instruction file
+  requires a report to carry is state and stays; so does a rewrite's opening line naming what was
+  wrong.
 - Mechanism only as deep as his decision needs.
 - Run the noun check again on a rewrite.
 - Chinese punctuation full-width: `，。：；？！、` and `……`, 「」 for quotes. Half-width stays inside
