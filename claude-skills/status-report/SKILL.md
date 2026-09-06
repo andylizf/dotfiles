@@ -2,8 +2,9 @@
 name: status-report
 description: >-
   Use when telling him where work stands. The test is whether the turn left something changed
-  outside the conversation — a file edited, a job now running, a message sent, a form submitted;
-  if the only product is text in the reply, it is a discussion, not a report. Writing down what
+  outside the conversation — a file edited, a job now running, a message sent, a form submitted —
+  or reports on work of yours that did; if the only product is text in the reply and it is not
+  reporting on such work of yours, it is a discussion, not a report. Writing down what
   was said does not count, wherever it lands: a memory, a note, a scratch file, a summary
   committed to a repo — a discussion that leaves those is still a discussion. Reports: the recap
   closing a turn like that; the message when something you did is blocked on him; a one-line update
@@ -46,8 +47,9 @@ as unusable as a bare category, because he cannot map it. Neither half is what t
 
 The first line starts with a stamp, `[MM-DD HH:MM]`, in the local time of the machine the session
 runs on, read from `date` at the moment of writing — never from a timestamp seen earlier in the
-context: those are usually UTC, and you cannot tell by looking. Items are numbered wherever there is
-more than one. He refers back by stamp and number (「18:40 的第 2 条没说清楚」), so a report
+context: those are usually UTC, and you cannot tell by looking. One exception: a rewrite after
+he said he did not understand opens with the sentence naming what was wrong, and the stamp opens the
+next line. Items are numbered wherever there is more than one. He refers back by stamp and number (「18:40 的第 2 条没说清楚」), so a report
 without them cannot be pointed at. A report following an earlier one in the same thread names it as
 the baseline (「自 17:50 以来」), so what changed is measured against something he can find; the
 baseline is a stamp you wrote from this same machine, since a stamp from another one is a different
@@ -121,7 +123,8 @@ pointer is not a restatement, and replacing one pointer with another is a failed
 report, a ticket number in a tool result, a branch in a log, a term in a teammate's message.
 Compressing such a passage into your report is composing it, and a passage a subagent wrote for
 you is the one most likely to carry its unit — ticket numbers as item names — into the report;
-check its nouns before its sentences. A source's account of how it got there is route and is cut
+check its nouns before its sentences. A source's account of how it got there — what it tried, in
+what order — is route rather than a fact he has to work with, and is cut
 before any renaming: renamed route is still route.
 
 **Names he made you replace stay replaced as the name of the item** — whether he asked with
@@ -242,7 +245,8 @@ Each line here is the short form of a rule above; where they differ, the rule ab
 
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
-- First line names the task and one of the three states.
+- First line names the task and one of the three states — in a rewrite, the second line does,
+  after the sentence naming what was wrong.
 - Phenomenon before cause; cause before fix.
 - Every item named by what broke, what he sees, or what now holds that did not; files, tickets and
   counts ride in parentheses and carry nothing.
