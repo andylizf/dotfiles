@@ -2,9 +2,11 @@
 name: status-report
 description: >-
   Use when telling him where work stands. The test is whether the turn left something changed
-  outside the conversation — a file edited, a job now running, a message sent, something filed; if
-  the only product is text in the reply, it is a discussion, not a report. Reports: the recap
-  closing such a turn; the message when something you did is blocked on him; a one-line update
+  outside the conversation — a file edited, a job now running, a message sent, a form submitted;
+  if the only product is text in the reply, it is a discussion, not a report. Writing down what
+  was said does not count, wherever it lands: a memory, a note, a scratch file, a summary
+  committed to a repo — a discussion that leaves those is still a discussion. Reports: the recap
+  closing a turn like that; the message when something you did is blocked on him; a one-line update
   while something long runs; the first reply after he returns to a session or asks what is going
   on with the work; and the rewrite after he answers a report with 什么意思, 没懂 or 人话. A
   question about the subject matter, some research, an answer, a chat — however much it found — is
@@ -347,12 +349,12 @@ word counts before and after, which section moved where — in a subagent's voca
 **The same change, rewritten.** He read it and moved on.
 
 ```
-我上一条报的是文件内部搬了什么、字数变了多少，通篇是我自己造的词，没说你以后会看到什么不一样，从头说，三条。
+我上一条报的是文件里搬了什么、字数变了多少，没说你以后会看到什么不一样。从头说，三条。
 
-[09-06 11:07] 三份规则文件的整改：改完、已部署，装出来的文件和仓库逐字节相同，不需要你做什么。
-1. 讲东西的规则。以后我给你讲一个机制时，你自己用过的词我直接用，不再解释；只有你没用过的词才定义，你贴给我的报错、论文里的词不算「你用过」。你说「没懂」让我重讲时，我重新组织，不会越写越长。（explain.md，a1b2c3d）
-2. 对外写作的规则。「我看行」这类说法要不要改成「我觉得可以」，以前两处规则给的答案相反，现在只有一个。你以后会看到：我替别人写东西之前，回复里先有一行「读者是谁、他拿去做什么、落在哪、多正式」；你问「这封邮件怎么回」，草稿进文件供你改，整段也贴在回复里。（writing.md，c3d4e5f）
-3. 要不要问你的规则。你能直接 push 的仓库里，commit、push、开 issue、开 PR、合并都不问；对着某个人的评论、回复，或 at 了人的文字，才要令牌。你回「SEND x，另外把第二段口气放软」这种带话的令牌，以前没有出口；现在旁边的话就是你的下一条指令，改了稿就作废重发。（gate.md，d4e5f6a）
+[09-06 11:07] 三份规则文件的整改：改完、已部署、装出来的和仓库一致，不需要你做什么。
+1. 讲东西：你用过的词直接用，只定义你没用过的；你说「没懂」，我重组，不加长。（explain.md）
+2. 对外写作：「我看行」要不要改成「我觉得可以」，两处规则原来答案相反，现在只剩一个。替别人写之前，回复里先一行「读者是谁、拿去做什么、落在哪、多正式」；你问「邮件怎么回」，草稿进文件，整段也贴回复。（writing.md）
+3. 要不要问你：能直接 push 的仓库，commit、push、开 PR、合并都不问；写给某个人的字才要令牌。令牌后面带的话（「SEND x，另外把第二段口气放软」）就是你的下一条指令，改了稿就作废重发——原来的规则没说这种情况怎么办。（gate.md）
 接下来没有在跑的东西。(details omitted)
 ```
 
