@@ -1,11 +1,11 @@
 ---
 name: writing-instructions
-description: Load before writing, editing, or committing text that a later session will read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file. **The trigger is the durability of the text, not where the wording came from**: adding one bullet, tightening a description, or turning a lesson from the current session into something permanent all land here. So does writing out wording the user dictated, and that is the disguise that gets missed — words arriving finished read as already reviewed, but the sign-off is on the content, never on whether it works as an instruction. Load it also when deciding *which* layer a new rule belongs in, when auditing existing instruction files, and when the user says the model behind the sessions has changed.
+description: Load before writing, editing, or committing text that a later session will read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file. **The trigger is the durability of the text, not where the wording came from**: adding one bullet, tightening a description, or turning a lesson from the current session into something permanent all land here. So does writing out wording the user dictated, and that is the disguise that gets missed — words arriving finished read as already reviewed, but the sign-off is on the content, never on whether it works as an instruction. Load it also when deciding *which* layer a new rule belongs in, and when auditing existing instruction files.
 ---
 
 # Writing instructions
 
-Rules are read months later by a reader with none of this context — sometimes a person, usually a model, and the model follows literally what a person would charitably reinterpret; each generation reads them more literally and more completely than the one they were written for.
+Rules are read months later by a reader with none of this context — sometimes a person, usually a model, and the model follows literally what a person would charitably reinterpret.
 
 ## Which layer
 
@@ -26,25 +26,25 @@ written into the body cannot fire: whoever needed it never got that far. **Descr
 session two ways — a listing of all of them, and a per-turn push of the ones that look relevant to
 the task in hand — and they are the only place triggering is governed from.** A rule that must always hold lives in a skill only if the skill's description names the trigger in
 words that will be in front of the reader at the moment the rule applies; where no such description
-can be written, it is proposed for the global file. A stop is the exception: a stop written into a
-skill halts work only while that skill's procedure is running, so a halt wanted everywhere is proposed
+can be written, it is proposed for the global file. A stop — a line that makes the reader halt and ask, whatever it is called — is the exception: a stop
+written into a skill halts work only while that skill's procedure is running, so a halt wanted everywhere is proposed
 for the global file too. Where two skills you own would fire on the same moment, each description
 says which one's rules win there and names the other; a skill you cannot edit is named from yours
 alone.
 
 **A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
 
-## Auditing a file written for an older model
-
-**A rule written to make an older model comply carries, in its own sentence, the reading it is guarding against**, so that the pass you run when the user says the model has changed can delete it where that misreading has not recurred. That pass's report says which rules it deleted, or that none had; in the global file it proposes the deletion and waits. Emphasis that marks which clause carries the rule is formatting and stays; emphasis that raises the volume of a whole rule — repetition, capitals, "IMPORTANT" — was there to make an older reader comply and comes out, and the rule under it stays or goes on its own merits.
-
-**A sentence that makes the reader stop and ask is a stop, whatever it is called** — "check with me", "confirm before", "wait for a reply". Where continuing wrongly would be cheaper than stopping, say so on the line. A stop written for politeness turns a capable reader into one that asks.
-
 ## What keeps going wrong
 
 **Explaining how you got there.** A paragraph defending the boundary you chose over the one you rejected, or saying what an earlier draft got wrong, or pricing the alternative — none of it changes what the reader does. **Test: delete the sentence. Does anything change about what gets done?** If not, it was thinking out loud in a file meant for instructions. **The evidence a rule rests on is part of that path, and it is the hardest instance to catch because it reads as rigour rather than as justification** — a dataset name, a paper, a measured count all feel like the thing that makes the rule legitimate, and none of them change what the reader does. Of a mechanism, keep only the part that changes the method: that a failure arrives disguised as the obvious next step tells the reader to hunt for it in finished-looking work rather than in hesitation, and that stays; the study it came from goes. **What a rule prevents is not the same as why you settled on this version of it** — the first lets a reader judge a case the rule never anticipated, so it belongs in the file; the second is a defence of your own choice and does not.
 
 **A sentence that only says what does not apply.** A paragraph about what this file does not cover, or that some reading of it would be wrong, ends with the reader holding no action while occupying the space a rule would have. What separates this from a useful exclusion is placement: an exclusion attached to the line where the action happens stops a specific wrong move and earns its keep — "an instruction is executed, never rewritten" sitting on the rule that rewrites things. The same words in their own paragraph about scope stop nothing.
+
+**A guard with no name on it.** A rule written to stop a misreading carries that misreading in its own sentence, so a later reader can see what it is for. Delete such a rule only where the misreading is shown not to recur — absent that evidence it stays — and say in the commit which rules went, or that none did; in the global file, propose and wait.
+
+**Compliance pressure.** A bold sentence or clause that marks where the rule is, is formatting and stays; repetition, capitals and "IMPORTANT" are pressure, not information, and come out — the rule under them stays or goes on its own merits.
+
+**A stop by another name.** A sentence that makes the reader stop and ask is a stop, whatever it is called — "check with me", "confirm before", "wait for a reply". Where continuing wrongly would be cheaper than stopping, say so on the line, so the later reader continues; a stop written only for politeness comes out.
 
 **Edit history.** Phrasing that only parses against a previous draft. The reader never saw that draft. State what is true now, in present tense, as though it had always read that way.
 
