@@ -42,7 +42,7 @@ alone.
 
 **A guard with no name on it.** A rule written to stop a misreading carries that misreading in its own sentence, so a later reader can see what it is for. Delete such a rule only where the misreading is shown not to recur — absent that evidence it stays — and say in the commit which rules went, or that none did; in the global file, propose and wait.
 
-**Compliance pressure.** A bold sentence or clause that marks where the rule is, is formatting and stays; repetition, capitals and "IMPORTANT" are pressure, not information, and come out — the rule under them stays or goes on its own merits.
+**Compliance pressure.** A bold sentence or clause that marks where the rule is, is formatting and stays; repetition, capitals, "IMPORTANT" and the like are pressure, not information, and come out — the rule they were applied to stays or goes on its own merits.
 
 **A stop by another name.** A sentence that makes the reader stop and ask is a stop, whatever it is called — "check with me", "confirm before", "wait for a reply". Where continuing wrongly would be cheaper than stopping, say so on the line, so the later reader continues; a stop written only for politeness comes out.
 
