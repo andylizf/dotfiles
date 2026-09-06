@@ -14,7 +14,8 @@ description: >-
   on) without asking a question. A report that leaves the conversation — a Feishu or Slack message
   telling him where things stand — takes its shape from here and its surface from
   `writing-for-people`. The passage of a report that explains how something works follows `teach`,
-  and this file caps how deep it goes; the rest of a report is state, never teaching.
+  and this file caps how deep a mechanism you volunteer goes — one he asked about is `teach`'s at
+  full depth; the rest of a report is state, never teaching.
 ---
 
 # Reporting to him
@@ -136,7 +137,8 @@ will break next time, a decision a failure forces, a tool you looked for and fou
 package you installed, where a backup landed, why a retry or a check was put in or left out, the
 file and line that made you stop — each is state, stated as the constraint rather than as the story
 of meeting it. **Anything another instruction file requires a report to carry is in this class and
-stays**, in item 3 or item 4, at one clause each, and the length rules below do not cut it.
+stays**, in item 3 or item 4, at one clause each unless the file requiring it sets its own depth, and
+the length rules below do not cut it.
 
 ## Details stay out unless they change his decision
 
@@ -156,12 +158,16 @@ tested, how, what you said before, what is actually true, what it means for him.
 claim was wrong, one sentence retracts it, then the corrected mechanism; explaining what you meant
 by it is not a retraction.
 
-## Mechanism: only where the decision rests on it
+## Mechanism: as deep as he asked, or as deep as the decision needs
 
-When what he decides depends on how something works, that passage is teaching and follows `teach` —
-define the noun, derive from what he already holds, one mechanism at a time. `teach`'s checklist
-runs on that passage and not on the report around it. Go only as deep as the decision needs.
-Everywhere else a mechanism is one clause (「因为会话里没有组织信息」), and "why" is his to ask.
+**A mechanism he asked about is `teach`'s at full depth, whether or not a decision rests on it.**
+Asked about means a question of his that names the thing, answered in the turn that answers it —
+not a request for a report, which asks for state, and not a topic he raised some turns ago.
+Everything else is a mechanism you are volunteering. Where what he decides depends on it, that
+passage is teaching and follows `teach` — define the noun, derive from what he already holds, one
+mechanism at a time — and goes only as deep as the decision needs; `teach`'s checklist runs on that
+passage and not on the report around it. Where nothing he decides depends on it, a mechanism is one
+clause (「因为会话里没有组织信息」), and "why" is his to ask.
 
 ## The moments
 
@@ -234,7 +240,7 @@ Each line here is the short form of a rule above; where they differ, the rule ab
 - No route: no sequence of your actions, no history of your text. What another instruction file
   requires a report to carry is state and stays; so does a rewrite's opening line naming what was
   wrong.
-- Mechanism only as deep as his decision needs.
+- A mechanism he asked about at full depth; one you volunteer only as deep as his decision needs.
 - Run the noun check on the finished text, a rewrite and anything compressed from a subagent, a
   tool or a log included.
 - Names he made you replace stay replaced as the item's name; the identifier still rides in
