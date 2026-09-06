@@ -1,11 +1,15 @@
 ---
 name: status-report
 description: >-
-  Use when telling him where work stands: the recap closing any turn that changed a file, ran a
-  job, or reached a finding; the message when work is blocked on him; a one-line update while
-  something long runs; the first reply after he returns to a session or asks what is going on; and
-  the rewrite after he answers a report with 什么意思, 没懂 or 人话. A turn that only answered a
-  question is not a report and does not load this. Two misses account for most failures. The
+  Use when telling him where work stands. The test is whether the turn left something changed
+  outside the conversation — a file edited, a job now running, a message sent, something filed; if
+  the only product is text in the reply, it is a discussion, not a report. Reports: the recap
+  closing such a turn; the message when something you did is blocked on him; a one-line update
+  while something long runs; the first reply after he returns to a session or asks what is going
+  on with the work; and the rewrite after he answers a report with 什么意思, 没懂 or 人话. A
+  question about the subject matter, some research, an answer, a chat — however much it found — is
+  answered as an answer: no stamp, no orientation line, no 要你做什么 line. A question about work
+  you did, or about a report you sent, is a report. Two misses account for most failures. The
   closing recap feels like the natural end of the work rather than a report on it, so it goes out
   as a list of what you did. And running commentary while you work ("checking X now", "that rules
   out Y, trying Z") reads to you as keeping him informed and to him as a wall of names he never
