@@ -461,7 +461,8 @@ PYPIRC
         "$schema": "https://json.schemastore.org/claude-code-settings.json",
         "attribution": {
           "commit": "",
-          "pr": ""
+          "pr": "",
+          "sessionUrl": false
         },
         "permissions": {
           "defaultMode": "bypassPermissions"
