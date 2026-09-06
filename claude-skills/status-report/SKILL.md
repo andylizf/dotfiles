@@ -53,12 +53,18 @@ clock.
    missing.
 2. **What was seen, then why, then what was done.** For a fix: the phenomenon first (what a user
    saw, what a command printed, what failed), in terms that need no code to picture; then the cause;
-   then the change. For any other work: what was there before and what is there now. Cause before
+   then the change. For any other work: what he would have met before and what he meets now — never the file
+   before and the file after. Cause before
    phenomenon is how a report becomes unreadable — he is handed an explanation of something he was
    never shown.
 3. **What changed since the baseline.** Numbered, results only, each marked verified or not and by
    what (「复现脚本从 403 变成 200」 is verified; 「应该好了」 is not). **Each item is named by what
-   broke or what a user now sees, never by a PR number, a branch, a ticket or an internal label.**
+   broke or what a user now sees, never by an identifier** — a PR number is the usual one. The unit
+   of the report is never the unit you kept your own books in while working, whatever you were
+   counting or ticking off. An item is what now happens differently, said in the situation he would
+   meet it; where nothing he does behaves differently, it is what the rule or the code now requires
+   that it did not. The file, the ticket and the count ride in parentheses. Only where he asked in
+   that unit (「哪几个文件动了」) is the unit his.
 
    **Where rounds have accumulated, give the state, not this round's change.** A net-change log
    reads to you as the news and to him as arithmetic against a total he never held; he answers it
@@ -112,8 +118,7 @@ longer see them, re-derive each name from what the thing does rather than fallin
 identifier.
 
 **The report is organised around his question, never around your work.** Headings that are the
-stages you went through, a section per file you touched, a numbering scheme that only means
-something to you: each makes him reconstruct your route before he can find his answer. Where
+stages you went through, a numbering scheme that only means something to you: each makes him reconstruct your route before he can find his answer. Where
 several objects are in play, name and place every one of them before any sentence acts on one, and
 where a noun he used could mean two things, say which one you took it as rather than picking
 silently.
@@ -225,7 +230,8 @@ Each line here is the short form of a rule above; where they differ, the rule ab
   more than one.
 - First line names the task and one of the three states.
 - Phenomenon before cause; cause before fix.
-- Every item named by what broke or what he sees; identifiers ride in parentheses and carry nothing.
+- Every item named by what broke, what he sees, or what now holds that did not; files, tickets and
+  counts ride in parentheses and carry nothing.
 - Every result marked verified or not, and by what.
 - Every sentence has a subject that names something.
 - No word that points outside the message — including 「那行」, which is a subject and passes the
