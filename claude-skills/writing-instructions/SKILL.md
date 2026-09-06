@@ -1,6 +1,6 @@
 ---
 name: writing-instructions
-description: Load before writing, editing, or committing text that a later session will read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file. **The trigger is the durability of the text, not where the wording came from**: adding one bullet, tightening a description, or turning a lesson from the current session into something permanent all land here. So does writing out wording the user dictated, and that is the disguise that gets missed — words arriving finished read as already reviewed, but the sign-off is on the content, never on whether it works as an instruction. Load it also when deciding *which* file a new rule belongs in, a stored memory included.
+description: Load before writing, editing, or committing text that a later session will read back as a rule — a skill, a global or per-repository CLAUDE.md, a machine-notes file. **The trigger is the durability of the text, not where the wording came from**: adding one bullet, tightening a description, or turning a lesson from the current session into something permanent all land here. So does writing out wording the user dictated, and that is the disguise that gets missed — words arriving finished read as already reviewed, but the sign-off is on the content, never on whether it works as an instruction. Load it also when deciding *which* layer a new rule belongs in.
 ---
 
 # Writing instructions
@@ -15,7 +15,7 @@ Rules are read months later by a reader with none of this context — sometimes 
 | Machine notes | Safety rules you need *before* acting here, and what is costly to rediscover on this box. Beyond those, only what another machine would have no use for | Present tense, self-contained, lean. Rewrite a changed line as though it had always read that way |
 | A skill | Procedures loaded on demand for one kind of work | Freely. A rule that must always hold, but is not universal enough for the global file, belongs here |
 | A repository's `CLAUDE.md` | Facts about that codebase | Freely |
-| A stored memory | **Evidence** — what happened, what was said, what a system actually does | Freely |
+| A stored memory | **Evidence** — what happened, what was said, what a system actually does. Never the only home of a rule that must always hold: that belongs in a skill or the global file | Freely |
 
 **Inside a skill, the description and the body are two layers.** The description is the only text
 read before the skill loads, so it carries everything that decides *whether* to load: the trigger,
@@ -27,8 +27,6 @@ session two ways — a listing of all of them, and a per-turn push of the ones t
 the task in hand — and they are the only place triggering is governed from.**
 
 **A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
-
-**A rule that must always hold goes in a skill or the global file, never only in a memory.** Memory gives a rule the worst combination there is: present only sometimes, and authoritative whenever it is. When a memory contradicts an instruction the instruction wins, and the memory is what to fix — in the same turn.
 
 ## What keeps going wrong
 
