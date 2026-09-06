@@ -80,5 +80,5 @@ differ, the rule governs.
   real phrase, so it passes both items above. → say which material contains it and what it says.
 - Described what a document says without marking which words are its own? → quote it; your reading
   goes under a label that says it is yours.
-- Quoted in another language without its rendering beside it? → give both; the quote shows it is
-  the text, the rendering is what he reads.
+- Quoted something not in Chinese without a Chinese translation right after it? → give both; the
+  quotation shows it is the text, the translation is what he reads.

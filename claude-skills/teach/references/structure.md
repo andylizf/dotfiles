@@ -126,9 +126,9 @@ under a label or heading that says it is yours. Otherwise a description of the f
 — what a section now holds, why a rule moved — reads as though it were the text, and he cannot tell
 what he would find if he opened it.
 
-A quote in a language other than the one you are writing in carries its rendering beside it. The
-quote is what shows this is the text rather than your summary of it, so it stays; the rendering is
-what he actually reads. Quote the span you are pointing at and no more: a block he has to parse
+A quotation not in Chinese carries a Chinese translation right after it; the quotation keeps its own
+words, because it is what shows this is the text rather than your summary of it, and the
+translation is what he reads. Quote the span you are pointing at and no more: a block he has to parse
 before he can see the point spends his attention on the block, and he will skip it.
 
 ## One idea per explanation
