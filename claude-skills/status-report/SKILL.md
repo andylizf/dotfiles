@@ -35,11 +35,14 @@ him one. This instance is never what the length rules cut.
 
 ## Where he can point
 
-The first line starts with a stamp — `[MM-DD HH:MM]` in the timezone he is reading in, never the
-clock of whatever machine you happen to be running on; where you cannot establish his, say which
-zone the stamp is in. Items are numbered wherever there is more than one. He refers back by stamp and number (「18:40 的第 2 条没说清楚」), so a report
+The first line starts with a stamp, `[MM-DD HH:MM]`, in the local time of the machine the session
+runs on, read from `date` at the moment of writing — never from a timestamp seen earlier in the
+context: those are usually UTC, and you cannot tell by looking. Items are numbered wherever there is
+more than one. He refers back by stamp and number (「18:40 的第 2 条没说清楚」), so a report
 without them cannot be pointed at. A report following an earlier one in the same thread names it as
-the baseline (「自 17:50 以来」), so what changed is measured against something he can find.
+the baseline (「自 17:50 以来」), so what changed is measured against something he can find; the
+baseline is a stamp you wrote from this same machine, since a stamp from another one is a different
+clock.
 
 ## The shape, in the order he needs it
 
@@ -147,7 +150,7 @@ Everywhere else a mechanism is one clause (「因为会话里没有组织信息�
 - **Blocked on him.** Full shape; item 4 is the whole point. Put the question in one sentence he
   can answer with one word where the options allow it.
 - **Still running, mid-task.** Stamp, what is being checked and for which symptom, how long, when
-  you will report next. One or two lines. An unconfirmed hypothesis about the thing you are chasing
+  you will report next as a duration rather than a clock time. One or two lines. An unconfirmed hypothesis about the thing you are chasing
   stays in your head until the result is in: a dozen undefined names and a guess are not information
   he can use. This is not silence about anything else — something you discover mid-run that changes
   what he should do, or that alters behaviour he would not notice, goes to him the moment you see
@@ -193,7 +196,8 @@ another experiment run instead of an answer, three options handed back with no l
 
 Each line here is the short form of a rule above; where they differ, the rule above governs.
 
-- Stamp in his local time; items numbered wherever there is more than one.
+- Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
+  more than one.
 - First line names the task and one of the three states.
 - Phenomenon before cause; cause before fix.
 - Every item named by what broke or what he sees; identifiers ride in parentheses and carry nothing.
@@ -213,7 +217,7 @@ Each line here is the short form of a rule above; where they differ, the rule ab
 - Mechanism only as deep as his decision needs.
 - Run the noun check again on a rewrite.
 - Chinese punctuation full-width: `，。：；？！、` and `……`, 「」 for quotes. Half-width stays inside
-  code, paths, parameter names and numbers, the `[09-06 04:45]` stamp included. For anything that
+  code, paths, parameter names and numbers, the `[08-12 18:40]` stamp included. For anything that
   lands in a file, `~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix` does it
   mechanically.
 
