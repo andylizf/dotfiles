@@ -82,8 +82,8 @@ built: a pool, a gate, a handle, a mode, a marker, a phase letter. To you each i
 it is noise, and he cannot approve or reject noise. Repo and paper terms he never used are the next
 group. Define each as what it is, why it exists and what it does for him, in terms of something he
 already uses, and then say the sentence again in those terms; or replace it with what it does
-(「登录后本该跳回原页面，现在跳到首页」). The judge: every proper noun in the report is one he used
-himself, or one defined in the line that uses it. Where a term is his own — he named the project,
+(「登录后本该跳回原页面，现在跳到首页」). The judge: every proper noun in the report — yours, a
+subagent's, a tool's — is one he used himself, or one defined in the line that uses it. Where a term is his own — he named the project,
 the machine, the script — use it unchanged and do not explain it back to him. Call this the noun
 check; it is referred to below.
 
@@ -96,17 +96,19 @@ A word that points outside the message fails the same way: 「那行」, 「上�
 number, a diff against a draft he never saw. Put the content at the address into the message; a
 pointer is not a restatement, and replacing one pointer with another is a failed repair.
 
-**Relayed text is how the wrong unit gets in.** A subagent's report, a tool result, a log, a
-teammate's message arrive organised by whatever unit their author chose — ticket numbers, function
-names, branch names — in an engineer's vocabulary, and compressing them into your report keeps
-both. Material you relay gets the same treatment as sentences you wrote: each item renamed by what
-it does or what broke, each name the source coined defined or dropped, the identifiers moved to
-parentheses. The subagent wrote for you; you write for him.
+**A noun you did not coin fails the same test as one you did**: a function name in a subagent's
+report, a ticket number in a tool result, a branch in a log, a term in a teammate's message.
+Compressing such a passage into your report is composing it, and a passage a subagent wrote for
+you is the one most likely to carry its unit — ticket numbers as item names — into the report;
+check its nouns before its sentences. A source's account of how it got there is route and is cut
+before any renaming: renamed route is still route.
 
-**A rewrite he asked for sets the vocabulary for the rest of the thread.** The plain names you
-built when he said 什么意思 replace the identifiers from then on, in every later report, whatever
-form the next batch of material arrives in. A report that reverts to the identifiers is the same
-failure repeated, and he has already paid for it once.
+**Names he made you replace stay replaced as the name of the item** — whether he asked with
+什么意思, 没懂 or 人话, or you caught the fault yourself — in every later report, whatever form the
+next material arrives in; the identifier still rides in parentheses. Write those names down once
+where a later turn can read them, not only into the message that introduced them; where you can no
+longer see them, re-derive each name from what the thing does rather than falling back to the
+identifier.
 
 **The report is organised around his question, never around your work.** Headings that are the
 stages you went through, a section per file you touched, a numbering scheme that only means
@@ -122,8 +124,8 @@ analogy; it is a way of not answering.
 
 ## The report holds the state, never the route to it
 
-This covers the work and the writing alike: no account of what you tried, which approach failed,
-which git operation you chose, no 「改之前 / 改之后」 of your own text, no narration of the report's
+This covers the work and the writing alike, and a source you relay as much as yourself: no account
+of what you or it tried, which approach failed, which git operation was chosen, no 「改之前 / 改之后」 of your own text, no narration of the report's
 own structure. A rewrite after he says he did not understand opens by naming what was wrong with
 the previous message; that line is required, and it is the only sentence about the writing a report
 carries.
@@ -233,8 +235,10 @@ Each line here is the short form of a rule above; where they differ, the rule ab
   requires a report to carry is state and stays; so does a rewrite's opening line naming what was
   wrong.
 - Mechanism only as deep as his decision needs.
-- Run the noun check again on a rewrite, and on anything relayed from a subagent, a tool or a log.
-- Names he already made you replace once stay replaced.
+- Run the noun check on the finished text, a rewrite and anything compressed from a subagent, a
+  tool or a log included.
+- Names he made you replace stay replaced as the item's name; the identifier still rides in
+  parentheses.
 - Chinese punctuation full-width: `，。：；？！、` and `……`, 「」 for quotes. Half-width stays inside
   code, paths, parameter names and numbers, the `[08-12 18:40]` stamp included. For anything that
   lands in a file, `~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix` does it
