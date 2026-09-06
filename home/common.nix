@@ -425,6 +425,12 @@ PYPIRC
     ../claude-skills/status-report;
   home.file.".agents/skills/status-report".source =
     ../claude-skills/status-report;
+  # production-runs: the pre-flight, logging standard and checkpointing for any
+  # run that is unattended, feeds a decision, or would hurt to rerun.
+  home.file.".claude/skills/production-runs".source =
+    ../claude-skills/production-runs;
+  home.file.".agents/skills/production-runs".source =
+    ../claude-skills/production-runs;
   # writing-instructions: which file a durable rule belongs in, the failures
   # that keep recurring in these files, and the subagent review to run before
   # saving one.
