@@ -32,7 +32,7 @@ not ask.
 2. **Lead with the answer, structured top-down** — one-line point first, layers under it. Never bury
    the conclusion.
 3. **Plain words first, ≤ 1 new term at a time** — each defined and settled before the next; the
-   plain gist must stand alone with no term he has not used himself. Terms are a second layer,
+   plain gist must stand alone with no term he has not used himself; such a term is a second layer,
    never woven into the first.
 4. **Short structured chunks, never prose walls — but keep a throughline** — the order carries the
    logic. Disconnected labels fail as badly as a wall of text.
