@@ -593,12 +593,13 @@ PYPIRC
       claude_bin="$HOME/.local/bin/claude"
       if [ -x "$claude_bin" ] && [ ! -f "$marker" ]; then
         mkdir -p "$HOME/.claude"
-        if ! "$claude_bin" mcp get context7 >/dev/null 2>&1; then
-          "$claude_bin" mcp add --scope user -t stdio context7 -- npx -y @upstash/context7-mcp
-        fi
-
-        "$claude_bin" mcp remove --scope user notion >/dev/null 2>&1 || true
-        if "$claude_bin" mcp add --scope user -t stdio notion -- "$HOME/.local/bin/notion-mcp-wrapper"; then
+        # Only register Notion when nothing is registered under that name. The
+        # previous remove-then-add clobbered whatever was there, which would
+        # undo a machine that has moved Notion to a shared HTTP server: an MCP
+        # stdio server is spawned per session, so N sessions meant N copies of
+        # it, and the http transport replaces them with one.
+        if "$claude_bin" mcp get notion >/dev/null 2>&1 \
+          || "$claude_bin" mcp add --scope user -t stdio notion -- "$HOME/.local/bin/notion-mcp-wrapper"; then
           touch "$marker"
           echo "[dotfiles] configured Notion MCP through notion-mcp-wrapper"
         else
@@ -653,10 +654,6 @@ PYPIRC
 
     [projects."${config.home.homeDirectory}/Projects/omem"]
     trust_level = "trusted"
-
-    [mcp_servers.context7]
-    command = "npx"
-    args = ["-y", "@upstash/context7-mcp"]
 
   '';
 
