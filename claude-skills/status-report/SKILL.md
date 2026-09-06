@@ -103,6 +103,11 @@ subagent's, a tool's — is one he used himself, or one defined in the line that
 the machine, the script — use it unchanged and do not explain it back to him. Call this the noun
 check; it is referred to below.
 
+**A quotation in another language carries a Chinese translation right after it**, in parentheses,
+however long the quote — a line from a file, a reviewer's sentence, a rule you are proposing. He
+reads the report in Chinese, and an English line he has to translate himself stands where the
+meaning has to be. Identifiers, commands and paths are not quotations and stay as they are.
+
 **An identifier is fine riding along and never fine load-bearing.** A ticket or PR number in
 parentheses at the end of an item he can already understand costs him nothing and lets him open it.
 The same number as the name of the item, or as the object of the next action (「先合 #412」), is a
