@@ -96,6 +96,18 @@ A word that points outside the message fails the same way: 「那行」, 「上�
 number, a diff against a draft he never saw. Put the content at the address into the message; a
 pointer is not a restatement, and replacing one pointer with another is a failed repair.
 
+**Relayed text is how the wrong unit gets in.** A subagent's report, a tool result, a log, a
+teammate's message arrive organised by whatever unit their author chose — ticket numbers, function
+names, branch names — in an engineer's vocabulary, and compressing them into your report keeps
+both. Material you relay gets the same treatment as sentences you wrote: each item renamed by what
+it does or what broke, each name the source coined defined or dropped, the identifiers moved to
+parentheses. The subagent wrote for you; you write for him.
+
+**A rewrite he asked for sets the vocabulary for the rest of the thread.** The plain names you
+built when he said 什么意思 replace the identifiers from then on, in every later report, whatever
+form the next batch of material arrives in. A report that reverts to the identifiers is the same
+failure repeated, and he has already paid for it once.
+
 **The report is organised around his question, never around your work.** Headings that are the
 stages you went through, a section per file you touched, a numbering scheme that only means
 something to you: each makes him reconstruct your route before he can find his answer. Where
@@ -221,7 +233,8 @@ Each line here is the short form of a rule above; where they differ, the rule ab
   requires a report to carry is state and stays; so does a rewrite's opening line naming what was
   wrong.
 - Mechanism only as deep as his decision needs.
-- Run the noun check again on a rewrite.
+- Run the noun check again on a rewrite, and on anything relayed from a subagent, a tool or a log.
+- Names he already made you replace once stay replaced.
 - Chinese punctuation full-width: `，。：；？！、` and `……`, 「」 for quotes. Half-width stays inside
   code, paths, parameter names and numbers, the `[08-12 18:40]` stamp included. For anything that
   lands in a file, `~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix` does it
