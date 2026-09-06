@@ -418,6 +418,13 @@ PYPIRC
     ../claude-skills/send-gate;
   home.file.".agents/skills/send-gate".source =
     ../claude-skills/send-gate;
+  # status-report: the shape of a report to him — anchor stamp, phenomenon
+  # before cause, decision decidable from the page. Same de-identification rule
+  # as above: the examples in it are constructed, never verbatim transcript.
+  home.file.".claude/skills/status-report".source =
+    ../claude-skills/status-report;
+  home.file.".agents/skills/status-report".source =
+    ../claude-skills/status-report;
   # writing-instructions: which file a durable rule belongs in, the failures
   # that keep recurring in these files, and the subagent review to run before
   # saving one.
@@ -465,6 +472,9 @@ PYPIRC
         "alwaysThinkingEnabled": true,
         "skipDangerousModePermissionPrompt": true,
         "cleanupPeriodDays": 365,
+        "env": {
+          "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
+        },
         "statusLine": {
           "type": "command",
           "command": "~/.claude/statusline.sh",

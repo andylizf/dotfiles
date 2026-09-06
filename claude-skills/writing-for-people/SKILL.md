@@ -1,6 +1,6 @@
 ---
 name: writing-for-people
-description: 写或改任何会被人读到的字之前加载：评论、code review、回复、帖子、邮件、文章、个人陈述、发言稿、给评审看的材料。**最容易漏的是应答式写作**——回评论、回 issue、回邮件、回聊天：被人问一句答一句，感觉像在说话不像在写东西，检查根本不会触发，这是本 skill 被跳过的头号原因。**短不豁免**，一句话的回复也要过，越短的字 AI 腔越集中（"Happy to"、"Let me know"、"Feel free to" 全长在短回复里）。**被动不豁免**，别人先开口不改变性质，发出去的仍然是署他名字的字。第一步是定读者和他拿去做什么：那一步决定内容留什么删什么，是本文件里最重要的一节，比任何文风检查都靠前。之后才是扫 AI 痕迹 (AI-isms) 和中文标点。Use before writing or editing any text a person will read. Its first section sets the reader and what they will do with the text, which decides what content stays; the checklists that follow scrub AI-isms and fix CJK punctuation.
+description: 写或改任何会离开这个对话的字之前加载：落成文件的、发给别人的、进仓库或文档的。评论、code review、给别人的回复、帖子、邮件、文章、个人陈述、发言稿、给评审看的材料、README、commit message、PR 描述都在内。**他会转手发出去的字在内，哪怕写在给他的回复里**——他问「这封邮件我该怎么回」，要的那句就是本 skill 的活：写进文件，过一遍，再把路径给他。真正不在内的只有一种：说完就停在这个对话里、他不会转发的话。**最容易漏的是应答式写作**——回评论、回 issue、回邮件、在聊天软件里回别人：被人问一句答一句，感觉像在说话不像在写东西，检查根本不会触发，这是本 skill 被跳过的头号原因。**短不豁免**，一句话的回复也要过，越短的字 AI 腔越集中（"Happy to"、"Let me know"、"Feel free to" 全长在短回复里）。**被动不豁免**，别人先开口不改变性质，发出去的仍然是署他名字的字。第一步是定读者和他拿去做什么：那一步决定内容留什么删什么，是本文件里最重要的一节，比任何文风检查都靠前。之后才是扫 AI 痕迹 (AI-isms) 和中文标点。Use before writing or editing any text that leaves this conversation for a file, a repository, a document or another person — including a line he asked for so that he can send it on, which goes into a file rather than into the reply. Only what stops inside the conversation is outside it. Its first section sets the reader and what they will do with the text, which decides what content stays; the checklists that follow scrub AI-isms and fix CJK punctuation.
 ---
 
 # 写给人看的字：先定读者，再去痕迹
@@ -9,7 +9,7 @@ description: 写或改任何会被人读到的字之前加载：评论、code re
 
 ## 动笔前：先定读者和文体
 
-**对外可见的一律英文**：代码注释、文档、提交信息、PR/issue 评论、GitHub review，除非他另说。**对话用什么语言不影响这一条。**
+**进代码和仓库的一律英文**：代码注释、文档、提交信息、PR/issue 评论、GitHub review，除非他另说。邮件、发言稿、个人陈述、文章按读者定语言，不受这条管。**对话用什么语言不影响这一条。**
 
 
 底下所有清单都是**减法**：告诉你删什么，从不问你写给谁。清单能查出病灶，查不出姿态。
@@ -245,7 +245,7 @@ couple of directions and want your read on them."
 这条不是文风判断，是**模型自身的输出偏差**：全角标点在 tokenizer 词表里不占便宜，
 模型写中文时会默认滑向 ASCII 半角。真人不会：中文输入法默认就出全角，打半角反而要多切一次。
 所以满屏半角是一眼假，而它在语义层之下，靠“写得用心”修不掉，只能定稿前扫一遍。
-任何一段中文都算，包括聊天里的一句话回复。
+任何一段会离开这个对话的中文都算：发给别人的、落成文件的、进仓库的，包括在聊天软件里回别人的一句话。
 
 **换成哪个**：`,→，` `.→。` `:→：` `;→；` `?→？` `!→！` `...→……`。
 并列项之间是顿号 `、` 不是逗号；书名篇名用 `《》`，不用引号也不用斜体；外国人名分隔用 `·`。
@@ -308,7 +308,7 @@ AI 本能。升华、展望、“这套模式还可以推广到…”一律删�
 
 **第一步，派 `writing-reviewer`。**
 
-**读者是别人的稿子**（评论、邮件、帖子、PR 描述、给评审看的材料）在给他看之前，把草稿
+**读者是别人的稿子**（评论、邮件、帖子、README、给评审看的材料）在给他看之前，把草稿
 全文交给 `writing-reviewer` subagent。它手上有穷举用的东西：英文换词表、英文套路清单、
 字频上限、标点。**这些不放在这份文件里，是因为它们只在成稿之后有用，而这份文件要在
 下笔之前就起作用。**
@@ -316,7 +316,12 @@ AI 本能。升华、展望、“这套模式还可以推广到…”一律删�
 它返回命中位置和改法，不改稿。**判据类的不派给它**：读者是谁、姿态、承重测试、限定词
 有没有被删掉——那些要在写的时候就定，事后没人替得了。
 
-给他自己看的分析不用派，一句话的聊天回复也不用，那些照本文件正文过。
+**没有收件人的仓库产物不派**：commit message、PR 描述、tag、release note——没有人被这段字
+点名，一次 subagent 往返不值。**判据和 `send-gate` 是同一条：这段字的另一头有没有人。**
+PR 描述里一旦 at 了某个人、或整段是写给某个 reviewer 的，那就有收件人，照派。
+一句话的即时回复也不派——短不豁免检查，只豁免这一趟往返。
+**不派不等于不查。** 不派的时候，那几张穷举表要自己过：英文换词表、英文套路清单、
+字频上限、标点，都在 `writing-reviewer.agent.md` 里，照着扫一遍再写。
 
 **第二步，读者要照着做的，才核。**
 

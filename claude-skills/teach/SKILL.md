@@ -1,15 +1,18 @@
 ---
 name: teach
 description: >-
-  Use whenever your reply will explain how something works — any concept, mechanism, paper, system,
-  formula, or piece of technical/abstract material. **The trigger is a property of the answer you
-  are about to write, never of the words they asked with.** Check it against your own outgoing
-  reply; a question phrased in no particular way still qualifies the moment the answer would
-  describe how something works. It applies whether or not they asked for a "lesson", and whether
-  the answer lands in chat, in an explanatory file, doc, or report, or in a status report on
-  changes you made — that last is the disguise that gets missed, because it still qualifies the
-  moment it says how anything works. Encodes their settled preferences so explanations read as
-  teaching rather than as a reference manual.
+  Use whenever the text you are about to write will explain to him how something works — any
+  concept, mechanism, paper, system, formula, or piece of technical or abstract material. **The
+  trigger is a property of that text, never of the words he asked with.** Check it against what you
+  are about to produce; a question phrased in no particular way still qualifies the moment the
+  answer would describe how something works. It applies whether or not he asked for a "lesson", and whether
+  the answer lands in chat, in an explanatory file, doc, or in the mechanism paragraphs of a
+  report. **The unit is the passage, not the document**: consecutive sentences whose job is to make
+  a mechanism understood are this file's, wherever they sit; sentences whose job is to convey what
+  happened, what state a thing is in, or what comes next are not, whoever did the work. Where the
+  report is to him, `status-report` sets its shape and caps how deep a volunteered mechanism goes;
+  a mechanism he asked about is this file's at full depth. Encodes his settled preferences so
+  explanations read as teaching rather than as a reference manual.
 ---
 
 # Teaching
@@ -22,10 +25,6 @@ someone who already holds the model. When in doubt, define the term.
 someone else sent him: he may be handing it over precisely because it means nothing to him yet.
 Reading it back in its own vocabulary answers a question he did not ask. Say what it says before
 saying anything about it, and define every term inside it that he has not used himself.
-
-**Load `writing-for-people` too, and apply both to the same draft.** The two work on different axes:
-that skill decides how the sentences sound, this one decides whether the explanation lands. Neither
-substitutes for the other.
 
 ## Why you keep failing: the curse of knowledge
 
@@ -60,10 +59,6 @@ This list is itself the demo: apex first, detail underneath. If you internalize 
 7. **Match their move** — asked what's wrong → only the errors; restating to check → validate
    precisely; answer as a peer, no reflexive reassurance.
 
-These aren't ad-hoc. They're the standard craft of clear explanation — Minto's pyramid, the curse of
-knowledge, Feynman's "explain it plainly or you don't know it," working-memory chunking — tuned to
-one person's specific complaints.
-
 ## The shape of one explanation
 
 The seven rules are properties: plain words, small chunks, no buried conclusion. None of them fixes
@@ -77,14 +72,16 @@ different sentences.
 
 **2. Derive from zero, assuming they remember nothing.** Not "assume they are new to the topic" —
 assume the context of the conversation itself is gone. Whatever the explanation rests on gets
-rebuilt where it is used, never pointed back at.
+rebuilt where it is used, never pointed back at. From zero means rebuilding what *this* explanation
+stands on, never re-teaching the field around it — and a step is rebuilt when his next move depends
+on it, which is what keeps deriving from becoming 琐碎.
 
 **3. Never drop the subject.** Every sentence says who or what is doing the thing. A quoted
 fragment, a pronoun carried over from an earlier paragraph, a referent that moved while the reader
 was following something else — each one stops them to reconstruct who is acting. The pull is
 strongest in languages where a sentence still parses with the subject missing. A subject that
-is *present but empty* fails the same way and is far harder to see — see *Hand over the thing,
-not a pointer to it*.
+is *present but empty* fails the same way and is far harder to see: "that line" and "the earlier
+point" fill the slot and name nothing.
 
 **4. Every piece has to say where it sits and what it is doing.** An explanation drifts: you set
 out to explain one thing, a second thing comes up while explaining it, and six paragraphs later
@@ -101,7 +98,10 @@ visible in the draft.
 These are step 1's three questions in running form: asked once at the top, and again at every
 piece.
 
-**Asked to explain it again, re-derive all three and rewrite the whole thing from zero.** Resuming
+**Asked to explain it again, re-derive all three and rewrite the whole thing from zero.** From zero
+is about the ordering, not the altitude: rebuild the explanation from its first sentence, at the
+same level, around the one point that was missing. Dropping to fundamentals is a different move and
+is almost always wrong — `references/interaction.md` has it. Resuming
 from where you stopped carries the drift forward, and answering only the part they queried leaves
 them holding two pieces and joining them. A pass that starts from "what am I actually trying to
 say" reorganises; one that starts from the last paragraph extends. Rewrite everything, including
@@ -229,8 +229,10 @@ all four.
 **Pick by what the finished piece will contain, never by whether you feel you already know the
 rule.** You will almost always feel that you do — that feeling is the curse of knowledge pointed at
 this skill instead of at the subject, and it is how these rules get broken while sitting unread in
-context. The trigger is a property of the artifact, not a judgement about yourself: **if the piece
-will contain even one number, `evidence.md` is mandatory.**
+context. The trigger is a property of the artifact, not a judgement about yourself: **if the passage
+will contain even one number that carries the explanation, `evidence.md` is mandatory.** A number
+that only reports state — a count of what passed, how long something ran — is `status-report`'s and
+takes no derivation.
 
 | Read this | When |
 |---|---|
@@ -241,10 +243,11 @@ will contain even one number, `evidence.md` is mandatory.**
 
 ## Before it leaves your hands
 
-**This applies to any explanatory artifact — a file, a doc, a report — not just chat replies.** The
-checklist is easiest to skip when the deliverable is a file, because there's no visible "send" moment
-to trigger it; you write, save, move on. That gap is where the worst session on record happened: the
-rules sat in context the whole time, unread at the one moment they applied.
+**This applies to any explanatory artifact — a file, a doc, the mechanism passage of a report —
+not just chat replies.** It applies to that passage, not to the state around it. The checklist is
+easiest to skip when the deliverable is a file, because there's no visible "send" moment to trigger
+it; you write, save, move on — and the rules then sit in context unread at the one moment they
+applied.
 
 **Ask this first, because it catches most of the rest:** is this a summary or is it teaching? A
 summary states conclusions for someone who already has the model — numbers with no arithmetic, deltas
@@ -252,7 +255,8 @@ with no baseline, coinages with no definition, four topics each given one line. 
 a reader without your context couldn't reconstruct any single claim from what's on the page, you
 wrote a summary, and it will cost a round-trip per claim. **This failure is systematic, not local** —
 when it happens it usually happens to every item at once, so finding one instance means re-checking
-all of them rather than patching the one.
+all of them rather than patching the one. Run this test on the passages that explain, never on the
+state around them: a report is *supposed* to state where things stand without deriving it.
 
 Then scan for the specific failures:
 
@@ -300,5 +304,7 @@ Then scan for the specific failures:
 
 ## Language
 
-Match their language — in practice almost always Chinese, plain spoken 人话. No ornate bold-header
-structure, no poetic parallel clauses for a conceptual or personal explanation.
+In a reply to him, match his language — in practice almost always Chinese, plain spoken 人话, and
+no poetic parallel clauses for a conceptual or personal explanation. Text that leaves the
+conversation takes its language from `writing-for-people` instead, which requires English for
+anything outward-facing whatever language the conversation is in.
