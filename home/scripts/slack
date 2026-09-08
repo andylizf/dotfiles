@@ -431,7 +431,9 @@ def reactions_fmt(ws, m):
         users = [ws.uname(u) for u in (r.get("users") or [])]
         hidden = (r.get("count") or len(users)) - len(users)
         if hidden > 0: users.append(f"+{hidden}")
-        out.append(f":{r.get('name')}: {', '.join(users) or r.get('count')}")
+        who = ", ".join(users)
+        n = r.get("count") or len(users)
+        out.append(f":{r.get('name')}: x{n}" + (f" {who}" if who else ""))
     return out
 
 def mention_ids(m):
@@ -482,11 +484,14 @@ def print_msgs(ws, msgs, header=None):
         if gap is not None:
             marks.append("edited" if gap < 0 else f"edited {dur(gap)} later")
         if m.get("reply_count"):
-            marks.append(f"{m['reply_count']} replies (ts={m['ts']})")
+            marks.append(f"↳ {m['reply_count']} replies · ts={m['ts']}")
         marks.extend(reactions_fmt(ws, m))
-        # On the header line, not trailing the body: a multi-line message would
-        # otherwise hide the marks hundreds of characters down.
-        tag = ("  ↳ " + ", ".join(marks)) if marks else ""
+        # Bracketed, on the header line. On the header line because trailing the
+        # body would bury the marks hundreds of characters down a long message.
+        # Bracketed because the bare "↳ :+1: A, B" form ran straight into the
+        # "name: text" separator, so a reaction read as part of the sentence and
+        # a reply count went unnoticed - which is the whole point of printing it.
+        tag = ("  [" + " | ".join(marks) + "]") if marks else ""
         print(f"[{stamp(m.get('ts'))}] {who}{tag}: {body}")
 
 # ---------------------------------------------------------------- workspaces
