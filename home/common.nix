@@ -768,6 +768,10 @@ PYPIRC
       cfg="$HOME/.codex/config.toml"
       marker="$HOME/.local/state/dotfiles/omem-installed-rev"
       force_update="''${DOTFILES_FORCE_CLI_UPDATE:-0}"
+      # $codex_bin is a `#!/usr/bin/env node` script and the activation PATH
+      # carries no node, so without this every codex call below dies with
+      # `env: node: No such file or directory` - two of them silently.
+      export PATH="${pkgs.nodejs_24}/bin:$PATH"
 
       if [ -d "$omem_repo" ] && [ -x "$codex_bin" ]; then
         # The retired reproduction checkout is no longer a valid marketplace root and
