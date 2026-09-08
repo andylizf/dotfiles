@@ -143,10 +143,8 @@ in
 <plist version="1.0"><dict>
   <key>Label</key><string>local.lark-refresh</string>
   <key>ProgramArguments</key><array><string>/bin/bash</string><string>$BIN/lark-refresh.sh</string></array>
-  <!-- 10min: lark-cli refreshes a token only once it has EXPIRED (no proactive/forced refresh), so
-       this interval bounds how long an expired token can sit in Bitwarden before the agent rotates
-       and republishes it. Rotation happens ~every 2h (on expiry), so a short interval adds no extra
-       token invalidations — it only shrinks the reader-visible expiry gap. -->
+  <!-- The official CLI decides when to refresh, including within five minutes of access-token
+       expiry. This timer requests a user API call and publishes the resulting access token. -->
   <key>StartInterval</key><integer>600</integer>
   <key>StandardOutPath</key><string>$CFG/refresh-stdout.log</string>
   <key>StandardErrorPath</key><string>$CFG/refresh-stderr.log</string>

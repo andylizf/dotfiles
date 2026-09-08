@@ -78,15 +78,23 @@ EOF
 # status` is handed straight to the real CLI — whose blanket "auth is not supported" message is the
 # exact confusing output this wrapper exists to replace. So resolve --profile AND the real subcommand
 # (the first two non-flag args) up front, and drive all detection off those instead of off $1.
-profile=""
+# Match the official CLI: an explicit --profile overrides the environment.
+profile="${LARKSUITE_CLI_PROFILE:-}"
 subcmd=""
 subsub=""
 want_profile=0
+help_requested=0
+update_check=0
 for a in "$@"; do
   if [ "$want_profile" = 1 ]; then profile="$a"; want_profile=0; continue; fi
   case "$a" in
     --profile=*) profile="${a#--profile=}" ;;
     --profile)   want_profile=1 ;;
+    --)          break ;;
+    --help|-h|--help=true|-h=true) help_requested=1 ;;
+    --help=false|-h=false) help_requested=0 ;;
+    --check|--check=true) update_check=1 ;;
+    --check=false) update_check=0 ;;
     -*)          : ;;   # any other flag (or a flag's value) — never the subcommand
     *)
       if   [ -z "$subcmd" ]; then subcmd="$a"
@@ -96,6 +104,11 @@ for a in "$@"; do
   esac
 done
 
+# These official commands need no relay credentials.
+if [ "$help_requested" = 1 ] || { [ "$subcmd" = auth ] && [ "$subsub" = qrcode ]; }; then
+  exec "$REAL" "$@"
+fi
+
 # Meta commands that involve no credentials (schema lookup is offline): run the real CLI as-is.
 # Bare flags like --version / --help leave subcmd empty and fall in here too. `update` is handled
 # separately just below.
@@ -104,13 +117,14 @@ case "$subcmd" in
 esac
 
 if [ "$subcmd" = "update" ]; then
+  [ "$update_check" = 1 ] && exec "$REAL" "$@"
   cat <<'EOF'
 {
   "ok": false,
   "error": {
     "type": "unsupported",
     "message": "`lark-cli update` is disabled on this machine: the npm reinstall would overwrite the reader-side relay wrapper at ~/.local/bin/lark-cli.",
-    "hint": "Update the npm package behind ~/.local/bin/lark-cli.real manually (npm install -g --prefix ~/.local @larksuite/cli@latest), then redeploy dotfiles to restore the wrapper."
+    "hint": "Back up both CLI entrypoints before upgrading the npm package: npm can remove the existing entry even with --bin-links=false. Restore lark-cli.real to the npm launcher and lark-cli from the maintained wrapper after installation, then verify both. Use lark-cli update --check for a read-only version check."
   }
 }
 EOF
