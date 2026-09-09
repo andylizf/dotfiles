@@ -58,7 +58,7 @@ reference is self-contained; read the ones whose trigger fires.
 | `references/structure.md` | Laying out any explanation — prose vs. pyramid, what to cut, the order the pieces go in, quoting a document to him, mirroring an outline he gave you |
 | `references/language.md` | Choosing words — introducing terms, the plain-first pass, an analogy, showing an artifact (a schema, a layout, a format) before describing it |
 | `references/evidence.md` | The passage holds a number he is meant to reason from — a comparison, a measurement, a worked example — however self-evident it looks to you, or a mechanism claim he will test by asking why the opposite case fails. A number that only reports state (a count of what passed, how long a run took) is `status-report`'s and takes no derivation |
-| `references/interaction.md` | Responding to *him* — correcting his work, the rewrite after "没看懂" (he did not follow), answering questions, running a feedback loop |
+| `references/interaction.md` | Responding to *him* — correcting his work, rewriting after he did not follow, answering questions, running a feedback loop; also before requesting or performing a review of a draft answer |
 | `references/checklist.md` | The scan before any explanation goes out, chat or file |
 
 ## How an explanation fails
@@ -122,8 +122,8 @@ say where things stand without deriving it. A file has no send moment, so run it
 
 **First: is this a summary or is it teaching?** A summary states conclusions for someone who
 already has the model — numbers with no arithmetic, deltas with no baseline, coinages with no
-definition, four topics each given one line. Teaching derives. If there is any claim on the page
-that he, holding nothing but the page, could not reconstruct, you wrote a summary. The failure hits
+definition, four topics each given one line. Teaching derives. If he could not reconstruct a claim
+in that explanatory passage from what it contains, you wrote a summary. The failure hits
 every item at once, so one instance means re-checking all.
 
 One check nothing else states, then the scan in `references/checklist.md`:

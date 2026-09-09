@@ -165,7 +165,10 @@ Everywhere else a mechanism is one clause, and "why" is his to ask.
 
 ## When he did not understand
 
-Rewrite from the top; never extend. The first line says the restart out loud — 「我上一条堆了太多
+Rewrite the full report requested, even when he names one passage as an example of its failure;
+answer only that passage when his question is confined to it. Asking for `teach` keeps the report's
+scope: explain the concrete changes and what remains, with mechanisms supporting those answers.
+For a full rewrite, the first line says the restart out loud — 「我上一条堆了太多
 细节，从头说」, 「那个词是我造的，没解释就用了」, 「我那句话说错了」 — and how long the rewrite runs.
 Then from the phenomenon: definitions before mechanism, his questions in his order and numbered,
 the text he could not see quoted where he asked, an instance where the first version gave a
@@ -173,8 +176,8 @@ category. Repeated 没懂 on one subject usually means one unstated premise the 
 name it, state it, rebuild on it. More structure is the wrong reflex — bold terms, the source
 quoted, formatting over unchanged sentences fail again, and one concrete retelling of something he
 actually did lands; the one table that lands is one that pins a term, with its columns set to the
-questions he is asking, never to the fields the code has. The rewrite carries nothing else — an
-appended finding becomes the next 什么意思; send it later, on its own. Run the noun check on the
+questions he is asking, never to the fields the code has. The rewrite carries the whole requested
+answer without unrelated appended findings; send those later, on their own. Run the noun check on the
 rewrite itself. The repairs that fail take three shapes: **re-pointing instead of handing over the
 thing** (a pointer for a pointer, the rejected term kept, a concession with no definition, "see the
 X skill"); **changing the presentation instead of the content** (the same voice with more words,
@@ -186,5 +189,6 @@ of an answer, three options with no leaning).
 
 | Read this | When |
 |---|---|
+| `teach` skill, `references/interaction.md`, "Review the answer against the request" | Before requesting or performing a review of a draft report: establish what the user requested and whether the draft answers it before checking its wording |
 | `references/checklist.md` | Every report, after it is written and before it is sent: the pass runs on the finished text, a rewrite included |
 | `references/examples.md` | Before your first report in a session, and again when he has answered one with 什么意思 or 没懂: four reports as sent and as they should have read |

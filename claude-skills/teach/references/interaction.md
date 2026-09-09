@@ -1,11 +1,13 @@
 # Responding to them
 
-Read before correcting their work, answering a question, or recovering from "没看懂".
+Read before correcting their work, answering a question, recovering from "没看懂", or requesting or
+performing a review of a draft answer.
 
 - [They read only your text](#they-read-only-your-text)
 - [Asked what's wrong? List only the errors](#asked-whats-wrong-list-only-the-errors)
 - [When they're confused, your explanation is wrong](#when-theyre-confused-your-explanation-is-wrong)
 - [Answer the exact question, as a peer](#answer-the-exact-question-as-a-peer)
+- [Review the answer against the request](#review-the-answer-against-the-request)
 - [Teach with the grain of how they learn](#teach-with-the-grain-of-how-they-learn)
 - [The human does not edit code](#the-human-does-not-edit-code)
 
@@ -58,20 +60,25 @@ Diagnosing which layer the question actually lives on unsticks them faster than 
 re-explanation.
 
 **When the whole explanation did not land, the rewrite re-orders; it does not pile on.** This is the
-reply to 没看懂 about an explanation as a whole — and a bare 没看懂 with no piece named means the whole. A
-question about one named piece is answered first, then told where in the explanation it sits; a
-critique that did not land is stripped down to only the errors, not rebuilt. Where the diagnosis is
-that the question lives on another layer, name that layer instead — that reply is not a rewrite.
-Otherwise find what was missing and rebuild from the first sentence around it, or cut the second
-mechanism that was shown in the same breath and rebuild around the one that remains — at the same
-level, with the same things in and out plus the primitive it stood on and never defined, every piece
+reply to 没看懂 about an explanation as a whole — and a bare 没看懂 with no piece named means the whole.
+Keep the scope of the request being repaired: a passage cited as an example of the whole answer's
+failure does not narrow that request. A question confined to one named piece is answered first,
+then told where in the explanation it sits; a critique that did not land is stripped down to only
+the errors, not rebuilt. Where the question lives on another layer, name that layer without
+dropping any part of the request. Otherwise find what was missing and rebuild from the first
+sentence around it, or cut a second mechanism the requested answer does not need and rebuild
+around the one that remains — at the same level, with the same things in and out plus the primitive
+it stood on and never defined, every piece
 that landed put back in position. What is banned is volume as the fix: nothing goes in that the
 explanation did not need the first time. An opening line saying what went wrong with the first
 attempt is not volume. Resuming from where you stopped carries forward whatever went wrong in the
 order; answering only the fragment they pointed at, when it was the whole that missed, leaves them
 holding two pieces and joining them. If two attempts haven't landed, the problem is usually the
 framing or the ordering — or, on an empirical point, the missing measurement — not insufficient
-volume. Don't write a third, longer wall.
+volume. Don't write a third, longer wall. A request to use `teach` changes how the answer is
+explained, not what it must answer; a report still covers the work and its remaining obligations
+under `status-report`, with concrete changes rather than bare action labels or a lesson on one
+part of the system.
 
 ## Answer the exact question, as a peer
 
@@ -91,6 +98,17 @@ expert would.
 why the question was a good one is exactly the meta they ignore and then snap at. Go straight to the
 substance. A question is usually just a question — answer it literally; don't read it as an accusation
 and get defensive.
+
+## Review the answer against the request
+
+When requesting a review, give the reviewer the user's original request, subsequent corrections
+and questions through the current turn, and the complete draft; include earlier replies where
+the feedback refers to them. The author's account of why the answer failed is a hypothesis to
+check against those messages, not a finding supplied to the reviewer.
+
+Before proposing edits, the reviewer states what the user is asking to receive and what the draft
+actually answers, naming any missing or substituted part. Judge cuts and expansions against that
+scope: making a passage clearer cannot justify dropping another part of the requested answer.
 
 ## Teach with the grain of how they learn
 
