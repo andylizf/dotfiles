@@ -46,7 +46,7 @@ echo "YOUR_AGE_KEY" > ~/.config/sops/age/keys.txt  # on remote
 
 - Packages: fish, git, unzip, tree, rsync, gh (GitHub CLI), uv, nodejs_24
 - Git config: user, email, push/pull defaults, default branch, editor, colors
-- Fish config: PATH via Home Manager, `CLAUDE_CODE_USE_VERTEX=1`
+- Shell config: PATH and shared environment via Home Manager; no global Claude provider override
 
 ## SkyPilot
 

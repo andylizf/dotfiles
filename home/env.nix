@@ -18,8 +18,8 @@ let
 
   # Plain values, no condition.
   staticVars = {
-    CLAUDE_CODE_USE_VERTEX = "0";
-    ANTHROPIC_VERTEX_PROJECT_ID = "llm-retrieval-403823";
+    # Provider-selecting Claude variables stay out of the global shell. Set them
+    # only on the command that deliberately uses that provider.
     ANTHROPIC_MODEL = "opus[1m]";
     ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-sonnet-4-6";
 
