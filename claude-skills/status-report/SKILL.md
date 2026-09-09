@@ -18,9 +18,9 @@ description: >-
   he never used. He reads every report cold, so it orients him first and succeeds only if he can
   act on it without asking a question. A report that leaves the conversation (Feishu, Slack) takes
   its shape from here, its surface from `writing-for-people` and its gate from `send-gate`. A
-  passage explaining how something works follows `teach`; this file caps a mechanism you
-  volunteer, one he asked about is `teach`'s at full depth, and the rest of a report is state,
-  never teaching.
+  report accounts for the work: results, verification, outstanding work and decisions. `teach`
+  helps him understand that account, including what a change means or why a problem remains.
+  Both can apply to the same sentences; his request sets how much explanation is needed.
 ---
 
 # Reporting to him
@@ -84,8 +84,8 @@ say 「18:40 的第 2 条没说清楚」. A report following an earlier one name
   used unchanged, never explained back to him.
 - **A subagent's passage gets the noun check before it is compressed.** It arrives organised by
   its author's unit (ticket numbers as item names) in an engineer's vocabulary; compressing it is
-  composing it. Its account of how it got there — what it tried, in what order — is cut before any
-  renaming.
+  composing it. Unless he asked for the investigation history, cut its account of what it tried
+  and in what order before any renaming.
 - **Names he made you replace stay replaced as the item's name**, whether he asked with 什么意思,
   没懂 or 人话 or you caught it yourself, in every later report; the identifier still rides in
   parentheses. Write those names down once in a memory or a file a later turn can read, not only
@@ -116,44 +116,50 @@ used could mean two things, say which you took. A thing with no counterpart he u
 one he does (a mailbox for a queue), with where the mapping stops; an analogy that carries the very
 decision he is questioning is not an analogy.
 
-## The report holds the state, never the route to it
+## Report the state; include the route when he asks for it
 
 A sentence asserting something now true that he has to work with is state; a sequence of actions —
 yours or a source's — is route: what was tried, which approach failed, which git operation was
-chosen, 「改之前 / 改之后」 of your own text, narration of the report's structure. The one sentence
-about the writing a report carries is a rewrite's opening line naming what was wrong. State that is
+chosen, 「改之前 / 改之后」 of your own text, narration of the report's structure. Cut that chronology
+unless he asks what was tried or how the result was reached; then answer the requested history.
+In an ordinary report, the only sentence about the writing itself is a rewrite's opening line
+naming what was wrong. State that is
 easy to mistake for route, and stays, stated as the constraint rather than as the story of meeting
 it: a limit you are now under, a thing that will break next time, a decision a failure forces, a
 tool looked for and found missing, a package installed, where a backup landed, why a retry or a
 check was put in or left out, the file and line that made you stop. **Anything another instruction
 file requires a report to carry is state**, in item 3 or 4, one clause each unless that file sets
-its own depth, and the length section below does not cut it.
+its own depth or he asks for explanation, and the length section below does not cut it.
 
-## Details stay out unless they change his decision
+## Length follows his request and the work
 
-Length follows what changed, never how long you worked: **a three-hour task that changed one line
-gets a three-line report** — stamp and item 1 stay, items 2, 3 and 5 collapse or disappear, item 4
-never goes. Mark what was cut with "(details omitted)". The cut falls on evidence, not reasons: the
-reason for a leaning stays, a second measurement propping up a conclusion already given goes, a
-fact he needs to act on or to reach the conclusion himself stays. A result that overturns something
+Default to a brief report sized to what changed, never how long you worked. For a small change,
+stamp and item 1 stay, items 2, 3 and 5 can collapse, and item 4 never goes. When he asks for a
+detailed account, examples or explanation, expand to answer that request; details needed to
+understand the work stay even when no decision depends on them. Mark what was cut with
+"(details omitted)". Cut evidence that adds nothing to the requested account, such as a second
+measurement propping up a conclusion already established; keep the reason for a leaning and the
+facts he needs to understand the conclusion or act on it. A result that overturns something
 you told him earlier restates what was measured and how before the new number — what is tested,
 how, what you said before, what is true, what it means for him — and one sentence retracts the old
 claim; explaining what you meant by it is not a retraction.
 
-## Mechanism: as deep as he asked, or as deep as the decision needs
+## Using teach in a report
 
-A mechanism he asked about — a question of his naming the thing, answered in that turn; not a
-request for a report, not a topic raised turns ago — is `teach`'s at full depth, whether or not a
-decision rests on it. One you volunteer follows `teach` where his decision depends on it and goes
-only as deep as the decision needs; `teach`'s checklist runs on that passage, not on the report.
-Everywhere else a mechanism is one clause, and "why" is his to ask.
+This skill keeps the requested work accounted for; `teach` makes that account understandable.
+Apply it wherever the reader needs background, an example or reasoning to understand a result,
+a changed rule, an outstanding problem or a mechanism. A request for a detailed report can need
+all of these without naming a mechanism. Explain each requested item far enough to answer his
+question, keeping the other items in view. A brief completion check can stay brief; a request to
+understand the whole task needs more than action labels, but does not invite a lesson on every
+part of the system. Run `teach`'s checklist on the passages doing that explanatory work.
 
 ## The moments
 
-- **Turn done.** Full shape, at the length the change earns.
+- **Turn done.** Full shape, at the length his request and the change call for.
 - **Blocked on him.** Full shape; item 4 is the point — one sentence he can answer with one word
   where the options allow it, the options and their costs where they do not.
-- **Still running.** Stamp, what is being checked and for which symptom, how long, when the next
+- **Unsolicited update while still running.** Stamp, what is being checked and for which symptom, how long, when the next
   update comes as a duration rather than a clock time. One or two lines. A suspicion in one clause
   is fine; an unconfirmed hypothesis about the thing you are chasing, delivered as mechanism, stays
   in your head until the result is in. That is not silence about anything else: something
@@ -167,7 +173,8 @@ Everywhere else a mechanism is one clause, and "why" is his to ask.
 
 Rewrite the full report requested, even when he names one passage as an example of its failure;
 answer only that passage when his question is confined to it. Asking for `teach` keeps the report's
-scope: explain the concrete changes and what remains, with mechanisms supporting those answers.
+scope: explain the concrete changes and what remains, with the background, examples and reasoning
+needed to understand those answers.
 For a full rewrite, the first line says the restart out loud — 「我上一条堆了太多
 细节，从头说」, 「那个词是我造的，没解释就用了」, 「我那句话说错了」 — and how long the rewrite runs.
 Then from the phenomenon: definitions before mechanism, his questions in his order and numbered,

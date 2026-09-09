@@ -1,14 +1,13 @@
 ---
 name: teach
 description: >-
-  Use whenever text you are about to write explains to him how something works. **The trigger is a
-  property of that text, never of the words he asked with**: a question phrased any way qualifies
-  the moment its answer would describe a mechanism. **The unit is the passage, not the document**:
-  any run of sentences, one included, whose job is to make a mechanism understood is this file's
-  wherever it sits, chat or file; sentences that say what happened, what state a thing is in, or
-  what comes next are not. A report qualifies where it explains a mechanism he has not been shown,
-  not where it lists what changed; `status-report` shapes the report and caps a volunteered
-  mechanism's depth, and a mechanism he asked about is this file's at full depth.
+  Use whenever text you are about to write helps him understand something — a concept, what a
+  change means, why a problem remains, or how something works. The trigger is the explanatory
+  job of the text, regardless of how he phrased the request. The unit is the passage, wherever
+  it sits, chat or file. In a work report, `status-report` governs what must be accounted for;
+  `teach` supplies the background, examples and reasoning needed to understand it. Both can
+  apply to the same sentences. His request sets the depth: a brief completion check needs no
+  lesson, while a detailed account of the work may need explanation throughout.
 ---
 
 # Teaching
@@ -41,7 +40,7 @@ not ask.
    logic. Disconnected labels fail as badly as a wall of text.
 5. **Big picture before details; a clean gap beats a fuzzy blob** — leave a thing out by saying it is
    left out, never by half-explaining it, and never where a conclusion rests on it. Don't drag in a
-   concept he didn't ask for, except a primitive the mechanism operates on.
+   concept he didn't ask for, except background needed to understand the requested subject.
 6. **He reads only your text** — put the thing on the page, never an address to it: the line
    quoted, the values, the claim in words. Never a restatement of the question in place of the
    answer; naming which of several open questions this one answers is not that.
@@ -57,7 +56,7 @@ reference is self-contained; read the ones whose trigger fires.
 |---|---|
 | `references/structure.md` | Laying out any explanation — prose vs. pyramid, what to cut, the order the pieces go in, quoting a document to him, mirroring an outline he gave you |
 | `references/language.md` | Choosing words — introducing terms, the plain-first pass, an analogy, showing an artifact (a schema, a layout, a format) before describing it |
-| `references/evidence.md` | The passage holds a number he is meant to reason from — a comparison, a measurement, a worked example — however self-evident it looks to you, or a mechanism claim he will test by asking why the opposite case fails. A number that only reports state (a count of what passed, how long a run took) is `status-report`'s and takes no derivation |
+| `references/evidence.md` | The passage holds a number he is meant to reason from — a comparison, a measurement, a worked example — however self-evident it looks to you, or a mechanism claim he will test by asking why the opposite case fails. A verified count or duration used only to report completion needs no worked derivation |
 | `references/interaction.md` | Responding to *him* — correcting his work, rewriting after he did not follow, answering questions, running a feedback loop; also before requesting or performing a review of a draft answer |
 | `references/checklist.md` | The scan before any explanation goes out, chat or file |
 
@@ -104,10 +103,9 @@ message. Can he name every noun in it and point at every concrete thing it claim
 
 ### A concept he did not ask for got introduced — the worst one
 
-Answer using **only the concepts already on the table, plus any primitive the mechanism itself
-manipulates**: a noun is a primitive when a sentence of the explanation is logic *about* it, not
-one that merely mentions it, and a primitive is never a deferrable gap; only a concept the
-explanation merely touches is. Every unrequested concept is a fresh thing to learn and a new
+Answer using **the concepts already on the table, plus the background the requested explanation
+needs**: define a concept the explanation reasons about, rather than one it merely mentions;
+the first cannot be deferred, while the second can. Every unnecessary concept is a fresh thing to learn and a new
 half-understood node that invites its own "but why" one level deeper — how a ten-minute answer
 becomes hours: not one hard idea, but an idea that kept sprouting ideas nobody asked about.
 
@@ -117,14 +115,15 @@ change the picture"). Go deeper **only when asked**. The discipline is leaving t
 
 ## Before it leaves your hands
 
-This runs on the passage that explains, never on the state around it: a report is *supposed* to
-say where things stand without deriving it. A file has no send moment, so run it before you save.
+Run this on the passages meant to help him understand, including explanations of work completed
+or still outstanding. A file has no send moment, so run it before you save.
 
-**First: is this a summary or is it teaching?** A summary states conclusions for someone who
-already has the model — numbers with no arithmetic, deltas with no baseline, coinages with no
-definition, four topics each given one line. Teaching derives. If he could not reconstruct a claim
-in that explanatory passage from what it contains, you wrote a summary. The failure hits
-every item at once, so one instance means re-checking all.
+**First: did you explain the requested thing, or only name the conclusion?** A summary works
+when he already has the background and wants a recap. Where he needs an explanation, supply the
+missing background, concrete example or reasoning: a change needs a baseline, an unfamiliar term
+needs a meaning, a derived number needs its arithmetic. If one passage assumes understanding it
+never supplied, check the others for the same skip. This is a check for missing understanding,
+not a requirement to derive every reported fact.
 
 One check nothing else states, then the scan in `references/checklist.md`:
 

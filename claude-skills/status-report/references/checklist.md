@@ -1,8 +1,8 @@
 # Before sending
 
 Run on every report after it is written and before it is sent, a rewrite included. "He" is the
-user; the noun check, the three states and the shape's items are defined in `SKILL.md` beside this
-file, and where a line here and a rule there differ, the rule there governs.
+user; the noun check, the three states and the shape's items are defined in `../SKILL.md`, and
+where a line here and a rule there differ, the rule there governs.
 
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
@@ -11,7 +11,7 @@ file, and where a line here and a rule there differ, the rule there governs.
   naming what was wrong.
 - Phenomenon before cause; cause before fix.
 - Every item named by what broke, what he sees, or what now holds that did not; files, tickets and
-  counts ride in parentheses and carry nothing.
+  counts ride in parentheses and carry nothing unless he asked in those units.
 - Every result marked verified or not, and by what.
 - Every sentence has a subject that names something.
 - No word that points outside the message — including 「那行」, which is a subject and passes the
@@ -32,11 +32,13 @@ file, and where a line here and a rule there differ, the rule there governs.
 - Something found mid-run that changes what he should do, or alters behaviour he would not notice,
   has already gone to him.
 - Anything still running names where he can watch it.
-- Length matches what changed, not how long it took; what was cut is marked "(details omitted)".
-- No route: no sequence of your actions, no history of your text. What another instruction file
-  requires a report to carry is state and stays; so does a rewrite's opening line naming what was
-  wrong.
-- A mechanism he asked about at full depth; one you volunteer only as deep as his decision needs.
+- Length matches his request and what changed, not how long it took: brief by default, expanded
+  when he asks for detail or needs it to understand the account; what was cut is marked "(details omitted)".
+- No unrequested chronology of your actions or text; when he asks what was tried or how the result
+  was reached, answer that history. What another instruction file requires a report to carry
+  stays; so does a rewrite's opening line naming what was wrong.
+- Requested work is all accounted for; `teach` supplies the explanation needed to understand it,
+  including changes and outstanding problems, at the depth his question calls for.
 - Run the noun check on the finished text, a rewrite and anything compressed from a subagent, a
   tool, a log or a teammate's message included.
 - Names he made you replace stay replaced as the item's name; the identifier still rides in

@@ -1,19 +1,19 @@
 # The scan before it goes out
 
-Run on the passage that explains — a reply, a doc, the mechanism paragraphs of a report — never on
-the state around it. A file has no send moment, so run it before you save. First ask whether the
-passage is a summary or teaching: a summary states conclusions for someone who already holds the
-model; teaching derives them so he can reconstruct each claim. If it is a summary, the failure hit
-every item at once, so rework all of them, not the one you found. Then, line by line — each is a
-tell, then the fix, and each is the short form of a rule in the root or a reference; where they
-differ, the rule governs.
+Run on passages meant to help him understand — in a reply, a doc or a work report, including its
+completed and outstanding work. A file has no send moment, so run it before you save. First ask
+whether the passage explains the requested thing or only names the conclusion: a summary is
+enough when he already has the background and wants a recap; where he needs an explanation, give
+the missing background, concrete example or reasoning. If one passage skips needed understanding,
+check the others too. Then, line by line — each is a tell, then the fix, and each is the short
+form of a rule in the root or a reference; where they differ, the rule governs.
 
 ## Scope and order
 
 - Tried to fit everything in instead of deciding the scope first? → cut, and name what is excluded.
-- Pulled in a concept he did not ask about and the explanation does not itself operate on? → cut
-  it, or defer it as a clean gap. A noun the mechanism manipulates is defined, never deferred.
-- Skipped a step because it is obvious *to you*? → put it back if his next move depends on it.
+- Pulled in a concept the requested explanation does not need? → cut it, or defer it as a clean
+  gap. A concept the explanation reasons about is defined, never deferred.
+- Skipped a step because it is obvious *to you*? → put it back if understanding the requested thing depends on it.
 - Ordered the way you discovered it rather than the way he will learn it? → introduce each thing
   before using it.
 - Disconnected labels with no throughline? → re-sequence so the order carries the logic, each unit
@@ -52,8 +52,9 @@ differ, the rule governs.
   unpack it.
 - Any 远小于 / 够不着 / 超出任何场景 (far below / out of reach / beyond any scenario)? → show both
   numbers instead of asserting the gap.
-- Every number: is he meant to reason from it? → one he is not — a count reported for its own
-  sake — is cut, not sourced. If it stays, can he compute it from what is on the page? → each is an input (what was measured, and
+- Every number: what job does it do? → a verified count or duration used only to report completion needs
+  no worked derivation; a number serving neither the requested account nor its explanation is cut.
+  If he is meant to reason from it, can he compute it from what is on the page? → each is an input (what was measured, and
   how) or a derivation (the arithmetic inline); "I measured it" is provenance, not derivation.
   Hardest to catch: a measured number that contradicts what he would compute from the formula you
   just gave him — that one needs the arithmetic *and* a sentence on why the expected route fails.
