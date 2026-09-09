@@ -391,56 +391,40 @@ PYPIRC
     source = ./scripts/gws-princeton;
     executable = true;
   };
-  # Shared user-level skills for Claude Code and Codex. Codex discovers user
-  # skills under ~/.agents/skills and supports symlinked skill directories, so
-  # both agents read the same tracked sources instead of maintaining copies.
+  # Codex recursively discovers Claude's local skills through this directory
+  # link. New skills stay shared without copying private content into the flake.
+  home.file.".agents/skills/claude".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/skills";
+
   # writing-for-people is canonical here; the copy in the daily-agent repo stays
   # for its unattended runs.
-  home.file.".claude/skills/writing-for-people/SKILL.md".source =
-    ../claude-skills/writing-for-people/SKILL.md;
-  home.file.".claude/skills/writing-for-people/scripts/cjk-punct.py" = {
-    source = ../claude-skills/writing-for-people/scripts/cjk-punct.py;
-    executable = true;
-  };
-  # The agent file also sits beside the skill, because the skill tells a session
-  # that is not dispatching the reviewer to scan its tables itself at this path.
-  home.file.".claude/skills/writing-for-people/writing-reviewer.agent.md".source =
-    ../claude-skills/writing-for-people/writing-reviewer.agent.md;
-  home.file.".agents/skills/writing-for-people".source =
+  # Link the directory: Codex skips SKILL.md when the file itself is a symlink.
+  home.file.".claude/skills/writing-for-people".source =
     ../claude-skills/writing-for-people;
   # teach: how explanations should read. Linked as a whole directory so new
   # files under references/ need no change here. The tracked copy is
   # de-identified — this repo is public, so keep names, personal details, and
   # verbatim user quotes out of it when editing.
   home.file.".claude/skills/teach".source = ../claude-skills/teach;
-  home.file.".agents/skills/teach".source = ../claude-skills/teach;
   # send-gate: the full approval rules for anything that reaches another
   # human. Same de-identification rule as above. (personal-matters is
   # deliberately NOT here — it lives in a private repo, since health and
   # personal-life material does not belong in a public one.)
   home.file.".claude/skills/send-gate".source =
     ../claude-skills/send-gate;
-  home.file.".agents/skills/send-gate".source =
-    ../claude-skills/send-gate;
   # status-report: the shape of a report to him — anchor stamp, phenomenon
   # before cause, decision decidable from the page. Same de-identification rule
   # as above: the examples in it are constructed, never verbatim transcript.
   home.file.".claude/skills/status-report".source =
     ../claude-skills/status-report;
-  home.file.".agents/skills/status-report".source =
-    ../claude-skills/status-report;
   # production-runs: the pre-flight, logging standard and checkpointing for any
   # run that is unattended, feeds a decision, or would hurt to rerun.
   home.file.".claude/skills/production-runs".source =
-    ../claude-skills/production-runs;
-  home.file.".agents/skills/production-runs".source =
     ../claude-skills/production-runs;
   # writing-instructions: which file a durable rule belongs in, the failures
   # that keep recurring in these files, and the subagent review to run before
   # saving one.
   home.file.".claude/skills/writing-instructions".source =
-    ../claude-skills/writing-instructions;
-  home.file.".agents/skills/writing-instructions".source =
     ../claude-skills/writing-instructions;
   # instruction-reviewer: the subagent that review calls. Kept beside the skill
   # because the two change together — the skill's failure-mode list is what the
