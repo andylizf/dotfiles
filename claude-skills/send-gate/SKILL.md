@@ -1,6 +1,7 @@
 ---
 name: send-gate
-description: Load before any repository write and before any text reaches a person — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, editing or sharing a document other people can open, submitting a form, registering, booking or scheduling, RSVPing, answering an invitation, or code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file catches, and the cases that need nothing are in here too.
+description: >-
+  Load before any repository write and before any text reaches a person — committing, pushing, opening an issue or PR, merging, commenting, reviewing, posting, emailing, messaging, editing or sharing a document other people can open, submitting a form, registering, booking or scheduling, RSVPing, answering an invitation, or code that hits a send endpoint. A click can be a send: if the page records something under his name once you press it, that is a send. Load it to decide whether Zhifei's approval is needed, not after deciding: concluding "this one is fine" without opening it is the failure this file catches, and the cases that need nothing are in here too. Load even when the task explicitly asks you to send.
 ---
 
 # The send gate
@@ -35,7 +36,7 @@ Before staging anything, **write into your reply** the case number and the three
 
 ## Approval is a token he types
 
-For text that reaches a person, approval has one form: a string he types back. Approval you inferred is not approval.
+For sends that require approval under this skill, a task request authorises preparation; only the matching SEND token he types after the exact final text is shown establishes authorisation to send. Existing authorisation for these sends means this approval. Only Zhifei's explicit instruction to change or waive this approval rule changes the requirement; never infer a waiver from an instruction to perform the task.
 
 One reply carries the exact final text as its own block — in a message you wrote to him, since stdout, a `cat`, a file you opened and a tool result never reached him — and the token alone on a line inside a fenced code block, so copying it carries nothing else. Shape it `SEND <item>-<recipient>`, and append `-2`, `-3` when that string would repeat one used earlier this session.
 
