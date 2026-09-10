@@ -70,12 +70,6 @@ in
     [hooks]
     managed_dir = "${omemManagedHook}/bin"
 
-    [[hooks.PreToolUse]]
-    matcher = "apply_patch"
-    [[hooks.PreToolUse.hooks]]
-    type = "command"
-    command = "${omemManagedHook}/bin/omem-managed-hook observe-write"
-
     [[hooks.SessionStart]]
     [[hooks.SessionStart.hooks]]
     type = "command"
