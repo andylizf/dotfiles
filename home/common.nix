@@ -175,7 +175,21 @@
 
       function codex --wraps codex
         set -l root (git rev-parse --show-toplevel 2>/dev/null; or pwd)
-        command codex -c "projects.\"$root\".trust_level=\"trusted\"" $argv
+        set -l trust -c "projects.\"$root\".trust_level=\"trusted\""
+        # With codex-switchboard installed, the interactive TUI attaches to its shared
+        # engine (one app-server whose account is swapped underneath when a usage limit
+        # is hit). Non-TUI subcommands go straight to the binary.
+        if command -q codex-switchboard
+          switch "$argv[1]"
+            case -V --version -h --help agents exec e review login logout mcp plugin app-server remote-control app completion update doctor sandbox debug apply a queue archive delete migrate-rollouts unarchive cloud exec-server features help
+              command codex $trust $argv
+            case '*'
+              codex-switchboard ensure; or return
+              env CODEX_HOME=$HOME/.codex-profiles/pool codex --remote unix:// $trust $argv
+          end
+        else
+          command codex $trust $argv
+        end
       end
       alias codex-resume 'codex --ask-for-approval never --sandbox danger-full-access resume'
     '';
