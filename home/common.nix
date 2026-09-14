@@ -630,11 +630,12 @@ PYPIRC
     source_type = "local"
     source = "${config.home.homeDirectory}/Projects/omem"
 
+    # The omem Codex plugin only ever bundled the `search_memory` MCP server; the
+    # lifecycle hooks live in /etc/codex/requirements.toml. Disabled 2026-09-13: in
+    # 30 days of MacBook sessions the tool was called in under 4% of them while a
+    # third read ~/omem-data directly, and each call spawned a `codex exec` selector.
     [plugins."omem@omem-local"]
-    enabled = true
-
-    [plugins."omem@omem-local".mcp_servers.omem.tools.search_memory]
-    approval_mode = "approve"
+    enabled = false
 
     [projects."${config.home.homeDirectory}/Projects/omem"]
     trust_level = "trusted"
@@ -764,24 +765,19 @@ PYPIRC
 
         revision="$("${pkgs.git}/bin/git" -C "$omem_repo" rev-parse HEAD 2>/dev/null || printf unknown)"
         installed_revision="$(cat "$marker" 2>/dev/null || true)"
-        plugin_manifest="$("${pkgs.findutils}/bin/find" "$HOME/.codex/plugins/cache/omem-local/omem" \
-          -mindepth 3 -maxdepth 3 -path '*/.codex-plugin/plugin.json' -print -quit 2>/dev/null || true)"
         needs_install=0
         if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/omem" ] \
-          || [ "$installed_revision" != "$revision" ] || [ -z "$plugin_manifest" ]; then
+          || [ "$installed_revision" != "$revision" ]; then
           needs_install=1
         fi
 
         if [ "$needs_install" -eq 1 ]; then
           echo "[dotfiles] installing real omem and Codex integration at $revision"
           if "${pkgs.uv}/bin/uv" tool install --reinstall "$omem_repo"; then
-            "$codex_bin" plugin marketplace add "$omem_repo" >/dev/null 2>&1 || true
-            if "$codex_bin" plugin add omem@omem-local; then
-              mkdir -p "$(dirname "$marker")"
-              printf '%s\n' "$revision" > "$marker"
-            else
-              echo "[dotfiles] failed to install omem Codex plugin; will retry next switch" >&2
-            fi
+            # No `codex plugin add`: the plugin's MCP server is retired, and the
+            # managed hooks in /etc/codex/requirements.toml need no plugin.
+            mkdir -p "$(dirname "$marker")"
+            printf '%s\n' "$revision" > "$marker"
           else
             echo "[dotfiles] failed to install omem CLI; will retry next switch" >&2
           fi
@@ -793,7 +789,8 @@ PYPIRC
           cfg_tmp="$cfg.omem-migration"
           "${pkgs.gawk}/bin/awk" '
             BEGIN { old_plugin = 0 }
-            /^\[plugins\."codex-memory-reproduction@codex-memory-repro"\]$/ {
+            /^\[plugins\."codex-memory-reproduction@codex-memory-repro"\]$/ ||
+            /^\[plugins\."omem@omem-local"\]$/ {
               old_plugin = 1
               print
               next
@@ -807,14 +804,6 @@ PYPIRC
           ' "$cfg" > "$cfg_tmp"
           chmod 0644 "$cfg_tmp"
           mv "$cfg_tmp" "$cfg"
-
-          if ! grep -Fqx '[plugins."omem@omem-local".mcp_servers.omem.tools.search_memory]' "$cfg"; then
-            cat >> "$cfg" <<'TOML'
-
-[plugins."omem@omem-local".mcp_servers.omem.tools.search_memory]
-approval_mode = "approve"
-TOML
-          fi
 
         fi
       else
