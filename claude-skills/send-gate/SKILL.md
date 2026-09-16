@@ -18,7 +18,7 @@ A document on a sharing platform — a Drive or Notion page, a wiki — exists t
 
 ## What stays free
 
-**No approval and no draft shown:** files nobody else can open; local drafts; text he wrote himself and handed over to send verbatim, a line he dictates inside the instruction included — what needs a token is wording you chose; and, in a repository he can push to directly, committing, pushing, opening issues and PRs, merging, titles and descriptions included. A commit message, issue body or PR body that pings nobody is free; a comment, review or reply *to* a person is not, in any repository. A document joins the list once the lookup above shows his account alone holds access; comment threads on a document are messaging people whatever its access. Free of approval is not free of the privacy audit: it runs whenever anyone but him can read the result.
+**No approval and no draft shown:** files nobody else can open; local drafts; text he wrote himself and handed over to send verbatim, a line he dictates inside the instruction included — what needs a token is wording you chose; and, in a repository he can push to directly, committing, pushing, opening issues and PRs, merging, titles and descriptions included. A commit message, issue body or PR body that pings nobody is free; a comment, review or reply *to* a person is not, in any repository. A document joins the list once the lookup above shows his account alone holds access; comment threads on a document are messaging people whatever its access. Free of approval is not free of the privacy audit, which runs whenever anyone but him can read the result; whether `writing-for-people` runs is its description's call, and his never seeing the text is not what decides.
 
 ## Repository writes: three cases
 
@@ -60,7 +60,3 @@ There is no post-hoc fix, so don't offer one — the only control point is befor
 ## Writing code that posts is posting
 
 A script hitting `/comments`, `/replies`, `/messages` or any send endpoint is the same act as doing it by hand, and the same rules decide it. **No automation exemption.**
-
-## Every draft goes through `writing-for-people`, shown to him or not
-
-Run it before the text goes anywhere and write the line it asks for into your reply. The case decides whose approval the send needs, not whether that skill runs: every draft you wrote goes through it, case-1 and case-2 writes he never sees included.

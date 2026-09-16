@@ -1,6 +1,6 @@
 ---
 name: writing-for-people
-description: 写或改任何会离开这个对话的字之前加载：落成文件的、发给别人的、进仓库或文档的。评论、code review、给别人的回复、帖子、邮件、文章、个人陈述、发言稿、给评审看的材料、README、release note、文档、代码注释、commit message、PR 描述都在内。**他会转手发出去的字在内，哪怕写在给他的回复里**：他问「这封邮件我该怎么回」，要的那句就是本 skill 的活。真正不在内的只有两种：说完就停在这个对话里、他不会转发的话；给后来的 session 当规则读的指令文件（skill、CLAUDE.md），那归 writing-instructions。**最容易漏的是应答式写作**：回评论、回 issue、回邮件、在聊天软件里回别人，被人问一句答一句，感觉像在说话不像在写东西，检查根本不会触发。**短不豁免**，一句话的回复也要过，越短的字 AI 腔越集中（"Happy to"、"Let me know"、"Feel free to" 全长在短回复里）。**被动不豁免**，别人先开口不改变性质，发出去的仍然是署他名字的字。Use before writing or editing any text that leaves this conversation for a file, a repository, a document or another person, including a line he asked for so that he can send it on. Only what stops inside the conversation is outside it.
+description: 写或改任何会离开这个对话的字之前加载：落成文件的、发给别人的、进仓库或文档的。评论、code review、给别人的回复、帖子、邮件、文章、个人陈述、发言稿、给评审看的材料、README、release note、文档、代码注释、PR 描述都在内。**他会转手发出去的字在内，哪怕写在给他的回复里**：他问「这封邮件我该怎么回」，要的那句就是本 skill 的活。不在内的有这几种：说完就停在这个对话里、他不会转发的话；给后来的 session 当规则读的指令文件（skill、CLAUDE.md），那归 writing-instructions；commit message——一律用英文写（除非他另说），本 skill 其余各节都不过它。**两种要过**：message 里任何位置 @ 了人的、合并时由你写而内容就是 PR 描述的那条正文。changelog、issue 正文、tag 正文都不算 commit message，按上面那份在内清单走。**最容易漏的是应答式写作**：回评论、回 issue、回邮件、在聊天软件里回别人，被人问一句答一句，感觉像在说话不像在写东西，检查根本不会触发。**短不豁免**，一句话的回复也要过，越短的字 AI 腔越集中（"Happy to"、"Let me know"、"Feel free to" 全长在短回复里）。**被动不豁免**，别人先开口不改变性质，发出去的仍然是署他名字的字。Use before writing or editing any text that leaves this conversation for a file, a repository, a document or another person, including a line he asked for so that he can send it on. A commit message is outside it and is written in English unless he says otherwise; two kinds stay inside — one that @-mentions anyone anywhere in the message, and a merge body you write that carries the PR description. Instruction files for later sessions and lines that stop inside this conversation are outside it too. Everything else that leaves is inside.
 ---
 
 <!-- 本文件和 writing-reviewer.agent.md 里 「」 是自指标记（章节名、要照抄的模板、句式术语），“” 才是普通引语。往这两份文件加中文时照这个分工走，别把既有的 「」 统一成 “”。 -->
@@ -15,7 +15,7 @@ description: 写或改任何会离开这个对话的字之前加载：落成文�
 
 ## 动笔前：先定读者和文体
 
-**进代码和仓库的一律英文**：代码注释、文档、提交信息、PR/issue 评论、GitHub review，除非他另说。邮件、发言稿、个人陈述、文章按读者定语言，不受这条管。**对话用什么语言不影响这一条。**
+**进代码和仓库的一律英文**：代码注释、文档、提交信息、PR/issue 评论、GitHub review，除非他另说。提交信息只受这一条管，本 skill 其余各节都不管它——除非它 @ 了人，或者那段正文就是 PR 描述。邮件、发言稿、个人陈述、文章按读者定语言，不受这条管。**对话用什么语言不影响这一条。**
 
 底下所有清单都是**减法**：告诉你删什么，从不问你写给谁。清单能查出病灶，查不出姿态。
 最难看的那几句往往一条规则都不违反，只有把读者放进来才看得见。
@@ -179,8 +179,8 @@ AI 本能。升华、展望、“这套模式还可以推广到…”一律删�
 
 ## 中文标点（机械换一遍）
 
-它在语义层之下，靠“写得用心”修不掉，只能定稿前机械扫一遍。任何一段会离开这个对话的
-中文都算：发给别人的、落成文件的、进仓库的，包括在聊天软件里回别人的一句话。
+它在语义层之下，靠“写得用心”修不掉，只能定稿前机械扫一遍。本 skill 覆盖的字里，任何一段
+中文都算：发给别人的、落成文件的、进仓库并且归本 skill 管的，包括在聊天软件里回别人的一句话。
 
 **换成哪个**：`,→，` `.→。` `:→：` `;→；` `?→？` `!→！` `...→……`。
 并列项之间是顿号 `、` 不是逗号；书名篇名用 `《》`，不用引号也不用斜体；外国人名分隔用 `·`。
@@ -213,7 +213,7 @@ python3 ~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix <文件>
 
 **第一步，派 `writing-reviewer`。**
 
-**给人读的字，在它落地之前**（发出、提交、写进文档之前，不只是给他看之前）把草稿
+**给人读的字，在它落地之前**（发出、写进文档之前，不只是给他看之前）把草稿
 全文交给 `writing-reviewer` subagent，**连同你那行「读者=X，他拿去做Y，落地载体=Z，档位=W」
 一起交**，它的扫人名和加粗判断靠这行才知道读者和档位：评论、邮件、帖子、README、release note、
 文档、给评审看的材料、公开仓库里的 PR 描述，以及任何 at 了某个人或整段写给某个 reviewer 的字
@@ -225,7 +225,7 @@ python3 ~/.claude/skills/writing-for-people/scripts/cjk-punct.py --fix <文件>
 应用完就结束，应用改法产生的新字按「读者」第 5 条和它那几张表自查，不再回派；改稿累积成
 新的一版才派新的一次（见「改稿」）。
 
-**没人细读的仓库记录不派**：commit message（在哪个仓库都一样）、私有仓库里的 PR 描述、
+**没人细读的仓库记录不派**：私有仓库里的 PR 描述、
 没有 at 人的 issue 正文、只写版本号的 tag。私有与否查 `gh api repos/<owner>/<name> --jq
 .private`，不凭感觉；这条只看 `.private`，和 `send-gate` 的隐私审计（按谁能打开这个仓库算）
 不是同一条判据。tag 正文里写了发布说明，就是给人读的，照派。
