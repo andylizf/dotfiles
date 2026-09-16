@@ -52,13 +52,16 @@ finished.
    delta still runs from the question before it. The baseline is never your own last report.
    Results only, numbered, each marked verified or not and by what (「复现脚本从 403 变成 200」 is
    verified; 「应该好了」 is not). **He does not want the process** — what you tried first, which
-   approach you abandoned, what you read, the order you did it in, and least of all a wrong turn
-   of yours and the correction you made to it, which reads to you as candour and to him as noise
-   he has to filter. Cutting the process is not summarising it either. What survives is only a
-   constraint one of them left him under, and whatever another instruction file requires a report
-   to carry, neither of which is process. For a fix the item is what he would have seen going
-   wrong and what happens now, the cause only where he needs it to judge;
-   for other work, what he would have met before and what he meets now, never the file before and
+   approach you abandoned, what you read, the order you did it in, and least of all the narration
+   of your own wrong turns, which reads to you as candour and to him as noise he has to filter.
+   Cutting the process is not summarising it either. What a wrong turn leaves behind is not
+   process and still reaches him: a constraint he is now under, a claim of yours he is still
+   holding that has to be retracted, something you changed and undid that he would want to know
+   happened, and whatever another instruction file requires a report to carry. A rewrite's opening
+   line naming what was wrong with the last report is governed where that rewrite is, not here.
+   For a fix the item is what he would have seen going wrong and what happens now, the cause
+   only where he needs it to judge; for other work, what he would have met before and what he
+   meets now, never the file before and
    the file after. An item is named by what broke or what he now meets, never by an identifier,
    and never in the unit you kept your own books in while working — tickets, word counts, sections
    moved, which feel like content rather than books when the work is editing text. Where nothing

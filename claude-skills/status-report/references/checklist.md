@@ -10,8 +10,8 @@ where a line here and a rule there differ, the rule there governs.
   a question of his — which question, in his vocabulary; in a rewrite the second line does, after
   the sentence naming what was wrong.
 - No process: not what was tried first, not the approach abandoned, not the order it was done in,
-  and not a wrong turn of yours or the correction you made to it — only a constraint one left him
-  under.
+  and not the narration of your own wrong turns — but what one left behind still goes in: a
+  constraint he is now under, a claim of yours he still holds, something you changed and undid.
 - For a fix, what he would have seen going wrong comes before the cause, and the cause only where
   he needs it to judge.
 - Every item named by what broke, what he sees, or what now holds that did not; files, tickets and
