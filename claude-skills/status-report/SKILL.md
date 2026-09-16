@@ -36,35 +36,42 @@ finished.
 
 ## The shape, in the order he needs it
 
-1. **Where we are.** One line holding the project and task in his name for them, one of three
-   states — done, blocked on him, still running — and, where this report is the answer to a
-   question of his about the work, which question, in his vocabulary — either in that line, or as one sentence of your own
-   words ahead of it saying what you understood him to ask, in which case the stamp opens the next
-   line, as after 没懂: he does not remember what he asked by the time the answer comes. Where the
-   task name and his question are the same words, the in-line form is enough.
-2. **Seen, then why, then done.** For a fix: the phenomenon (what a user saw, what a command
-   printed, what failed), in terms that need no code to picture; then the cause; then the change.
-   For other work: what he would have met before and what he meets now — never the file before
-   and the file after. Cause before phenomenon hands him an explanation of something he was never
-   shown.
-3. **What changed since the baseline.** Numbered, results only, each marked verified or not and by
-   what (「复现脚本从 403 变成 200」 is verified; 「应该好了」 is not). An item is named by what broke
-   or what he now meets, never by an identifier. The unit of the report is never the unit you kept
-   your own books in while working — whatever you were counting or ticking off: tickets, word
-   counts, sections moved, which feel like content rather than books when the work is editing
-   text. Where nothing he does behaves differently, the item is what the rule or the code now
-   requires that it did not. File, ticket and count ride in parentheses; only where he asked in
-   that unit (「哪几个文件动了」) is the unit his. Where rounds have accumulated, give the whole
-   state — the table, the counts — with the one cell that still needs him marked, not this round's
-   delta; every count says which total it is out of.
-4. **What he has to decide or do**, with your leaning and its reason in the same sentence, or
+1. **What this session is for.** One line in his words saying what the work is trying to achieve,
+   and which of three states it is in — done, blocked on him, still running. Not the project's
+   name, not this turn's task: he arrives holding nothing, and without the goal every line under
+   it answers a question he cannot reconstruct. Where this report answers a question of his about
+   the work, that question goes here too in his vocabulary, either in the same line or as one
+   sentence of your own words ahead of it, in which case the stamp opens the next line, as after
+   没懂 — he does not remember what he asked by the time the answer comes. Anything still running
+   names a place he can watch it — a log path, a command — and where more than one thing is in
+   flight, which is live, which is next, the single blocker, and whether anything else is running
+   at all.
+2. **What has happened since his last question that opened a subject.** A message of his opens a
+   subject when it introduces scope the delta does not already cover; one that only reacts to what
+   you just said — a 什么意思, a 不对, a 这个先放着 — does not, however sharply it lands, so the
+   delta still runs from the question before it. The baseline is never your own last report.
+   Results only, numbered, each marked verified or not and by what (「复现脚本从 403 变成 200」 is
+   verified; 「应该好了」 is not). **He does not want the process** — what you tried first, which
+   approach you abandoned, what you read, the order you did it in, and least of all a wrong turn
+   of yours and the correction you made to it, which reads to you as candour and to him as noise
+   he has to filter. Cutting the process is not summarising it either. What survives is only a
+   constraint one of them left him under, and whatever another instruction file requires a report
+   to carry, neither of which is process. For a fix the item is what he would have seen going
+   wrong and what happens now, the cause only where he needs it to judge;
+   for other work, what he would have met before and what he meets now, never the file before and
+   the file after. An item is named by what broke or what he now meets, never by an identifier,
+   and never in the unit you kept your own books in while working — tickets, word counts, sections
+   moved, which feel like content rather than books when the work is editing text. Where nothing
+   he does behaves differently, the item is what the rule or the code now requires that it did
+   not. File, ticket and count ride in parentheses; only where he asked in that unit (「哪几个文件
+   动了」) is the unit his. Where rounds have accumulated, give the whole state — the table, the
+   counts — with the one cell that still needs him marked, not this round's delta, and every count
+   says which total it is out of.
+3. **What judgment is needed from him**, with your leaning and its reason in the same sentence, or
    不需要你做什么. A decision that is his — direction or design — gets the options and what each
    costs; an implementation choice is yours, and asking it hands back delegated work. A plan of
    yours that branches is collapsed: what you will do, and the one condition that would change it.
    Where several things need him, the blocker comes first and alone.
-5. **What comes next.** One line; anything still running gets a place he can watch it — a log
-   path, a command. With more than one thing in flight: what is live, what is next, the single
-   blocker, and whether anything else is running at all.
 
 ## Where he can point
 
@@ -72,8 +79,9 @@ The first line starts with `[MM-DD HH:MM]` in the local time of the machine the 
 read from `date` now — never from a timestamp seen earlier in the context, which is usually UTC and
 cannot be told apart by looking. A rewrite after 没懂 opens with the sentence naming what was wrong
 and the stamp opens the next line. Items are numbered wherever there is more than one, so he can
-say 「18:40 的第 2 条没说清楚」. A report following an earlier one names it as the baseline (「自
-17:50 以来」); the baseline is a stamp from this same machine.
+say 「18:40 的第 2 条没说清楚」. A report following an earlier one says where its delta starts by
+naming the question it runs from in his own words (「自你问登录为什么跳错页以来」), never by a stamp
+alone: a stamp tells him which message, not which subject.
 
 ## Every word he must act on is decodable where it appears
 
@@ -130,13 +138,13 @@ easy to mistake for route, and stays, stated as the constraint rather than as th
 it: a limit you are now under, a thing that will break next time, a decision a failure forces, a
 tool looked for and found missing, a package installed, where a backup landed, why a retry or a
 check was put in or left out, the file and line that made you stop. **Anything another instruction
-file requires a report to carry is state**, in item 3 or 4, one clause each unless that file sets
+file requires a report to carry is state**, in item 2 or 3, one clause each unless that file sets
 its own depth or he asks for explanation, and the length section below does not cut it.
 
 ## Length follows his request and the work
 
 Default to a brief report sized to what changed, never how long you worked. For a small change,
-stamp and item 1 stay, items 2, 3 and 5 can collapse, and item 4 never goes. When he asks for a
+stamp and item 1 stay, item 2 can collapse, and item 3 never goes. When he asks for a
 detailed account, examples or explanation, expand to answer that request; details needed to
 understand the work stay even when no decision depends on them. Mark what was cut with
 "(details omitted)". Cut evidence that adds nothing to the requested account, such as a second
@@ -147,7 +155,7 @@ how, what you said before, what is true, what it means for him — and one sente
 claim; explaining what you meant by it is not a retraction. That covers a claim that reached him,
 in a report and an answer alike; one that stood only in the narration between tool calls was never
 told to him — repair whatever it misled and leave the retraction out, while the corrected fact
-still appears as current state in item 3 or 4, which the length rule above does not cut.
+still appears as current state in item 2 or 3, which the length rule above does not cut.
 
 ## Using teach in a report
 
@@ -162,7 +170,7 @@ part of the system. Run `teach`'s checklist on the passages doing that explanato
 ## The moments
 
 - **Turn done.** Full shape, at the length his request and the change call for.
-- **Blocked on him.** Full shape; item 4 is the point — one sentence he can answer with one word
+- **Blocked on him.** Full shape; item 3 is the point — one sentence he can answer with one word
   where the options allow it, the options and their costs where they do not.
 - **Unsolicited update while still running.** Stamp, what is being checked and for which symptom, how long, when the next
   update comes as a duration rather than a clock time. One or two lines. A suspicion in one clause
