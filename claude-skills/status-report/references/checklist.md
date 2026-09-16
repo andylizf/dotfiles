@@ -27,8 +27,9 @@ where a line here and a rule there differ, the rule there governs.
 - A report following an earlier one names it as the baseline, a stamp from this same machine.
 - For work that is not a fix: what he would have met before and what he meets now, never the file
   before and after.
-- A result that overturns an earlier claim says what was measured and how before the new number,
-  and retracts the old claim in one sentence.
+- A result that overturns a claim that reached him says what was measured and how before the new
+  number, and retracts the old claim in one sentence; one that stood only in the narration between
+  tool calls is repaired without a retraction, the corrected fact still carried as state.
 - Something found mid-run that changes what he should do, or alters behaviour he would not notice,
   has already gone to him.
 - Anything still running names where he can watch it.

@@ -14,8 +14,8 @@ description: >-
   about work you did, or about a report you sent, is a report. Two misses account for most
   failures: the closing recap feels like the end of the work rather than a report on it, so it
   goes out as a list of what you did; and running commentary while you work ("checking X now",
-  "that rules out Y, trying Z") reads to you as keeping him informed and to him as a wall of names
-  he never used. He reads every report cold, so it orients him first and succeeds only if he can
+  "that rules out Y, trying Z") reads to you as keeping him informed and never reaches him.
+  He reads every report cold, so it orients him first and succeeds only if he can
   act on it without asking a question. A report that leaves the conversation (Feishu, Slack) takes
   its shape from here, its surface from `writing-for-people` and its gate from `send-gate`. A
   report accounts for the work: results, verification, outstanding work and decisions. `teach`
@@ -28,6 +28,8 @@ description: >-
 He reads a report the way an on-call engineer reads a handover: he was somewhere else, does not
 remember where this thread was, and needs to decide something or confirm nothing needs him. His
 name for the standard is zero context: someone holding nothing but this message can follow it.
+**He does not read the narration between tool calls** — what is being checked now, a wrong turn
+corrected two calls later. What he reads is what you send him: a report, or an answer.
 **The test of a finished report: can he act on it without asking a question?** A noun that would
 make him ask "what is that" or an item that would make him ask "so what do I do" means it is not
 finished.
@@ -142,7 +144,10 @@ measurement propping up a conclusion already established; keep the reason for a 
 facts he needs to understand the conclusion or act on it. A result that overturns something
 you told him earlier restates what was measured and how before the new number — what is tested,
 how, what you said before, what is true, what it means for him — and one sentence retracts the old
-claim; explaining what you meant by it is not a retraction.
+claim; explaining what you meant by it is not a retraction. That covers a claim that reached him,
+in a report and an answer alike; one that stood only in the narration between tool calls was never
+told to him — repair whatever it misled and leave the retraction out, while the corrected fact
+still appears as current state in item 3 or 4, which the length rule above does not cut.
 
 ## Using teach in a report
 
