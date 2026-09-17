@@ -396,6 +396,13 @@ PYPIRC
     source = ./scripts/claude-stop-gate.py;
     executable = true;
   };
+  # `~/.claude/stop-gate-report.py` reads the gate's log for rates, latency and
+  # cost, and checks every hook settings.json wires up — a hook that quietly
+  # stops running leaves no trace anywhere else on this machine.
+  home.file.".claude/stop-gate-report.py" = {
+    source = ./scripts/claude-stop-gate-report.py;
+    executable = true;
+  };
   home.file.".local/bin/notion-mcp-wrapper" = {
     source = ./scripts/notion-mcp-wrapper.sh;
     executable = true;

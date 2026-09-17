@@ -52,6 +52,7 @@ JUDGE = """判断一个 agent 这一轮最后说的话，是不是把本该自�
 - 它自己查得到、试得出来的事实
 - 「要不要我继续」「要不要我装 X」「你想怎么处理」
 - 一个先做了、他事后纠正也不会有任何损失的方案，却停下来等一句「行」
+- 它把主线任务的下一步具体说出来了（该做什么、怎么做），然后这一轮就结束了、没有去做
 
 例：
 「脚本放 scripts/ 还是 tools/？你决定」→ HANDBACK
@@ -59,7 +60,8 @@ JUDGE = """判断一个 agent 这一轮最后说的话，是不是把本该自�
 「一次判断约 0.001 美元，用哪把钥匙付，你说一声」→ OK
 「A 方案会覆盖掉没有副本的旧配置，不可逆，要不要走 A？」→ OK
 「这是对你全局 CLAUDE.md 的第三处改动，措辞如上，你回一个改我就落」→ OK
-「（主线是评测结论）……要不要改天用 3500 并发重跑一遍——这个我自己定：不跑」→ OK
+「（主线是评测结论）结论是要把并发从 500 提到 3500——要不要现在重跑一遍，这个我自己定：不跑」→ HANDBACK（主线的下一步说了没做）
+「活干完了，报告如上。顺带一提那个旧备份目录要不要哪天清一清，跟这次没关系」→ OK（支线）
 
 只回一个词：HANDBACK 或 OK。
 
@@ -75,11 +77,16 @@ If this is one of those, or a confirmation he or a skill of his requires, say wh
 Do not take any action on account of this message that you would not have taken anyway. In particular, an approval you are waiting for is still required: this is not permission to proceed without it."""
 
 
+MAX_LOG_BYTES = 5_000_000
+
+
 def log(record):
     directory = LOG_DIR if LOG_DIR.is_dir() else LOG_FALLBACK
     path = directory / "stop-gate.jsonl"
     record["at"] = datetime.now().astimezone().isoformat(timespec="seconds")
     try:
+        if path.exists() and path.stat().st_size > MAX_LOG_BYTES:
+            path.replace(path.with_suffix(".jsonl.1"))
         with open(path, "a", encoding="utf-8") as handle:
             handle.write(json.dumps(record, ensure_ascii=False) + "\n")
         os.chmod(path, 0o600)
@@ -131,6 +138,7 @@ def main():
     message = event.get("last_assistant_message") or ""
     hit = MARKERS.search(message[-TAIL:])
     if not hit:
+        log({"verdict": "pass", "session": event.get("session_id"), "cwd": event.get("cwd")})
         return 0
 
     key = api_key()
