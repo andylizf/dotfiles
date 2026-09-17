@@ -66,14 +66,16 @@ JUDGE = """判断一个 agent 这一轮最后说的话，是不是把本该自�
 「活干完了，报告如上。顺带一提那个旧备份目录要不要哪天清一清，跟这次没关系」→ OK（支线）
 「（主线在改代码）报告如上。另外干活的时候一直在冒一个和这次无关的后台报错，要不要我去看看？」→ OK
 
-只回一个词：HANDBACK 或 OK。
+按这两行回答，不要别的：
+主线：<这一轮被派来做的那件事，一句话>
+判词：<HANDBACK 或 OK>
 
 最后一段话：
 ---
 %s
 ---"""
 
-REASON = """Ending the turn here hands work back. Two stops are allowed: the step is not yours to take (only he can do or supply it — his approval alone is not that), or a direction only he can set. If it is one of those, or a confirmation he or a skill of his requires, say which in a clause and end again — this fires once. Otherwise do it yourself and carry on. An approval you are already waiting on still stands; this is not permission to proceed without it."""
+REASON = """Ending the turn here hands work back. Two stops are allowed: the step is not yours to take (only he can do or supply it — his approval alone is not that), or a direction only he can set. If it is one of those, or a confirmation he or a skill of his requires, say which in a clause and end again — this fires once. Otherwise do it yourself and carry on — unless what you were asking about is not this turn's task, in which case do not go off and do it either: leave the note and end. An approval you are already waiting on still stands; this is not permission to proceed without it."""
 
 
 MAX_LOG_BYTES = 5_000_000
@@ -110,7 +112,7 @@ def judge(message, key):
     body = json.dumps(
         {
             "model": MODEL,
-            "max_tokens": 4,
+            "max_tokens": 90,
             "temperature": 0,
             "messages": [{"role": "user", "content": JUDGE % message[-TAIL:]}],
         }
@@ -122,7 +124,13 @@ def judge(message, key):
     )
     with urllib.request.urlopen(request, timeout=API_TIMEOUT) as response:
         payload = json.load(response)
-    return payload["choices"][0]["message"]["content"].strip().upper()
+    answer = payload["choices"][0]["message"]["content"].strip()
+    verdict = "HANDBACK" if "HANDBACK" in answer.rsplit("判词", 1)[-1].upper() else "OK"
+    mainline = ""
+    for line in answer.splitlines():
+        if line.strip().startswith("主线"):
+            mainline = line.split("：", 1)[-1].strip()[:120]
+    return verdict, mainline
 
 
 def main():
@@ -147,7 +155,16 @@ def main():
 
     started = time.monotonic()
     try:
-        verdict = judge(message, key)
+        verdict, mainline = judge(message, key)
+        # Blocking a turn that was right to stop is the expensive error — it argues
+        # against a gate he wants held, or sends the model off to do the aside it
+        # was only mentioning. The judge is a model and a borderline message does
+        # not come back the same way every time, so a block has to be said twice.
+        second = ""
+        if verdict == "HANDBACK":
+            second, _ = judge(message, key)
+            if second != "HANDBACK":
+                verdict = "OK"
     except (urllib.error.URLError, OSError, KeyError, ValueError, TimeoutError) as error:
         log({"verdict": "skipped", "why": type(error).__name__, "marker": hit.group(0)})
         return 0
@@ -158,6 +175,8 @@ def main():
             "verdict": verdict,
             "took_s": took,
             "marker": hit.group(0),
+            "mainline": mainline,
+            "second": second,
             "session": event.get("session_id"),
             "cwd": event.get("cwd"),
             "tail": message[-300:],
