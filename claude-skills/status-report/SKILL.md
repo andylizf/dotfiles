@@ -16,8 +16,9 @@ description: >-
   goes out as a list of what you did; and running commentary while you work ("checking X now",
   "that rules out Y, trying Z") reads to you as keeping him informed and never reaches him.
   He reads every report cold, so it orients him first and succeeds only if he can
-  act on it without asking a question. A report that leaves the conversation (Feishu, Slack) takes
-  its shape from here, its surface from `writing-for-people` and its gate from `send-gate`. A
+  act on it without asking a question. A report to him on another channel — a message to
+  him on Feishu or Slack — takes its shape from here. Posted anywhere anyone else can read it, it
+  is a send: `writing-for-people` and `send-gate` each decide their own reach over it. A
   report accounts for the work: results, verification, outstanding work and decisions. `teach`
   helps him understand that account, including what a change means or why a problem remains.
   Both can apply to the same sentences; his request sets how much explanation is needed.
@@ -28,8 +29,14 @@ description: >-
 He reads a report the way an on-call engineer reads a handover: he was somewhere else, does not
 remember where this thread was, and needs to decide something or confirm nothing needs him. His
 name for the standard is zero context: someone holding nothing but this message can follow it.
-**He does not read the narration between tool calls** — what is being checked now, a wrong turn
-corrected two calls later. What he reads is what you send him: a report, or an answer.
+**Write every report as though it is the only one he will read.** What he reads is a turn's last
+message — his next message ends a turn, while a check of your own that rejects the ending and puts
+you back to work leaves the same turn running — plus anything you send him on another channel. The
+narration between tool calls never reaches him, and neither does a report you superseded, meaning
+one you followed with another message of the same turn before he had spoken: displayed though it
+was, it reached no one. So everything he must act on, know or quote back stands after the stamp in
+the message you are sending or was never said; where an earlier message of this turn carried it,
+state it here again as current fact, never as a correction of a message of this turn.
 **The test of a finished report: can he act on it without asking a question?** A noun that would
 make him ask "what is that" or an item that would make him ask "so what do I do" means it is not
 finished.
@@ -60,9 +67,7 @@ finished.
    Cutting the process is not summarising it either. What a wrong turn leaves behind is not
    process and still reaches him: a constraint he is now under, a claim of yours he is still
    holding that has to be retracted, something you changed and undid that he would want to know
-   happened, and whatever another instruction file requires a report to carry. A rewrite's opening
-   line naming what was wrong with the last report is governed where that rewrite is, not here.
-   For a fix the item is what he would have seen going wrong and what happens now, the cause
+   happened. For a fix the item is what he would have seen going wrong and what happens now, the cause
    only where he needs it to judge; for other work, what he would have met before and what he
    meets now, never the file before and
    the file after. An item is named by what broke or what he now meets, never by an identifier,
@@ -80,12 +85,13 @@ finished.
    delegated work. A plan of yours that branches is collapsed: what you will do, and the one
    condition that would change it. Where several things need him, the blocker is item 1 and alone.
 
-**The stamp opens the report, and the report runs to the end of the message.** He scans a turn for
-that stamp and reads from it down; whatever stands before it costs him nothing, which is where
-process, thinking aloud and mid-flight commentary belong. That is what makes the no-process rule
-executable, and it cuts both ways: anything he must act on, know, or quote back comes after the
-stamp or was never said — the rewrite's opening sentence naming what was wrong being the one thing
-that precedes it, and it exists to send him back into the report rather than away from it.
+**The stamp opens the report, and the report runs to the end of the message.** He scans the turn's
+last message for that stamp and reads from it down; whatever stands before it costs him nothing,
+which is where process, thinking aloud and mid-flight commentary belong. That is what makes the
+no-process rule executable, and it cuts both ways: two things may precede the stamp and still be
+read — a rewrite's opening sentence naming what was wrong, which exists to send him back into the
+report rather than away from it, and one sentence of your own words saying what you understood him
+to ask.
 
 ## The ledger a task keeps when he will hear about it more than once
 
@@ -134,8 +140,7 @@ alone: a stamp tells him which message, not which subject.
   the sentence breaking.
 - **An abstraction arrives with one real instance beside it** (the row, the warning text, the
   value), and the instance says what it is an instance of, in a word he has used or the same line
-  defines; a bare example is as unusable as a bare category. Neither half is what the length
-  section below cuts.
+  defines; a bare example is as unusable as a bare category.
 - In a report written in Chinese, a quotation not in Chinese carries a Chinese translation right
   after it — a line from a file, an error message, a reviewer's sentence, a rule you are proposing —
   in full; the quotation keeps its own words, and identifiers, commands and paths are not
@@ -160,9 +165,10 @@ naming what was wrong. State that is
 easy to mistake for route, and stays, stated as the constraint rather than as the story of meeting
 it: a limit you are now under, a thing that will break next time, a decision a failure forces, a
 tool looked for and found missing, a package installed, where a backup landed, why a retry or a
-check was put in or left out, the file and line that made you stop. **Anything another instruction
-file requires a report to carry is state**, in item 2 or 3, one clause each unless that file sets
-its own depth or he asks for explanation, and the length section below does not cut it.
+check was put in or left out, the file and line that made you stop. **Anything another rule — in
+this file or in another instruction file — requires a report to carry is state**: it rides in item
+2 or 3, one clause each unless that file sets its own depth or he asks for explanation, and the
+rules against process, against chronology and on length do not remove it.
 
 ## Length follows his request and the work
 
@@ -173,15 +179,15 @@ understand the work stay even when no decision depends on them. Detail he might 
 moved rather than dropped: write it to a file under the project's own directories before the report
 goes, and say where it landed, so the marker hands him a path and not only a notice. Evidence that
 adds nothing, the process, and a chronology he did not ask for are dropped outright and have no
-address. Cut evidence that adds nothing to the requested account, such as a second
-measurement propping up a conclusion already established; keep the reason for a leaning and the
-facts he needs to understand the conclusion or act on it. A result that overturns something
+address, and the same goes for a second measurement propping up a conclusion already established;
+keep the reason for a leaning and the facts he needs to understand the conclusion or act on it. A result that overturns something
 you told him earlier restates what was measured and how before the new number — what is tested,
 how, what you said before, what is true, what it means for him — and one sentence retracts the old
-claim; explaining what you meant by it is not a retraction. That covers a claim that reached him,
-in a report and an answer alike; one that stood only in the narration between tool calls was never
-told to him — repair whatever it misled and leave the retraction out, while the corrected fact
-still appears as current state in item 2 or 3, which the length rule above does not cut.
+claim; explaining what you meant by it is not a retraction. That covers a claim he read — a
+message that ended an earlier turn, or another channel you sent it on, report and answer alike; one that stood only in
+this turn's narration or in a message of this turn you superseded never reached him — repair the
+file, memory or note it was written into, leave the retraction out, and carry the corrected fact as
+current state in item 2 or 3.
 
 ## Using teach in a report
 
@@ -203,8 +209,10 @@ part of the system. Run `teach`'s checklist on the passages doing that explanato
   two lines under the anchor. A suspicion in one clause
   is fine; an unconfirmed hypothesis about the thing you are chasing, delivered as mechanism, stays
   in your head until the result is in. That is not silence about anything else: something
-  discovered mid-run that changes what he should do, or alters behaviour he would not notice, goes
-  to him the moment you see it.
+  you find or do mid-run that changes what he should do, or changes how something behaves in a way
+  he would not notice, goes to him the moment you see it — on another channel if one is open — and
+  is stated again as current fact in every later message of this turn, the closing report included,
+  since a message you superseded reached him as nothing.
 - **He returns, or asks what is going on.** Full shape as of now, even if nothing changed since the
   last stamp — say so and name it.
 - **He answers 什么意思, 没懂, 人话, or asks what was actually done.** Below.
@@ -215,8 +223,9 @@ Rewrite the full report requested, even when he names one passage as an example 
 answer only that passage when his question is confined to it. Asking for `teach` keeps the report's
 scope: explain the concrete changes and what remains, with the background, examples and reasoning
 needed to understand those answers.
-For a full rewrite, the first line says the restart out loud — 「我上一条堆了太多
-细节，从头说」, 「那个词是我造的，没解释就用了」, 「我那句话说错了」 — and how long the rewrite runs.
+For a full rewrite he asked for, after his 什么意思 / 没懂 / 人话 on a report he read, the first
+line says the restart out loud — 「我上一条堆了太多细节，从头说」, 「那个词是我造的，没解释就用了」,
+「我那句话说错了」 — and what the rewrite covers.
 Then from the phenomenon: definitions before mechanism, his questions in his order and numbered,
 the text he could not see quoted where he asked, an instance where the first version gave a
 category. Repeated 没懂 on one subject usually means one unstated premise the whole thing stands on:

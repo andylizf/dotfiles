@@ -32,8 +32,8 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 另外两个修复和逐条测试结果在 logs/backend-fixes-0812.md。(details omitted)
 ```
 
-The stamp is what he scans a turn for; everything before it he never reads, which is what makes
-writing the process elsewhere free rather than merely discouraged. The two lines under it are the
+The stamp is what he scans the turn's last message for; whatever stands before it costs him
+nothing, which is what makes writing the process elsewhere free rather than merely discouraged. The two lines under it are the
 anchor, the same two lines every report of this subject opens with: he reads each one cold and should not have to remember the last. What was cut names
 where it now is, so 「(details omitted)」 hands him a door rather than only telling him a room
 exists.

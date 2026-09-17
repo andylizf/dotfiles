@@ -4,8 +4,10 @@ Run on every report after it is written and before it is sent, a rewrite include
 user; the noun check, the three states and the shape's items are defined in `../SKILL.md`, and
 where a line here and a rule there differ, the rule there governs.
 
-- Nothing he must act on, know or quote back stands before the stamp; only a rewrite's sentence
-  naming what was wrong does.
+- Everything he must act on, know or quote back stands after the stamp in the message being sent:
+  none of it sits only in an earlier message of this turn, and none of it precedes the stamp, save
+  a rewrite's sentence naming what was wrong or one sentence saying what you understood him to
+  ask.
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
 - Line 1 is the stamp; lines 2 and 3 are the anchor — the problem this subject exists to solve, and
@@ -39,16 +41,18 @@ where a line here and a rule there differ, the rule there governs.
   his last question that opened a subject, not his last message and not your last report.
 - For work that is not a fix: what he would have met before and what he meets now, never the file
   before and after.
-- A result that overturns a claim that reached him says what was measured and how before the new
-  number, and retracts the old claim in one sentence; one that stood only in the narration between
-  tool calls is repaired without a retraction, the corrected fact still carried as state.
-- Something found mid-run that changes what he should do, or alters behaviour he would not notice,
-  has already gone to him.
+- A result that overturns a claim he read — a message that ended an earlier turn, or another channel
+  you sent it on — says what was measured and how before the new number, and retracts the old claim
+  in one sentence; one that stood only in this turn's narration or in a message of this turn you
+  superseded is repaired where it was written down, without a retraction, the corrected fact still
+  carried as state.
+- Something you found or did mid-run that changes what he should do, or changes how something
+  behaves in a way he would not notice, went to him the moment you saw it, not only now.
 - Anything still running names where he can watch it.
 - Length matches his request and what changed, not how long it took: brief by default, expanded
   when he asks for detail or needs it to understand the account; what was cut is marked
   "(details omitted)", and where he might want it back it was written to a file first and the
-  marker names where.
+  marker names where; content another rule requires the report to carry is not what this cuts.
 - No unrequested chronology of your actions or text; when he asks what was tried or how the result
   was reached, answer that history. What another instruction file requires a report to carry
   stays; so does a rewrite's opening line naming what was wrong.
