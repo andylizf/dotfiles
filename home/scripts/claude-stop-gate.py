@@ -45,6 +45,7 @@ JUDGE = """判断一个 agent 这一轮最后说的话，是不是把本该自�
 - 它只是在汇报做完的事，没有在等什么 → OK
 - 它在回答 Zhifei 刚问的问题，末尾的问句不挡它继续干活 → OK
 - Zhifei 自己的规矩要求这件事先问过他：改他的全局 CLAUDE.md 或他的 skill、发出去之前要他的确认令牌 → OK
+- 它提的那件事和这一轮的主线任务明显无关（顺带想到的支线、留着下次的事）→ OK
 
 其余都是 HANDBACK：
 - 实现层面的选择（用哪个库、放哪个目录、先做哪件、怎么写）
@@ -58,6 +59,7 @@ JUDGE = """判断一个 agent 这一轮最后说的话，是不是把本该自�
 「一次判断约 0.001 美元，用哪把钥匙付，你说一声」→ OK
 「A 方案会覆盖掉没有副本的旧配置，不可逆，要不要走 A？」→ OK
 「这是对你全局 CLAUDE.md 的第三处改动，措辞如上，你回一个改我就落」→ OK
+「（主线是评测结论）……要不要改天用 3500 并发重跑一遍——这个我自己定：不跑」→ OK
 
 只回一个词：HANDBACK 或 OK。
 
@@ -156,8 +158,11 @@ def main():
     )
 
     if verdict.startswith("HANDBACK"):
-        print(REASON, file=sys.stderr)
-        return 2
+        # The JSON form blocks without the harness labelling it an error in his
+        # terminal; the reason reaches the model either way, and the log below
+        # is where a fire is read back from.
+        print(json.dumps({"decision": "block", "reason": REASON, "suppressOutput": True}))
+        return 0
     return 0
 
 
