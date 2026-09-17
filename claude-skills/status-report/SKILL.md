@@ -10,7 +10,7 @@ description: >-
   on him; a one-line update while something long runs; the first reply after he returns or asks
   what is going on with the work; the rewrite after he answers a report with 什么意思, 没懂 or
   人话. A question about the subject matter, some research, an answer, a chat is answered as an
-  answer, however much it found: no stamp, no anchor lines, no 要你做什么 line. A question
+  answer, however much it found: no 【】, no stamp, no anchor lines, no 要你做什么 line. A question
   about work you did, or about a report you sent, is a report. Two misses account for most
   failures: the closing recap feels like the end of the work rather than a report on it, so it
   goes out as a list of what you did; and running commentary while you work ("checking X now",
@@ -73,11 +73,35 @@ finished.
    动了」) is the unit his. Where rounds have accumulated, give the whole state — the table, the
    counts — with the one cell that still needs him marked, not this round's delta, and every count
    says which total it is out of.
-3. **What judgment is needed from him**, with your leaning and its reason in the same sentence, or
-   不需要你做什么. A decision that is his — direction or design — gets the options and what each
-   costs; an implementation choice is yours, and asking it hands back delegated work. A plan of
-   yours that branches is collapsed: what you will do, and the one condition that would change it.
-   Where several things need him, the blocker comes first and alone.
+3. **What judgment is needed from him**, written as an agenda rather than a paragraph: one
+   numbered line per thing that needs him, each carrying its options, what each costs, and your
+   leaning with its reason in the same sentence — or 不需要你做什么 and nothing else. A decision
+   that is his is direction or design; an implementation choice is yours, and asking it hands back
+   delegated work. A plan of yours that branches is collapsed: what you will do, and the one
+   condition that would change it. Where several things need him, the blocker is item 1 and alone.
+
+**A report is opened by a 【汇报】 line and runs to the end of the message.** He scans a turn for
+that marker and reads from it down; whatever stands before it costs him nothing, which is where
+process, thinking aloud and mid-flight commentary belong. The marker is what makes the no-process
+rule executable, and it cuts both ways: anything he must act on, know, or quote back comes after
+the marker or was never said — the rewrite's opening sentence naming what was wrong included, which
+therefore follows the marker rather than preceding it. An answer, a discussion or a chat is never
+marked; the description above says which turns are reports.
+
+## What the report points at, on a task you will report on more than once
+
+Two files under the project's own `notes/`, written as you go — kept out of `logs/` because they
+are re-read and edited rather than appended to:
+
+- `notes/worklog.md` — your handoff notes, and the route this file otherwise has you cut: at each
+  fork, what you saw, which branch you took, why. Written for whoever picks the task up next, you
+  included, and it is what he opens to ask why the other branch was not taken, which no summary of
+  your work can answer.
+- `notes/open.md` — his: what was agreed and not done, and the deeper questions he asked that are
+  still unanswered. An item leaves when it is done or answered, never when it is mentioned, and it
+  outlives any one report, so something still running belongs in both.
+
+Keeping the two apart is what stops notes meant for the next agent arriving in front of him.
 
 ## Where he can point
 

@@ -4,6 +4,8 @@ Run on every report after it is written and before it is sent, a rewrite include
 user; the noun check, the three states and the shape's items are defined in `../SKILL.md`, and
 where a line here and a rule there differ, the rule there governs.
 
+- A 【汇报】 line opens the report; nothing he must act on, know or quote back stands before it,
+  the rewrite's sentence naming what was wrong included.
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
 - Line 1 is the stamp; lines 2 and 3 are the anchor — the problem this subject exists to solve, and
@@ -27,6 +29,9 @@ where a line here and a rule there differ, the rule there governs.
   are not quotations.
 - Where rounds have accumulated: the whole state, and every count says which total.
 - Organised around his question, not around the work.
+- Item 3 is an agenda: one numbered line per thing needing him, or 不需要你做什么 and nothing else.
+- On a task you will report on more than once, `notes/worklog.md` and `notes/open.md` exist and are
+  current, and the report names them where he would want them.
 - A decision that is his carries its options and their costs; a plan of yours that branches is
   collapsed to what you will do and the one condition that would change it; each with your leaning
   and its reason; the blocker first and alone.

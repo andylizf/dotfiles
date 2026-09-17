@@ -18,6 +18,7 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 **The same work, rewritten.** He engaged with item 2 and asked a follow-up about its mechanism.
 
 ```
+【汇报】
 [08-12 18:40]
 
 这个 session：你问今天到底做了什么。
@@ -32,8 +33,9 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 另外两个修复和逐条测试结果在 logs/backend-fixes-0812.md。(details omitted)
 ```
 
-The first two lines are the anchor, and they are the same two lines every report this session
-opens with: he reads each one cold and should not have to remember the last. What was cut names
+The 【汇报】 marker is what he scans a turn for; everything outside it he never reads, which is
+what makes writing the process elsewhere free rather than merely discouraged. The two lines under
+the stamp are the anchor, the same two lines every report of this subject opens with: he reads each one cold and should not have to remember the last. What was cut names
 where it now is, so 「(details omitted)」 hands him a door rather than only telling him a room
 exists.
 
@@ -50,6 +52,7 @@ mechanism before the probe has confirmed it, and nothing that tells him the stat
 **The same moment, rewritten.**
 
 ```
+【汇报】
 [09-05 18:37]
 
 这个 session：后端测试跑完之后，数据库连接不释放。
@@ -76,6 +79,7 @@ counts over three different denominators side by side.
 **The same round, rewritten.** He answered with the next step's constraint, not another question.
 
 ```
+【汇报】
 [07-10 15:20]
 
 这个 session：638 条条目要分清哪些是对方的、该删，哪些是我们的、该留。
@@ -89,8 +93,11 @@ counts over three different denominators side by side.
 | 我们的 → 留  | 22      | 520    | 542 |
 
 四个格子的意思：行是这条归谁、因此删还是留；列是这个判断你亲自定过，还是我猜的。
-你只剩一件事：过一遍右上角那 25 条——判成「对方的、要删」，而判断是我猜的。
-那 25 条逐条列在 review/uncertain-25.md。
+要你做的，一件：
+
+1. 过一遍右上角那 25 条——判成「对方的、要删」，而判断是我猜的。逐条列在
+   review/uncertain-25.md。你确认或推翻，第四批我照你的判法走；不过的话我按自己的判法
+   继续，代价是这 25 条错了没人拦。我倾向你过一遍：这一格是整张表里唯一没人核过的。
 ```
 
 **A change to rules, as it went out.** He said he still could not read it.
@@ -108,6 +115,7 @@ word counts before and after, which section moved where — in a subagent's voca
 **The same change, rewritten.** He read it and moved on.
 
 ```
+【汇报】
 我上一条报的是文件里搬了什么、字数变了多少，没说你以后会看到什么不一样。从头说，三条。
 
 [09-06 11:07]
