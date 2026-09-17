@@ -4,8 +4,8 @@ Run on every report after it is written and before it is sent, a rewrite include
 user; the noun check, the three states and the shape's items are defined in `../SKILL.md`, and
 where a line here and a rule there differ, the rule there governs.
 
-- A 【汇报】 line opens the report; nothing he must act on, know or quote back stands before it,
-  the rewrite's sentence naming what was wrong included.
+- Nothing he must act on, know or quote back stands before the stamp; only a rewrite's sentence
+  naming what was wrong does.
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
 - Line 1 is the stamp; lines 2 and 3 are the anchor — the problem this subject exists to solve, and

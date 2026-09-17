@@ -18,7 +18,6 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 **The same work, rewritten.** He engaged with item 2 and asked a follow-up about its mechanism.
 
 ```
-【汇报】
 [08-12 18:40]
 
 这个 session：你问今天到底做了什么。
@@ -33,9 +32,9 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 另外两个修复和逐条测试结果在 logs/backend-fixes-0812.md。(details omitted)
 ```
 
-The 【汇报】 marker is what he scans a turn for; everything outside it he never reads, which is
-what makes writing the process elsewhere free rather than merely discouraged. The two lines under
-the stamp are the anchor, the same two lines every report of this subject opens with: he reads each one cold and should not have to remember the last. What was cut names
+The stamp is what he scans a turn for; everything before it he never reads, which is what makes
+writing the process elsewhere free rather than merely discouraged. The two lines under it are the
+anchor, the same two lines every report of this subject opens with: he reads each one cold and should not have to remember the last. What was cut names
 where it now is, so 「(details omitted)」 hands him a door rather than only telling him a room
 exists.
 
@@ -52,7 +51,6 @@ mechanism before the probe has confirmed it, and nothing that tells him the stat
 **The same moment, rewritten.**
 
 ```
-【汇报】
 [09-05 18:37]
 
 这个 session：后端测试跑完之后，数据库连接不释放。
@@ -79,7 +77,6 @@ counts over three different denominators side by side.
 **The same round, rewritten.** He answered with the next step's constraint, not another question.
 
 ```
-【汇报】
 [07-10 15:20]
 
 这个 session：638 条条目要分清哪些是对方的、该删，哪些是我们的、该留。
@@ -115,7 +112,6 @@ word counts before and after, which section moved where — in a subagent's voca
 **The same change, rewritten.** He read it and moved on.
 
 ```
-【汇报】
 我上一条报的是文件里搬了什么、字数变了多少，没说你以后会看到什么不一样。从头说，三条。
 
 [09-06 11:07]
