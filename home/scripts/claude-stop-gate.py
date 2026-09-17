@@ -71,11 +71,7 @@ JUDGE = """判断一个 agent 这一轮最后说的话，是不是把本该自�
 %s
 ---"""
 
-REASON = """This turn ended by putting something to Zhifei. His CLAUDE.md allows that for exactly two things: the next step is not yours to take (impossible outright, or it needs something only he can do or supply — never merely his approval), or it turns on a decision of direction or method that is his, one where you can neither name the answer you expect from him nor take the decision provisionally and have him correct it.
-
-If this is one of those, or a confirmation he or a skill of his requires, say which in one clause and end the turn again — this check will not fire twice. Otherwise do the thing yourself and carry on.
-
-Do not take any action on account of this message that you would not have taken anyway. In particular, an approval you are waiting for is still required: this is not permission to proceed without it."""
+REASON = """Ending the turn here hands work back. Two stops are allowed: the step is not yours to take (only he can do or supply it — his approval alone is not that), or a direction only he can set. If it is one of those, or a confirmation he or a skill of his requires, say which in a clause and end again — this fires once. Otherwise do it yourself and carry on. An approval you are already waiting on still stands; this is not permission to proceed without it."""
 
 
 MAX_LOG_BYTES = 5_000_000
