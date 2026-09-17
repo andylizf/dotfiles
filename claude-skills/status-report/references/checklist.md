@@ -30,8 +30,8 @@ where a line here and a rule there differ, the rule there governs.
 - Where rounds have accumulated: the whole state, and every count says which total.
 - Organised around his question, not around the work.
 - Item 3 is an agenda: one numbered line per thing needing him, or 不需要你做什么 and nothing else.
-- On a task you will report on more than once, `notes/worklog.md` and `notes/open.md` exist and are
-  current, and the report names them where he would want them.
+- On a task he will hear about more than once, `notes/open.md` is current, and the report names it
+  where he would want it.
 - A decision that is his carries its options and their costs; a plan of yours that branches is
   collapsed to what you will do and the one condition that would change it; each with your leaning
   and its reason; the blocker first and alone.

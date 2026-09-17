@@ -88,20 +88,12 @@ the marker or was never said — the rewrite's opening sentence naming what was 
 therefore follows the marker rather than preceding it. An answer, a discussion or a chat is never
 marked; the description above says which turns are reports.
 
-## What the report points at, on a task you will report on more than once
+## The ledger a task keeps when he will hear about it more than once
 
-Two files under the project's own `notes/`, written as you go — kept out of `logs/` because they
-are re-read and edited rather than appended to:
-
-- `notes/worklog.md` — your handoff notes, and the route this file otherwise has you cut: at each
-  fork, what you saw, which branch you took, why. Written for whoever picks the task up next, you
-  included, and it is what he opens to ask why the other branch was not taken, which no summary of
-  your work can answer.
-- `notes/open.md` — his: what was agreed and not done, and the deeper questions he asked that are
-  still unanswered. An item leaves when it is done or answered, never when it is mentioned, and it
-  outlives any one report, so something still running belongs in both.
-
-Keeping the two apart is what stops notes meant for the next agent arriving in front of him.
+`notes/open.md`, under the project's own directory and kept out of `logs/` because it is edited
+rather than appended to: what was agreed and not done, and the deeper questions he asked that are
+still unanswered. An item leaves when it is done or answered, never when it is mentioned. It
+outlives any one report, so something still running belongs both there and in the report.
 
 ## Where he can point
 
