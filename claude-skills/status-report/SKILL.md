@@ -10,7 +10,7 @@ description: >-
   on him; a one-line update while something long runs; the first reply after he returns or asks
   what is going on with the work; the rewrite after he answers a report with 什么意思, 没懂 or
   人话. A question about the subject matter, some research, an answer, a chat is answered as an
-  answer, however much it found: no stamp, no orientation line, no 要你做什么 line. A question
+  answer, however much it found: no stamp, no anchor lines, no 要你做什么 line. A question
   about work you did, or about a report you sent, is a report. Two misses account for most
   failures: the closing recap feels like the end of the work rather than a report on it, so it
   goes out as a list of what you did; and running commentary while you work ("checking X now",
@@ -36,13 +36,16 @@ finished.
 
 ## The shape, in the order he needs it
 
-1. **What this session is for.** One line in his words saying what the work is trying to achieve,
-   and which of three states it is in — done, blocked on him, still running. Not the project's
-   name, not this turn's task: he arrives holding nothing, and without the goal every line under
-   it answers a question he cannot reconstruct. Where this report answers a question of his about
-   the work, that question goes here too in his vocabulary, either in the same line or as one
-   sentence of your own words ahead of it, in which case the stamp opens the next line, as after
-   没懂 — he does not remember what he asked by the time the answer comes. Anything still running
+1. **What this session is for.** Two lines in his words, before anything you did: the problem the
+   session exists to solve, and what you are changing or investigating to solve it. Then which of
+   three states the work is in — done, blocked on him, still running. Not the project's name and
+   not this turn's task: he arrives holding nothing, and without the subject every line under it
+   answers a question he cannot reconstruct. Those two lines read the same in every report until a
+   message of his opens a new subject in the sense item 2 gives it, which rewrites them; he starts
+   from the same anchor each time rather than remembering the last one. Where this report answers a
+   question of his about the work, that question is a third line under the anchor, in his
+   vocabulary, never a replacement for either of the two — or one sentence of your own words ahead
+   of the stamp, as after 没懂: he does not remember what he asked by the time the answer comes. Anything still running
    names a place he can watch it — a log path, a command — and where more than one thing is in
    flight, which is live, which is next, the single blocker, and whether anything else is running
    at all.
@@ -108,7 +111,9 @@ alone: a stamp tells him which message, not which subject.
   understands lets him open it; the same number as the item's name or as the object of the next
   action (「先合 #412」) is noise where the meaning has to be.
 - **No word that points outside the message**: 「那行」, 「上面说的」, 「之前那版」, a line number, a
-  diff against a draft he never saw. Put the content at the address into the message; a pointer
+  diff against a draft he never saw — and equally a noun phrase full of real content words that
+  still resolves only outside it, 「你定的那三段」, 「你贴的那段」, which reads as specific and names
+  nothing he can reach from here. Put the content at the address into the message; a pointer
   swapped for another pointer is a failed repair.
 - **Every sentence says who or what is doing the thing.** Subjects go missing in Chinese without
   the sentence breaking.
@@ -149,8 +154,11 @@ its own depth or he asks for explanation, and the length section below does not 
 Default to a brief report sized to what changed, never how long you worked. For a small change,
 stamp and item 1 stay, item 2 can collapse, and item 3 never goes. When he asks for a
 detailed account, examples or explanation, expand to answer that request; details needed to
-understand the work stay even when no decision depends on them. Mark what was cut with
-"(details omitted)". Cut evidence that adds nothing to the requested account, such as a second
+understand the work stay even when no decision depends on them. Detail he might later want back is
+moved rather than dropped: write it to a file under the project's own directories before the report
+goes, and say where it landed, so the marker hands him a path and not only a notice. Evidence that
+adds nothing, the process, and a chronology he did not ask for are dropped outright and have no
+address. Cut evidence that adds nothing to the requested account, such as a second
 measurement propping up a conclusion already established; keep the reason for a leaning and the
 facts he needs to understand the conclusion or act on it. A result that overturns something
 you told him earlier restates what was measured and how before the new number — what is tested,
@@ -175,8 +183,9 @@ part of the system. Run `teach`'s checklist on the passages doing that explanato
 - **Turn done.** Full shape, at the length his request and the change call for.
 - **Blocked on him.** Full shape; item 3 is the point — one sentence he can answer with one word
   where the options allow it, the options and their costs where they do not.
-- **Unsolicited update while still running.** Stamp, what is being checked and for which symptom, how long, when the next
-  update comes as a duration rather than a clock time. One or two lines. A suspicion in one clause
+- **Unsolicited update while still running.** The anchor, then what is being checked and for which
+  symptom, how long, and when the next update comes as a duration rather than a clock time. One or
+  two lines under the anchor. A suspicion in one clause
   is fine; an unconfirmed hypothesis about the thing you are chasing, delivered as mechanism, stays
   in your head until the result is in. That is not silence about anything else: something
   discovered mid-run that changes what he should do, or alters behaviour he would not notice, goes

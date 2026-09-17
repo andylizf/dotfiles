@@ -6,9 +6,11 @@ where a line here and a rule there differ, the rule there governs.
 
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
-- First line names what the session is for, one of the three states, and — where the report answers
-  a question of his — which question, in his vocabulary; in a rewrite the second line does, after
-  the sentence naming what was wrong.
+- Line 1 is the stamp; lines 2 and 3 are the anchor — the problem this subject exists to solve, and
+  what is being changed or investigated — before anything you did; then the state, then, where the
+  report answers a question of his, which question, in his vocabulary, added under the anchor
+  rather than replacing it. In a rewrite the sentence naming what was wrong comes first and the
+  stamp follows it.
 - No process: not what was tried first, not the approach abandoned, not the order it was done in,
   and not the narration of your own wrong turns — but what one left behind still goes in: a
   constraint he is now under, a claim of yours he still holds, something you changed and undid.
@@ -39,7 +41,9 @@ where a line here and a rule there differ, the rule there governs.
   has already gone to him.
 - Anything still running names where he can watch it.
 - Length matches his request and what changed, not how long it took: brief by default, expanded
-  when he asks for detail or needs it to understand the account; what was cut is marked "(details omitted)".
+  when he asks for detail or needs it to understand the account; what was cut is marked
+  "(details omitted)", and where he might want it back it was written to a file first and the
+  marker names where.
 - No unrequested chronology of your actions or text; when he asks what was tried or how the result
   was reached, answer that history. What another instruction file requires a report to carry
   stays; so does a rewrite's opening line naming what was wrong.
