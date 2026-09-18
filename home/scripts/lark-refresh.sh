@@ -18,6 +18,9 @@
 #     either -- a dead profile nobody mentions again reads exactly like a working one.
 #  5. A never-truncated transitions log beside the main one, so a death weeks old can still
 #     be dated after the main log has rolled over it.
+#  6. The pre-check in 1 no longer skips in silence forever: an unbroken skip streak past
+#     12 hours is announced, because nothing refreshes during one and the refresh window
+#     it is eating is only 7 days long.
 set -uo pipefail
 
 LARK_CLI="$HOME/.local/bin/lark-cli.real"
@@ -26,7 +29,10 @@ CFG_DIR="$HOME/.config/lark-sync"
 LOG_FILE="$CFG_DIR/lark-refresh.log"
 TRANSITIONS_LOG="$CFG_DIR/lark-transitions.log"
 STATE_DIR="$CFG_DIR/state"
+SKIP_SINCE="$CFG_DIR/state/skip-since"   # epoch of the first cycle in the current skip streak
 REALERT_SECONDS=604800   # a profile that stays dead says so again once a week
+SKIP_ALERT_AFTER=43200   # 12h of unbroken skipped cycles is an outage, not node jitter
+SKIP_REALERT=86400       # and then once a day for as long as it lasts
 PROXY="http://127.0.0.1:7897"
 WEBHOOK_FILE="$CFG_DIR/feishu-webhook"
 PROFILES="personal cheese"
@@ -85,6 +91,13 @@ explain_terminal() {
 
 read_state()  { cat "$STATE_DIR/$1.state" 2>/dev/null || echo unknown; }
 
+# An epoch from a marker file, or the fallback when the file is missing, empty or junk:
+# an unreadable marker must not turn the arithmetic that uses it into a syntax error.
+read_epoch() {
+    local v; v=$(cat "$1" 2>/dev/null)
+    case "$v" in ""|*[!0-9]*) echo "$2" ;; *) echo "$v" ;; esac
+}
+
 # $LOG_FILE is truncated to its last 250 lines, and one dead profile writes ~20 lines of raw
 # rejection every cycle, so it holds roughly 90 minutes — it cannot say when a profile died
 # weeks ago. $TRANSITIONS_LOG takes one line per actual state change and is never truncated:
@@ -100,19 +113,43 @@ write_state() {
 since_last_alert() {
     local stamp="$STATE_DIR/$1.alerted"
     [ -f "$stamp" ] || { echo 999999999; return; }
-    echo $(( $(date +%s) - $(cat "$stamp" 2>/dev/null || echo 0) ))
+    echo $(( $(date +%s) - $(read_epoch "$stamp" 0) ))
 }
 mark_alerted()  { date +%s > "$STATE_DIR/$1.alerted"; }
 clear_alerted() { rm -f "$STATE_DIR/$1.alerted"; }
 
+# Rotate log. Ahead of the pre-check, because a skipped cycle logs a line too and an
+# outage lasting days would otherwise grow this file until connectivity came back.
+[ -f "$LOG_FILE" ] && [ "$(wc -l < "$LOG_FILE")" -gt 500 ] && tail -n 250 "$LOG_FILE" > "$LOG_FILE.tmp" && mv "$LOG_FILE.tmp" "$LOG_FILE"
+
 # --- 1. Connectivity pre-check -------------------------------------------------
+# Skipping is the safe response to an outage and stays silent while it looks like jitter.
+# What is not safe is skipping indefinitely in silence: a refresh window is 7 days and only
+# rolls forward when a refresh succeeds, so an outage that outlasts it expires every
+# credential at once, and the first anyone hears of it is a profile asking for a re-login.
 if ! feishu_reachable; then
     log "SKIP cycle: Feishu unreachable (connectivity pre-check failed); credentials untouched"
+    write_state connectivity unreachable
+    now=$(date +%s)
+    [ -f "$SKIP_SINCE" ] || echo "$now" > "$SKIP_SINCE"
+    streak=$(( now - $(read_epoch "$SKIP_SINCE" "$now") ))
+    if [ "$streak" -ge "$SKIP_ALERT_AFTER" ] && [ "$(since_last_alert connectivity)" -ge "$SKIP_REALERT" ]; then
+        send_feishu "[lark-cli] Feishu has been unreachable from the writer for $((streak / 3600))h, so nothing has refreshed in that time. Credentials are untouched and safe for now, but a refresh window is 7 days: past that every profile needs a manual re-login. Check this machine's network."
+        mark_alerted connectivity
+        log "ALERT sent: Feishu unreachable for $((streak / 3600))h"
+    fi
     exit 0
 fi
 
-# Rotate log
-[ -f "$LOG_FILE" ] && [ "$(wc -l < "$LOG_FILE")" -gt 500 ] && tail -n 250 "$LOG_FILE" > "$LOG_FILE.tmp" && mv "$LOG_FILE.tmp" "$LOG_FILE"
+if [ -f "$SKIP_SINCE" ]; then
+    now=$(date +%s); streak=$(( now - $(read_epoch "$SKIP_SINCE" "$now") ))
+    log "connectivity back after $((streak / 60))m of skipped cycles"
+    [ -f "$STATE_DIR/connectivity.alerted" ] &&
+        send_feishu "[lark-cli] Feishu is reachable from the writer again after $((streak / 3600))h; refreshing has resumed."
+    clear_alerted connectivity
+    rm -f "$SKIP_SINCE"
+fi
+write_state connectivity reachable
 
 # --- 2/3. Refresh each profile with retry + classification ---------------------
 for profile in $PROFILES; do
