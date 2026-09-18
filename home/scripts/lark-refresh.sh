@@ -23,6 +23,13 @@
 #     it is eating is only 7 days long.
 #  7. A lock, so a hand-run of this script cannot refresh a profile alongside the timer's
 #     own cycle and spend a token the other one already replaced.
+#
+# What a cycle actually does, because the log used to overstate it: it probes each profile's
+# USER identity. lark-cli refreshes only once the access token has expired, and that token
+# lasts 2h while this job runs every 10 min, so most cycles refresh nothing and the log says
+# only that the identity was accepted. To see whether a refresh really happened, read
+# `lark-cli auth status --profile <name>`: `expiresAt` moves to last-refresh + 2h and
+# `refreshExpiresAt` to last-refresh + 7 days, so both standing still means it did not.
 set -uo pipefail
 
 LARK_CLI="$HOME/.local/bin/lark-cli.real"
@@ -195,7 +202,7 @@ for profile in $PROFILES; do
     done
 
     if [ "$ok" = "True" ]; then
-        log "OK: $profile token refreshed"
+        log "OK: $profile healthy (user identity accepted)"
         if [ "$prev" = "terminal" ]; then
             send_feishu "[lark-cli] $profile recovered -- token refreshing normally again"
             log "RECOVERED notice sent for: $profile"
