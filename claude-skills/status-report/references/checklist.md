@@ -10,11 +10,12 @@ where a line here and a rule there differ, the rule there governs.
   ask.
 - Stamp matches `date` run now on the machine this session is on; items numbered wherever there is
   more than one.
-- Line 1 is the stamp; lines 2 and 3 are the anchor — the problem this subject exists to solve, and
-  what is being changed or investigated — before anything you did; then the state, then, where the
-  report answers a question of his, which question, in his vocabulary, added under the anchor
-  rather than replacing it. In a rewrite the sentence naming what was wrong comes first and the
-  stamp follows it.
+- Line 1 is the stamp; line 2 opens `目标：` with the problem this subject exists to solve, and
+  line 3 says in prose what is being changed or investigated and which state the work is in — 目标
+  is the only labelled line, and both come before anything you did. Where 目标 names what you did
+  this turn rather than the problem behind it, it is wrong. Then, where the report answers a
+  question of his, which question, in his vocabulary, added under the anchor rather than replacing
+  it. In a rewrite the sentence naming what was wrong comes first and the stamp follows it.
 - No process: not what was tried first, not the approach abandoned, not the order it was done in,
   and not the narration of your own wrong turns — but what one left behind still goes in: a
   constraint he is now under, a claim of yours he still holds, something you changed and undid.

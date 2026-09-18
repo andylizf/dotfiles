@@ -43,19 +43,27 @@ finished.
 
 ## The shape, in the order he needs it
 
-1. **What this session is for.** Two lines in his words, before anything you did: the problem the
-   session exists to solve, and what you are changing or investigating to solve it. Then which of
-   three states the work is in — done, blocked on him, still running. Not the project's name and
-   not this turn's task: he arrives holding nothing, and without the subject every line under it
-   answers a question he cannot reconstruct. Those two lines read the same in every report until a
-   message of his opens a new subject in the sense item 2 gives it, which rewrites them; he starts
-   from the same anchor each time rather than remembering the last one. Where this report answers a
-   question of his about the work, that question is a third line under the anchor, in his
-   vocabulary, never a replacement for either of the two — or one sentence of your own words ahead
-   of the stamp, as after 没懂: he does not remember what he asked by the time the answer comes. Anything still running
-   names a place he can watch it — a log path, a command — and where more than one thing is in
-   flight, which is live, which is next, the single blocker, and whether anything else is running
-   at all.
+1. **What this session is for, opening with a labelled 目标 line.** The stamp, then these two
+   lines, before anything you did:
+
+   ```
+   [MM-DD HH:MM]
+   目标：<the problem this session exists to solve, in words he uses — his own where he framed it>
+   <what you are changing or investigating to solve it, and which of three states the work is in —
+   done, blocked on him, still running — in a sentence or two of ordinary prose>
+   ```
+
+   **Only 目标 carries a label; the rest is prose.** 目标 is the session's subject, not the
+   project's name and not what you did this turn — he arrives holding nothing, and without the
+   subject every line under it answers a question he cannot reconstruct. The problem and the work
+   on it read the same in every report until a message of his opens a new subject in the sense item
+   2 gives it, which rewrites them; only the state moves, and he starts from the same anchor each
+   time rather than remembering the last one. Where this report answers a question of his about the
+   work, that question is a third line under the anchor, in his vocabulary, never a replacement for
+   either of the two — or one sentence of your own words ahead of the stamp, as after 没懂: he does
+   not remember what he asked by the time the answer comes. Anything still running names a place he
+   can watch it — a log path, a command — and where more than one thing is in flight, which is
+   live, which is next, the single blocker, and whether anything else is running at all.
 2. **What has happened since his last question that opened a subject.** A message of his opens a
    subject when it introduces scope the delta does not already cover; one that only reacts to what
    you just said — a 什么意思, a 不对, a 这个先放着 — does not, however sharply it lands, so the

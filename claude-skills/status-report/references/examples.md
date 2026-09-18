@@ -19,11 +19,9 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 
 ```
 [08-12 18:40]
-
-这个 session：你问今天到底做了什么。
-在改的东西：后端，五个修复。
-
-都已提交，等 CI 绿了我合。一句话：都是同一个毛病，系统出了事不告诉人。
+目标：系统出了事不告诉人。任务死在半路、通知发给错的人，界面上都看不出来。
+后端五个修复，都已提交，等 CI 绿了我合。
+你问今天到底做了什么：下面三条是主要的，都是同一个毛病。
 
 1. 点一下「全部已读」，会把全项目所有人的未读都标掉。通知接口不认收件人，不指定就当成所有人的。改完按登录身份认，读别人的直接 403。已验证：接口测试 31 条全绿。（#413）
 2. 后台任务干到一半被杀掉，界面一直显示「进行中」。容器重建、内存不够都会杀掉它，死了状态不变，实测三个任务这样躺了八小时没人发现。上周修了一半，今天补上剩下三个口子。（#417）
@@ -33,8 +31,10 @@ no item says what a user would have seen go wrong; nothing says whether he has t
 ```
 
 The stamp is what he scans the turn's last message for; whatever stands before it costs him
-nothing, which is what makes writing the process elsewhere free rather than merely discouraged. The two lines under it are the
-anchor, the same two lines every report of this subject opens with: he reads each one cold and should not have to remember the last. What was cut names
+nothing, which is what makes writing the process elsewhere free rather than merely discouraged. The
+anchor is the two lines under it, only the first of them labelled: 目标 is the problem behind all
+five fixes rather than 「你问今天到底做了什么」, which is what this one report answers and so sits on
+the third line. What was cut names
 where it now is, so 「(details omitted)」 hands him a door rather than only telling him a room
 exists.
 
@@ -52,11 +52,8 @@ mechanism before the probe has confirmed it, and nothing that tells him the stat
 
 ```
 [09-05 18:37]
-
-这个 session：后端测试跑完之后，数据库连接不释放。
-在改的东西：查是哪一处没释放。
-
-还在查，探针要跑三轮，约 3 分钟。目前的怀疑是测试退出时没等后台任务跑完，任务手里的数据库事务就一直挂着；探针跑完能点名是哪一处。
+目标：后端测试跑完之后，数据库连接不释放。
+还在查是哪一处没释放，探针要跑三轮，约 3 分钟。目前的怀疑是测试退出时没等后台任务跑完，任务手里的数据库事务就一直挂着；探针跑完能点名是哪一处。
 
 你不用做什么，3 分钟后我再报。探针输出实时写在 logs/conn-probe-0905.log。
 ```
@@ -78,11 +75,8 @@ counts over three different denominators side by side.
 
 ```
 [07-10 15:20]
-
-这个 session：638 条条目要分清哪些是对方的、该删，哪些是我们的、该留。
-在改的东西：逐批判定每条归谁。
-
-还在跑，第三批判完了。当前全局快照：
+目标：638 条条目要分清哪些是对方的、该删，哪些是我们的、该留。
+在逐批判定每条归谁，第三批判完了，还在跑。当前全局快照：
 
 |              | 你亲定的 | 我猜的 | 合计 |
 |---|---:|---:|---:|
@@ -100,7 +94,7 @@ counts over three different denominators side by side.
 **A change to rules, as it went out.** He said he still could not read it.
 
 ```
-（时间戳和锚点两行略）
+（时间戳和锚点那两行略）
 1. explain.md（a1b2c3d + b2c3d4e）：根文件 3,798 → 1,600 词，描述 1,117 → 746 字符。路由表挪到七条规则下面；「一次讲解的形状」并入 references/structure.md；三十项发送前清单搬进新建的 references/checklist.md，四件「递把手不递东西」的马甲合成一项。三处冲突各在规则自己那句里收口：只定义他没用过的词、机制操作的原语从不算可推迟的空缺、重写是重组不是加长。已验证：部署后逐字节与源码相同。
 2. writing.md（c3d4e5f）：952 → 613 词……
 ```
@@ -115,11 +109,8 @@ word counts before and after, which section moved where — in a subagent's voca
 我上一条报的是文件里搬了什么、字数变了多少，没说你以后会看到什么不一样。从头说，三条。
 
 [09-06 11:07]
-
-这个 session：三份规则文件互相矛盾，你读不动，也不知道该信哪份。
-在改的东西：那三份规则。
-
-改完、已部署、装出来的和仓库一致。
+目标：三份规则文件互相矛盾，你读不动，也不知道该信哪份。
+三份规则都改完、已部署，装出来的和仓库一致。
 
 1. 讲东西：你用过的词直接用，只定义你没用过的；你说「没懂」，我重组，不加长。（explain.md）
 2. 对外写作：「我看行」要不要改成「我觉得可以」，两处规则原来答案相反，现在只剩一个答案：改。替别人写之前，回复里先一行「读者是谁、拿去做什么、落在哪、多正式」；你问「邮件怎么回」，草稿进文件，整段也贴回复。（writing.md）
