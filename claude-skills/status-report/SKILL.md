@@ -111,12 +111,17 @@ read — a rewrite's opening sentence naming what was wrong, which exists to sen
 report rather than away from it, and one sentence of your own words saying what you understood him
 to ask.
 
-## The ledger a task keeps when he will hear about it more than once
+## The open list a session keeps once a report leaves something open
 
-`notes/open.md`, under the project's own directory and kept out of `logs/` because it is edited
-rather than appended to: what was agreed and not done, and the deeper questions he asked that are
-still unanswered. An item leaves when it is done or answered, never when it is mentioned. It
-outlives any one report, so something still running belongs both there and in the report.
+From the first report whose item 3 is not 不需要你做什么, or that names something still running or
+still to do, the session keeps `open.md` in the scratchpad directory its system prompt names —
+never the project's tree, because it lives and dies with the session; where no such directory is
+named, the last report's state line and item 3 are the list. `open.md` holds two kinds of line and
+no other: something not yet done, and a question or decision put to him that he has not answered,
+named and not restated. A line says what is still missing, in one sentence, and carries no result,
+verification or history anywhere in it. A line leaves when it is done or answered, never when it is
+mentioned. Every later report of the session writes the state line under 目标 and item 3 from the
+list.
 
 ## Where he can point
 

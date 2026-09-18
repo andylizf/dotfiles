@@ -41,8 +41,10 @@ where a line here and a rule there differ, the rule there governs.
 - Where rounds have accumulated: the whole state, and every count says which total.
 - Organised around his question, not around the work.
 - Item 3 is an agenda: one numbered line per thing needing him, or 不需要你做什么 and nothing else.
-- On a task he will hear about more than once, `notes/open.md` is current, and the report names it
-  where he would want it.
+- Once a report has left something needing him, running or still to do, this session's scratchpad
+  `open.md` is current — each line one thing still undone or unanswered by him, no result,
+  verification or history anywhere in it — and the state line under 目标 and item 3 were written
+  from it (with no scratchpad, from the last report's).
 - A decision that is his carries its options and their costs; a plan of yours that branches is
   collapsed to what you will do and the one condition that would change it; each with your leaning
   and its reason; the blocker first and alone.
