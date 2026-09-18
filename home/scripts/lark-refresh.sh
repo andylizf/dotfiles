@@ -115,10 +115,10 @@ for profile in $PROFILES; do
         # Whoever reads this next (human or agent) should not have to open this script to
         # find out that "bot identity" means "the credential is gone".
         log "TERMINAL: $profile needs re-login -- $(explain_terminal "$out")"
-        log "TERMINAL: $profile fix -- on the WRITER host run: lark-cli.real auth login --profile $profile   (readers cannot re-auth; doing so would fork the single-use refresh chain)"
+        log "TERMINAL: $profile fix -- on THIS host (the writer) run: lark-cli auth login --profile $profile --no-wait --json, send the verification URL to the account owner, then complete it with --device-code   (readers cannot re-auth; doing so would fork the single-use refresh chain)"
         log "TERMINAL: $profile raw -- $out"
         if [ "$prev" != "terminal" ]; then
-            send_feishu "[lark-cli] token issue: $profile -- needs re-login (auth chain broken). $(explain_terminal "$out") Fix on the writer host: lark-cli.real auth login --profile $profile"
+            send_feishu "[lark-cli] token issue: $profile -- needs re-login (auth chain broken). $(explain_terminal "$out") Fix on the writer host: lark-cli auth login --profile $profile"
             log "ALERT sent for: $profile (OK->terminal transition)"
         else
             log "ALERT suppressed for: $profile (already terminal)"
