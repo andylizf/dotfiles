@@ -23,7 +23,7 @@ LOG_FILE="$CFG_DIR/lark-refresh.log"
 STATE_DIR="$CFG_DIR/state"
 PROXY="http://127.0.0.1:7897"
 WEBHOOK_FILE="$CFG_DIR/feishu-webhook"
-PROFILES="personal byte cheese"
+PROFILES="personal cheese"
 PROBE_URL="https://open.feishu.cn/open-apis/authen/v1/user_info"
 MAX_TRIES=3
 
