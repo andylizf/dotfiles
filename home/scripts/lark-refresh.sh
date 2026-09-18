@@ -21,6 +21,8 @@
 #  6. The pre-check in 1 no longer skips in silence forever: an unbroken skip streak past
 #     12 hours is announced, because nothing refreshes during one and the refresh window
 #     it is eating is only 7 days long.
+#  7. A lock, so a hand-run of this script cannot refresh a profile alongside the timer's
+#     own cycle and spend a token the other one already replaced.
 set -uo pipefail
 
 LARK_CLI="$HOME/.local/bin/lark-cli.real"
@@ -30,6 +32,7 @@ LOG_FILE="$CFG_DIR/lark-refresh.log"
 TRANSITIONS_LOG="$CFG_DIR/lark-transitions.log"
 STATE_DIR="$CFG_DIR/state"
 SKIP_SINCE="$CFG_DIR/state/skip-since"   # epoch of the first cycle in the current skip streak
+LOCK_DIR="$CFG_DIR/state/refresh.lock"   # one refresh at a time; see acquire_lock
 REALERT_SECONDS=604800   # a profile that stays dead says so again once a week
 SKIP_ALERT_AFTER=43200   # 12h of unbroken skipped cycles is an outage, not node jitter
 SKIP_REALERT=86400       # and then once a day for as long as it lasts
@@ -91,9 +94,9 @@ explain_terminal() {
 
 read_state()  { cat "$STATE_DIR/$1.state" 2>/dev/null || echo unknown; }
 
-# An epoch from a marker file, or the fallback when the file is missing, empty or junk:
+# The number in a marker file, or the fallback when the file is missing, empty or junk:
 # an unreadable marker must not turn the arithmetic that uses it into a syntax error.
-read_epoch() {
+read_number() {
     local v; v=$(cat "$1" 2>/dev/null)
     case "$v" in ""|*[!0-9]*) echo "$2" ;; *) echo "$v" ;; esac
 }
@@ -113,10 +116,36 @@ write_state() {
 since_last_alert() {
     local stamp="$STATE_DIR/$1.alerted"
     [ -f "$stamp" ] || { echo 999999999; return; }
-    echo $(( $(date +%s) - $(read_epoch "$stamp" 0) ))
+    echo $(( $(date +%s) - $(read_number "$stamp" 0) ))
 }
 mark_alerted()  { date +%s > "$STATE_DIR/$1.alerted"; }
 clear_alerted() { rm -f "$STATE_DIR/$1.alerted"; }
+
+# One refresh at a time. A Feishu refresh token is single-use, so two runs refreshing the same
+# profile means the second spends a token the first already replaced, and the chain dies -- the
+# exact failure this script exists to prevent. launchd will not overlap its own scheduled cycles
+# (measured), so what this guards is a hand-run of the script racing the timer.
+acquire_lock() {
+    mkdir "$LOCK_DIR" 2>/dev/null && { echo $$ > "$LOCK_DIR/pid"; return 0; }
+    local holder; holder=$(read_number "$LOCK_DIR/pid" 0)
+    if [ "$holder" != 0 ] && kill -0 "$holder" 2>/dev/null; then
+        return 1
+    fi
+    # The holder is gone: a killed run leaves the directory behind. Clear it and take the lock
+    # the normal way, so two runs racing to take over cannot both believe they won.
+    rm -rf "$LOCK_DIR"
+    mkdir "$LOCK_DIR" 2>/dev/null || return 1
+    echo $$ > "$LOCK_DIR/pid"
+    log "took over a lock left behind by pid $holder"
+    return 0
+}
+release_lock() { rm -rf "$LOCK_DIR"; }
+
+if ! acquire_lock; then
+    log "SKIP cycle: another refresh run is in progress (pid $(cat "$LOCK_DIR/pid" 2>/dev/null)); a second one would spend the same single-use token"
+    exit 0
+fi
+trap release_lock EXIT
 
 # Rotate log. Ahead of the pre-check, because a skipped cycle logs a line too and an
 # outage lasting days would otherwise grow this file until connectivity came back.
@@ -132,7 +161,7 @@ if ! feishu_reachable; then
     write_state connectivity unreachable
     now=$(date +%s)
     [ -f "$SKIP_SINCE" ] || echo "$now" > "$SKIP_SINCE"
-    streak=$(( now - $(read_epoch "$SKIP_SINCE" "$now") ))
+    streak=$(( now - $(read_number "$SKIP_SINCE" "$now") ))
     if [ "$streak" -ge "$SKIP_ALERT_AFTER" ] && [ "$(since_last_alert connectivity)" -ge "$SKIP_REALERT" ]; then
         send_feishu "[lark-cli] Feishu has been unreachable from the writer for $((streak / 3600))h, so nothing has refreshed in that time. Credentials are untouched and safe for now, but a refresh window is 7 days: past that every profile needs a manual re-login. Check this machine's network."
         mark_alerted connectivity
@@ -142,7 +171,7 @@ if ! feishu_reachable; then
 fi
 
 if [ -f "$SKIP_SINCE" ]; then
-    now=$(date +%s); streak=$(( now - $(read_epoch "$SKIP_SINCE" "$now") ))
+    now=$(date +%s); streak=$(( now - $(read_number "$SKIP_SINCE" "$now") ))
     log "connectivity back after $((streak / 60))m of skipped cycles"
     [ -f "$STATE_DIR/connectivity.alerted" ] &&
         send_feishu "[lark-cli] Feishu is reachable from the writer again after $((streak / 3600))h; refreshing has resumed."
