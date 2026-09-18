@@ -23,9 +23,15 @@ where a line here and a rule there differ, the rule there governs.
   constraint he is now under, a claim of yours he still holds, something you changed and undid.
 - For a fix, what he would have seen going wrong comes before the cause, and the cause only where
   he needs it to judge.
-- Every item named by what broke, what he sees, or what now holds that did not; files, tickets and
-  counts ride in parentheses and carry nothing unless he asked in those units.
-- Every result marked verified or not, and by what.
+- Every item named by what broke, what he sees, or what now holds that did not; a file, a ticket or
+  a count rides in parentheses only where he would open it, or where he asked in that unit and the
+  unit is his — the same gate wherever this comes up.
+- Every result says what he does with it, and none is told from your side: 「我跑了什么」,
+  「我确认了什么」, 「我装了 X」, 「自审提了几条」, 「逐字节比对过」. The same fact from his
+  side is the version that goes in: 「现在是什么样」, 「下次开工会遇到什么」. Nothing is marked
+  「(details omitted)」 for what went this way.
+- Every result marked verified or not, and by something that says how far to trust it or how he
+  would check it again. 「部署后逐字节与源码相同」 is neither.
 - Every sentence has a subject that names something.
 - No word or phrase that points outside the message: 「那行」, 「上面说的」, and equally one that reads
   specific and still resolves only outside it — 「你截图里那 3 条超时的」, 「我上一条说的那个方案」.
@@ -63,5 +69,5 @@ where a line here and a rule there differ, the rule there governs.
   including changes and outstanding problems, at the depth his question calls for.
 - Run the noun check on the finished text, a rewrite and anything compressed from a subagent, a
   tool, a log or a teammate's message included.
-- Names he made you replace stay replaced as the item's name; the identifier still rides in
-  parentheses.
+- Names he made you replace stay replaced as the item's name; the identifier still rides where he
+  would open it.

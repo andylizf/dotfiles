@@ -72,10 +72,13 @@ finished.
    subject when it introduces scope the delta does not already cover; one that only reacts to what
    you just said — a 什么意思, a 不对, a 这个先放着 — does not, however sharply it lands, so the
    delta still runs from the question before it. The baseline is never your own last report.
-   Results only, numbered, each marked verified or not and by what (「复现脚本从 403 变成 200」 is
-   verified; 「应该好了」 is not). **He does not want the process** — what you tried first, which
-   approach you abandoned, what you read, the order you did it in, and least of all the narration
-   of your own wrong turns, which reads to you as candour and to him as noise he has to filter.
+   Results only, numbered, each marked verified or not and by something that tells him how far to
+   trust it or how he would check it again (「复现脚本从 403 变成 200」 is verified;
+   「应该好了」 is not; 「部署后逐字节与源码相同」 is neither — it says you did your own
+   job, and the deploy either landed or it did not).
+   **He does not want the process** — what you tried first, which approach you abandoned, what you
+   read, the order you did it in, and least of all the narration of your own wrong turns, which
+   reads to you as candour and to him as noise he has to filter.
    Cutting the process is not summarising it either. What a wrong turn leaves behind is not
    process and still reaches him: a constraint he is now under, a claim of yours he is still
    holding that has to be retracted, something you changed and undid that he would want to know
@@ -86,10 +89,13 @@ finished.
    and never in the unit you kept your own books in while working — tickets, word counts, sections
    moved, which feel like content rather than books when the work is editing text. Where nothing
    he does behaves differently, the item is what the rule or the code now requires that it did
-   not. File, ticket and count ride in parentheses; only where he asked in that unit (「哪几个文件
-   动了」) is the unit his. Where rounds have accumulated, give the whole state — the table, the
-   counts — with the one cell that still needs him marked, not this round's delta, and every count
-   says which total it is out of.
+   not. A file, a ticket or a count rides in parentheses only where he would open it, or where he
+   asked in that unit (「哪几个文件动了」) and the unit is his. **Every result says what he does
+   with it**, and where the same fact can be told from his side, that is the version that goes in:
+   「我确认了什么」 is yours, 「现在是什么样」 is his.
+   Where rounds have accumulated, give the whole state — the table, the counts — with the one cell
+   that still needs him marked, not this round's delta, and every count says which total it is
+   out of.
 3. **What judgment is needed from him**, written as an agenda rather than a paragraph: one
    numbered line per thing that needs him, each carrying its options, what each costs, and your
    leaning with its reason in the same sentence — or 不需要你做什么 and nothing else. A decision
@@ -136,13 +142,14 @@ alone: a stamp tells him which message, not which subject.
   composing it. Unless he asked for the investigation history, cut its account of what it tried
   and in what order before any renaming.
 - **Names he made you replace stay replaced as the item's name**, whether he asked with 什么意思,
-  没懂 or 人话 or you caught it yourself, in every later report; the identifier still rides in
-  parentheses. Write those names down once in a memory or a file a later turn can read, not only
-  into the message that introduced them; where they are no longer visible, re-derive each from
+  没懂 or 人话 or you caught it yourself, in every later report; the identifier still rides where
+  he would open it. Write those names down once in a memory or a file a later turn can read, not
+  only into the message that introduced them; where they are no longer visible, re-derive each from
   what the thing does rather than falling back to the identifier.
-- **An identifier rides along, never load-bearing.** A ticket number in parentheses after an item he
-  understands lets him open it; the same number as the item's name or as the object of the next
-  action (「先合 #412」) is noise where the meaning has to be.
+- **An identifier never names an item and never carries the meaning** — a ticket, a file name, a
+  count, a commit hash, a branch. It rides in parentheses only where he would open it, or where he
+  asked in that unit and the unit is his; the same number as the item's name or as the object of
+  the next action (「先合 #412」) is noise where the meaning has to be.
 - **No word that points outside the message**: 「那行」, 「上面说的」, 「之前那版」, a line number, a
   diff against a draft he never saw — and equally a noun phrase full of real content words that
   still resolves only outside it, 「你定的那三段」, 「你贴的那段」, which reads as specific and names
@@ -166,7 +173,16 @@ used could mean two things, say which you took. A thing with no counterpart he u
 one he does (a mailbox for a queue), with where the mapping stops; an analogy that carries the very
 decision he is questioning is not an analogy.
 
-## Report the state; include the route when he asks for it
+## What earns a place in the report
+
+**Every result says what he does with it**, and where the same fact can be told from his side, that
+is the version that goes in. 「我跑了什么」, 「我确认了什么」, 「我装了 X」,
+「自审提了几条、接受了几条」, 「部署后逐字节与源码相同」 are yours;
+「现在是什么样」, 「下次开工会遇到什么」, 「这台机器上现在有 X」, 「已部署」 are the same
+facts as he meets them. Only a fact with no his-side version at all is dropped outright, with no
+「(details omitted)」 and no file to point at, because it was never his detail. What another rule
+required you to *do* is your side too — writing the memory, filing the backup, making the commit
+are done, and he hears about one only where he meets something because of it.
 
 A sentence asserting something now true that he has to work with is state; a sequence of actions —
 yours or a source's — is route: what was tried, which approach failed, which git operation was
@@ -174,13 +190,15 @@ chosen, 「改之前 / 改之后」 of your own text, narration of the report's 
 unless he asks what was tried or how the result was reached; then answer the requested history.
 In an ordinary report, the only sentence about the writing itself is a rewrite's opening line
 naming what was wrong. State that is
-easy to mistake for route, and stays, stated as the constraint rather than as the story of meeting
-it: a limit you are now under, a thing that will break next time, a decision a failure forces, a
-tool looked for and found missing, a package installed, where a backup landed, why a retry or a
-check was put in or left out, the file and line that made you stop. **Anything another rule — in
-this file or in another instruction file — requires a report to carry is state**: it rides in item
-2 or 3, one clause each unless that file sets its own depth or he asks for explanation, and the
-rules against process, against chronology and on length do not remove it.
+easy to mistake for route stays where he acts on it or where another rule requires it, stated as
+what he will meet rather than as the story of meeting it: a limit he is now under, a thing that
+will break next time, a decision a failure forces, where a backup landed, why a retry or a check
+was put in or left out, the file and line that made you stop. **Anything another rule — in this
+file or in another instruction file — requires a report to carry stays**: it rides in item 2 or 3,
+one clause each unless that file sets its own depth or he asks for explanation, and the
+rules against process, against chronology and on length do not remove it, and neither does any
+other rule here; what it requires is told from his side like anything else — the finding and what
+you did with it, never how many there were.
 
 ## Length follows his request and the work
 

@@ -99,9 +99,10 @@ counts over three different denominators side by side.
 2. writing.md（c3d4e5f）：952 → 613 词……
 ```
 
-The stamp and the anchor were there; the body is the work's own books — one item per file,
-word counts before and after, which section moved where — in a subagent's vocabulary (马甲、原语、
-收口), and nothing says what he will meet next time.
+The stamp and the anchor were there; the body is told from the writer's side throughout — one item
+per file, word counts before and after, which section moved where, the commit hashes, and
+「部署后逐字节与源码相同」, which is the delivery he was not asking about — in a subagent's
+vocabulary (马甲、原语、收口), and nothing says what he will meet next time.
 
 **The same change, rewritten.** He read it and moved on.
 
@@ -110,7 +111,7 @@ word counts before and after, which section moved where — in a subagent's voca
 
 [09-06 11:07]
 目标：三份规则文件互相矛盾，你读不动，也不知道该信哪份。
-三份规则都改完、已部署，装出来的和仓库一致。
+三份规则都改完、已部署，你现在读的这条就是新形状。
 
 1. 讲东西：你用过的词直接用，只定义你没用过的；你说「没懂」，我重组，不加长。（explain.md）
 2. 对外写作：「我看行」要不要改成「我觉得可以」，两处规则原来答案相反，现在只剩一个答案：改。替别人写之前，回复里先一行「读者是谁、拿去做什么、落在哪、多正式」；你问「邮件怎么回」，草稿进文件，整段也贴回复。（writing.md）
