@@ -24,8 +24,8 @@ where a line here and a rule there differ, the rule there governs.
   counts ride in parentheses and carry nothing unless he asked in those units.
 - Every result marked verified or not, and by what.
 - Every sentence has a subject that names something.
-- No word that points outside the message — including 「那行」, which is a subject and passes the
-  line above.
+- No word or phrase that points outside the message: 「那行」, 「上面说的」, and equally one that reads
+  specific and still resolves only outside it — 「你截图里那 3 条超时的」, 「我上一条说的那个方案」.
 - Every abstraction has one real instance beside it, and every instance a word he can map it to.
 - Every quotation not in Chinese carries its Chinese translation; identifiers, commands and paths
   are not quotations.
