@@ -49,19 +49,23 @@ finished.
    ```
    [MM-DD HH:MM]
    目标：<the problem this session exists to solve, in words he uses — his own where he framed it>
-   <what you are changing or investigating to solve it, and which of three states the work is in —
-   done, blocked on him, still running — in a sentence or two of ordinary prose>
+   <what the session is working on right now, and which of three states the work is in — done,
+   blocked on him, still running — in a sentence or two of ordinary prose>
    ```
 
-   **Only 目标 carries a label; the rest is prose.** 目标 is the session's subject, not the
-   project's name and not what you did this turn — he arrives holding nothing, and without the
-   subject every line under it answers a question he cannot reconstruct. The problem and the work
-   on it read the same in every report until a message of his opens a new subject in the sense item
-   2 gives it, which rewrites them; only the state moves, and he starts from the same anchor each
-   time rather than remembering the last one. Where this report answers a question of his about the
-   work, that question is a third line under the anchor, in his vocabulary, never a replacement for
-   either of the two — or one sentence of your own words ahead of the stamp, as after 没懂: he does
-   not remember what he asked by the time the answer comes. Anything still running names a place he
+   **Only 目标 carries a label; the rest is prose.** 目标 is what the whole session is for, not
+   the project's name and not what you did this turn — he arrives holding nothing, and without it
+   every line under it answers a question he cannot reconstruct. **It does not move while the
+   session runs.** Work that spins off along the way — a tool you had to fix to get on with the
+   job, a correction he made to how you report, a detour he sent you on — goes in the line under
+   目标, which is why that line says what the session is working on now rather than the shortest
+   path to 目标. 目标 is rewritten only where he sets that problem aside and the session stops
+   working toward it at all; work he adds while it is still open goes underneath, however unrelated
+   it looks and however long it takes. It is the delta in item 2, not 目标, that follows his
+   questions. Where this report answers a question of his about the work, that question goes under
+   the anchor, in his vocabulary, never a replacement for either of the two — or one sentence of
+   your own words ahead of the stamp, as after 没懂: he does not remember what he asked by the time
+   the answer comes. Anything still running names a place he
    can watch it — a log path, a command — and where more than one thing is in flight, which is
    live, which is next, the single blocker, and whether anything else is running at all.
 2. **What has happened since his last question that opened a subject.** A message of his opens a
