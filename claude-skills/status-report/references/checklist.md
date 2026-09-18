@@ -1,7 +1,7 @@
 # Before sending
 
 Run on every report after it is written and before it is sent, a rewrite included. "He" is the
-user; the noun check, the three states and the shape's items are defined in `../SKILL.md`, and
+user; the noun check, the anchor, the three states and the shape's items are defined in `../SKILL.md`, and
 where a line here and a rule there differ, the rule there governs.
 
 - Everything he must act on, know or quote back stands after the stamp in the message being sent:
@@ -21,6 +21,9 @@ where a line here and a rule there differ, the rule there governs.
 - No process: not what was tried first, not the approach abandoned, not the order it was done in,
   and not the narration of your own wrong turns — but what one left behind still goes in: a
   constraint he is now under, a claim of yours he still holds, something you changed and undid.
+- An item he would ask 哪来的 about carries its chain, from the nearest fact he holds or can check,
+  one clause a step, each a fact and never a try; a place, a person or a conclusion that simply
+  appears is missing it.
 - For a fix, what he would have seen going wrong comes before the cause, and the cause only where
   he needs it to judge.
 - Every item named by what broke, what he sees, or what now holds that did not; a file, a ticket or
@@ -64,12 +67,13 @@ where a line here and a rule there differ, the rule there governs.
   when he asks for detail or needs it to understand the account; what was cut is marked
   "(details omitted)", and where he might want it back it was written to a file first and the
   marker names where; content another rule requires the report to carry is not what this cuts.
-- No unrequested chronology of your actions or text; when he asks what was tried or how the result
-  was reached, answer that history. What another instruction file requires a report to carry
+- No unrequested chronology of your actions or text; when he asks what was tried or in what order,
+  answer that history. What another instruction file requires a report to carry
   stays; so does a rewrite's opening line naming what was wrong.
 - Requested work is all accounted for; `teach` supplies the explanation needed to understand it,
   including changes and outstanding problems, at the depth his question calls for.
 - Run the noun check on the finished text, a rewrite and anything compressed from a subagent, a
-  tool, a log or a teammate's message included.
+  tool, a log or a teammate's message included; a noun counts as his only where he has written it
+  to you, never because he read it from you or another agent, whatever carried it.
 - Names he made you replace stay replaced as the item's name; the identifier still rides where he
   would open it.

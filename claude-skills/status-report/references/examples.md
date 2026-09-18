@@ -34,7 +34,8 @@ The stamp is what he scans the turn's last message for; whatever stands before i
 nothing, which is what makes writing the process elsewhere free rather than merely discouraged. The
 anchor is the two lines under it, only the first of them labelled: 目标 is the problem behind all
 five fixes rather than 「你问今天到底做了什么」, which is what this one report answers and so sits on
-the third line. What was cut names
+the third line. Each item carries its cause because he asked what was done; had he not,
+with nothing in item 3 for him to judge, the cause would go. What was cut names
 where it now is, so 「(details omitted)」 hands him a door rather than only telling him a room
 exists.
 

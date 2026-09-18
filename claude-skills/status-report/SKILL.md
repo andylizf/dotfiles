@@ -38,13 +38,13 @@ was, it reached no one. So everything he must act on, know or quote back stands 
 the message you are sending or was never said; where an earlier message of this turn carried it,
 state it here again as current fact, never as a correction of a message of this turn.
 **The test of a finished report: can he act on it without asking a question?** A noun that would
-make him ask "what is that" or an item that would make him ask "so what do I do" means it is not
-finished.
+make him ask "what is that", an item that would make him ask "so what do I do", or one that would
+make him ask "where did that come from" means it is not finished.
 
 ## The shape, in the order he needs it
 
 1. **What this session is for, opening with a labelled 目标 line.** The stamp, then these two
-   lines, before anything you did:
+   lines — the anchor — before anything you did:
 
    ```
    [MM-DD HH:MM]
@@ -76,14 +76,24 @@ finished.
    trust it or how he would check it again (「复现脚本从 403 变成 200」 is verified;
    「应该好了」 is not; 「部署后逐字节与源码相同」 is neither — it says you did your own
    job, and the deploy either landed or it did not).
-   **He does not want the process** — what you tried first, which approach you abandoned, what you
-   read, the order you did it in, and least of all the narration of your own wrong turns, which
+   **He does not want the process** — what you tried first, which approach you abandoned, which
+   documents you went through, the order you did it in, and least of all the narration of your own wrong turns, which
    reads to you as candour and to him as noise he has to filter.
-   Cutting the process is not summarising it either. What a wrong turn leaves behind is not
+   **He does want the derivation of an item that would otherwise have him ask where it came from** —
+   the chain the item rests on: from the nearest fact he holds or can check (his own words, a
+   source's sentence, a rule that applies), through each step he would have to dispute to overturn
+   it, to the item, so that from this message alone he can say why it is this and not another. A
+   step stays only where removing it leaves him unable to say that. A step is a fact, never a try
+   of yours: where a dropped approach is why the item is what it is, the step is what it exposed (「接口一次最多收 40 条」),
+   not the try (「先试了 100 条，被拒」). An item that names only its endpoint — a letter addressed
+   to one of three places with nothing on why that one, a count that is a conclusion with nothing
+   on the rule that produced it — reads as a fact that appeared rather than one that followed. One
+   clause per step.
+   Cutting the process is not summarising it. What a wrong turn leaves behind is not
    process and still reaches him: a constraint he is now under, a claim of yours he is still
    holding that has to be retracted, something you changed and undid that he would want to know
-   happened. For a fix the item is what he would have seen going wrong and what happens now, the cause
-   only where he needs it to judge; for other work, what he would have met before and what he
+   happened. For a fix the chain is what he would have seen going wrong and what happens now, and the
+   cause is a step only where his judgment of the fix or of a line in item 3 turns on it; for other work, what he would have met before and what he
    meets now, never the file before and
    the file after. An item is named by what broke or what he now meets, never by an identifier,
    and never in the unit you kept your own books in while working — tickets, word counts, sections
@@ -136,9 +146,15 @@ alone: a stamp tells him which message, not which subject.
 ## Every word he must act on is decodable where it appears
 
 - **The noun check.** Every proper noun in the report, whoever wrote it first — you, a subagent, a
-  tool, a log, a teammate — is one he used himself or one defined in the line that uses it. The
+  tool, a log, a teammate — is one he used himself or one defined in the line that uses it. **Used
+  himself means he has written it to you** — in this conversation, in an instruction file he
+  wrote, or in an earlier conversation that a memory or a file you can open quotes him in; a term you recall as his but cannot point to is not
+  his — not only read it from you, however many reports or other agents' messages carried it,
+  because each report is read as the only one; a word he wrote back only to ask what it means is
+  not his. The
   words he cannot decode are mostly names you coined during the work (a pool, a gate, a phase
-  letter), then repo and paper terms he never used. Define each as what it is, why it exists and
+  letter), then names of people and places the work brought in, then repo and paper terms he never
+  used. Define each as what it is, why it exists and
   what it does for him, in terms of something he already uses, then say the sentence again in his
   terms; or replace it with what it does (「登录后本该跳回原页面，现在跳到首页」). His own terms are
   used unchanged, never explained back to him.
@@ -191,14 +207,15 @@ are done, and he hears about one only where he meets something because of it.
 
 A sentence asserting something now true that he has to work with is state; a sequence of actions —
 yours or a source's — is route: what was tried, which approach failed, which git operation was
-chosen, 「改之前 / 改之后」 of your own text, narration of the report's structure. Cut that chronology
-unless he asks what was tried or how the result was reached; then answer the requested history.
+chosen, 「改之前 / 改之后」 of your own text, narration of the report's structure. A step in an item's
+chain is the fact an action left, never the attempt, so it is state. Cut that chronology unless he asks what was tried or in
+what order; then answer the requested history.
 In an ordinary report, the only sentence about the writing itself is a rewrite's opening line
 naming what was wrong. State that is
 easy to mistake for route stays where he acts on it or where another rule requires it, stated as
 what he will meet rather than as the story of meeting it: a limit he is now under, a thing that
 will break next time, a decision a failure forces, where a backup landed, why a retry or a check
-was put in or left out, the file and line that made you stop. **Anything another rule — in this
+was put in or left out, the file and line that made you stop, the facts an item follows from. **Anything another rule — in this
 file or in another instruction file — requires a report to carry stays**: it rides in item 2 or 3,
 one clause each unless that file sets its own depth or he asks for explanation, and the
 rules against process, against chronology and on length do not remove it, and neither does any
@@ -215,7 +232,7 @@ moved rather than dropped: write it to a file under the project's own directorie
 goes, and say where it landed, so the marker hands him a path and not only a notice. Evidence that
 adds nothing, the process, and a chronology he did not ask for are dropped outright and have no
 address, and the same goes for a second measurement propping up a conclusion already established;
-keep the reason for a leaning and the facts he needs to understand the conclusion or act on it. A result that overturns something
+keep the reason for a leaning and the chain an item rests on. A result that overturns something
 you told him earlier restates what was measured and how before the new number — what is tested,
 how, what you said before, what is true, what it means for him — and one sentence retracts the old
 claim; explaining what you meant by it is not a retraction. That covers a claim he read — a
