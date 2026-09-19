@@ -179,16 +179,23 @@
         # With codex-switchboard installed, the interactive TUI attaches to its shared
         # engine (one app-server whose account is swapped underneath when a usage limit
         # is hit). Non-TUI subcommands go straight to the binary. A remote TUI works in
-        # the engine's own directory unless told otherwise, so --cd pins it to this shell's;
-        # $trust does not reach the engine, so a directory not yet in the config's
-        # projects table gets codex's one-time trust prompt, which the engine persists.
+        # the engine's own directory unless told otherwise, so --cd pins it to this shell's.
+        # $trust never reaches the engine, so trust is written where the engine reads it,
+        # as codex itself does when its prompt is answered Yes; the engine reads the file
+        # fresh for every thread. That covers ~ too, where trust makes the engine load
+        # ~/.codex a second time as project config (each hook fires twice in a window
+        # opened in ~); the alternative is codex's trust prompt or its untrusted warning
+        # in every window, since the engine itself starts in ~.
         if command -q codex-switchboard
           switch "$argv[1]"
             case -V --version -h --help agents exec e review login logout mcp plugin app-server remote-control app completion update doctor sandbox debug apply a queue archive delete migrate-rollouts unarchive cloud exec-server features help
               command codex $trust $argv
             case '*'
               codex-switchboard ensure; or return
-              env CODEX_HOME=$HOME/.codex-profiles/pool codex --remote unix:// --cd $PWD $trust $argv
+              set -l cfg $HOME/.codex/config.toml
+              grep -qF "[projects.\"$root\"]" $cfg
+              or printf '\n[projects."%s"]\ntrust_level = "trusted"\n' $root >> $cfg
+              env CODEX_HOME=$HOME/.codex-profiles/pool codex --remote unix:// --cd $PWD $argv
           end
         else
           command codex $trust $argv
