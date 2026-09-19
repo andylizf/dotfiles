@@ -48,7 +48,10 @@ land, strip it down; don't hand over the whole answer.
 
 ## When they're confused, your explanation is wrong
 
-Not their foundation. This is the most important recovery move and the easiest to get wrong.
+Not their foundation. This is the most important recovery move and the easiest to get wrong. A
+further question on the same subject is this case unless they have said in words that they
+understood — one more chance at the explanation, not a sign the last one landed. A restatement of
+your explanation back as a question is not this case: validate it point by point, do not rebuild.
 
 When they say they don't follow, the instinct to **restart at fundamentals is almost always exactly
 wrong**. They have studied the field; re-explaining basics reads as condescension while missing the
