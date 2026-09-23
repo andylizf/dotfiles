@@ -23,6 +23,9 @@ let
 
     case "$event" in
       observe-write|publish-write) exec "$omem_bin" hook "$event" ;;
+      # Codex reads a Stop hook's exit 2 as "continue the turn with stderr", so an omem
+      # too old to know this event must come back as {} rather than as a prompt.
+      conflict-stop) "$omem_bin" hook conflict-stop || printf '{}\n' ;;
       session-start) exec "$omem_bin" hook session-start ;;
       recall) exec "$omem_bin" hook recall ;;
       stash|extract)
@@ -94,6 +97,13 @@ in
     command = "${omemManagedHook}/bin/omem-managed-hook publish-write"
 
     [[hooks.Stop]]
+    # Delivers the routed memory-conflict notice publish-write holds back under Codex:
+    # context from PostToolUse lands between a tool call and its output, which DeepSeek
+    # rejects on every later turn. A Stop block continues the turn after the output.
+    [[hooks.Stop.hooks]]
+    type = "command"
+    command = "${omemManagedHook}/bin/omem-managed-hook conflict-stop"
+
     [[hooks.Stop.hooks]]
     type = "command"
     command = "${omemManagedHook}/bin/omem-managed-hook stash"
