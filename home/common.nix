@@ -186,6 +186,15 @@
         # ~/.codex a second time as project config (each hook fires twice in a window
         # opened in ~); the alternative is codex's trust prompt or its untrusted warning
         # in every window, since the engine itself starts in ~.
+        # `codex @<account> [args]` runs a native codex on that one account, outside the shared
+        # engine, so the switchboard never moves it (`codex-acct run`). codex itself takes no
+        # argument starting with @.
+        if string match -q -- '@*' "$argv[1]"; and command -q codex-acct
+          set -l account (string sub -s 2 -- $argv[1])
+          set -e argv[1]
+          codex-acct run $account $trust $argv
+          return
+        end
         if command -q codex-switchboard
           switch "$argv[1]"
             case -V --version -h --help agents exec e review login logout mcp plugin app-server remote-control app completion update doctor sandbox debug apply a queue archive delete migrate-rollouts unarchive cloud exec-server features help
