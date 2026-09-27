@@ -118,6 +118,7 @@ false.
 
 **句式：**
 - **提问紧接自答**："And that question? It's the answer." / "The result? Total chaos." → 删掉这种自问自答的小机灵。
+- 档位是 Slack / X（Twitter）的稿子，小写、碎句是他定的写法，不报；Slack 稿里的手打式错别字也不报，X 稿里的照报。
 - **戏剧性断句**："Short sentences. Pauses. For effect." 碎句堆戏剧感 → 合回正常句子。
 - **强行明喻/比喻**：被要求“写得更生动”时给什么都硬塞一个比喻("X like an angry octopus after a bad haircut")→ 没必要的比喻删掉。
 - **三连**(rule of three)："fast, reliable, and scalable" 这种凑数三元组，砍成一个具体的。ChatGPT 改不掉这个，要专门盯。
