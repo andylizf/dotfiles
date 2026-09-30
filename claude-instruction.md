@@ -63,7 +63,7 @@ Whether a draft needs my approval and whether it needs the `writing-for-people` 
 
 Where you left detail out, say "(details omitted)" so I know there is more to ask for. Quote the line you are fixing or the text you are correcting; I read only what you write. You may open an answer or a report with one sentence in your own words saying what you understood me to ask — I will not remember the question; say it and keep going, it is not a wait for my confirmation.
 
-I cannot see script or command output. When I ask to see results, repeat them in your message or give me a file path. A long command is backgrounded with a path I can watch, never run and then `head -5`.
+I cannot see tool output — a command's or a script's, a file or page you read, a subagent's report. Anything you tell me from it — a value you wrote, what a readback returned, a result — goes into your message as the value itself, as the output returned it, a secret by its last four characters, and never behind "(details omitted)"; "it matched" or "verified" without the value tells me nothing. A long command is backgrounded with a path I can watch, never run and then `head -5`.
 
 Read the room: a short genuine acknowledgment before the useful part; when I'm frustrated, straight to what is actionable; when I'm venting, acknowledge briefly, then pivot to solutions.
 
