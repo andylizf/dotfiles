@@ -131,6 +131,8 @@ TIER="$CACHE_DIR/tier-$USAGE_SLOT.txt"
 LOCK="$CACHE_DIR/refresh-$USAGE_SLOT.lock"
 # When a refresh was last attempted, successful or not. See the spawn below.
 ATTEMPT="$CACHE_DIR/attempt-$USAGE_SLOT.txt"
+# Epoch before which the endpoint asked not to be called again (its 429 retry-after).
+QUIET="$CACHE_DIR/quiet-$USAGE_SLOT.txt"
 
 # ---------------------------------------------------------------- refresh ---
 # `--refresh` is what the SessionStart hook runs, never the render path: it
@@ -176,10 +178,29 @@ if [[ ${1:-} == --refresh ]]; then
   fi
   [[ -n $tok ]] || exit 0
 
-  body=$(curl -sS --max-time 10 \
+  # A session behind a TLS-intercepting proxy trusts that proxy's CA through
+  # NODE_EXTRA_CA_CERTS, which curl ignores; without it every fetch from such a
+  # session fails the handshake. Added to the default bundle, as Node does.
+  # A file rather than <(…): a process substitution is closed once the array
+  # assignment that opened it ends, before curl ever reads it.
+  ca=()
+  if [[ -r ${NODE_EXTRA_CA_CERTS:-} ]]; then
+    cat "${SSL_CERT_FILE:-${NIX_SSL_CERT_FILE:-/etc/ssl/cert.pem}}" "$NODE_EXTRA_CA_CERTS" \
+      > "$CACHE_DIR/ca-bundle.pem" 2>/dev/null && ca=(--cacert "$CACHE_DIR/ca-bundle.pem")
+  fi
+  hdr="$CACHE_DIR/headers-$USAGE_SLOT.txt"
+  body=$(curl -sS --max-time 10 "${ca[@]}" -D "$hdr" \
            -H @<(printf 'Authorization: Bearer %s\n' "$tok") \
            -H 'Content-Type: application/json' \
-           https://api.anthropic.com/api/oauth/usage 2>/dev/null) || exit 0
+           https://api.anthropic.com/api/oauth/usage 2>/dev/null) || { rm -f "$hdr"; exit 0; }
+  # A 429 here carries a retry-after of most of an hour, and a request inside
+  # that window extends it, so record when it ends and stop asking until then.
+  status=$(awk 'toupper($1) ~ /^HTTP\// {s=$2} END {print s}' "$hdr")
+  if [[ $status == 429 ]]; then
+    wait=$(awk -F': *' 'tolower($1) == "retry-after" {gsub(/\r/, "", $2); print int($2)}' "$hdr")
+    printf '%s\n' "$(( $(date +%s) + ${wait:-900} ))" > "$QUIET"
+  fi
+  rm -f "$hdr"
 
   # resets_at comes back as an ISO 8601 string here, while the same field
   # arrives from stdin as epoch seconds. Normalise to epoch so the render path
@@ -356,14 +377,16 @@ scoped_label=$c_label scoped_pct=$c_spct scoped_at=$c_sat
 # this row could earn a credential any trouble. Stamping before the spawn holds
 # the floor at one attempt per interval whether or not it works.
 #
-# A constant floor, not a widening backoff: a failed fetch costs a blank column
-# and nothing else, and five minutes is already far below any rate this
-# endpoint is likely to object to.
+# The endpoint does object, per account and for most of an hour, and every
+# request inside that window extends it. So a 429's retry-after, recorded by the
+# refresh, holds every session on that credential off until it has passed.
 if [[ -n $USAGE_SLOT ]] && (( now - c_sfetched > SCOPED_TTL )) && [[ ! -d $LOCK ]]; then
-  attempted=0
+  attempted=0 quiet=0
   [[ -r $ATTEMPT ]] && read -r attempted < "$ATTEMPT" 2>/dev/null
+  [[ -r $QUIET ]] && read -r quiet < "$QUIET" 2>/dev/null
   is_int "${attempted:-}" || attempted=0
-  if (( now - attempted > SCOPED_TTL )); then
+  is_int "${quiet:-}" || quiet=0
+  if (( now - attempted > SCOPED_TTL && now >= quiet )); then
     mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
     printf '%s\n' "$now" > "$ATTEMPT" 2>/dev/null
     ( "${BASH:-bash}" "$0" --refresh </dev/null >/dev/null 2>&1 & ) &
