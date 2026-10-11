@@ -150,17 +150,20 @@ let
       end
     end'';
   shLambda = ''
-    for f in "$HOME"/.config/lambda/*; do
-      [ -f "$f" ] || continue
-      _p="$(basename "$f")"
-      _v="$(tr -d "[:space:]" < "$f")"
-      [ -n "$_v" ] || continue
-      if [ "$_p" = "default" ]; then
-        export LAMBDA_API_KEY="$_v"
-      else
-        export "LAMBDA_API_KEY_$(printf '%s' "$_p" | tr '[:lower:]' '[:upper:]')=$_v"
-      fi
-    done
+    # zsh aborts on a glob that matches nothing, so only expand it when the dir has entries.
+    if [ -n "$(ls "$HOME/.config/lambda" 2>/dev/null)" ]; then
+      for f in "$HOME"/.config/lambda/*; do
+        [ -f "$f" ] || continue
+        _p="$(basename "$f")"
+        _v="$(tr -d "[:space:]" < "$f")"
+        [ -n "$_v" ] || continue
+        if [ "$_p" = "default" ]; then
+          export LAMBDA_API_KEY="$_v"
+        else
+          export "LAMBDA_API_KEY_$(printf '%s' "$_p" | tr '[:lower:]' '[:upper:]')=$_v"
+        fi
+      done
+    fi
     unset f _p _v'';
 
   fishBody = concatStringsSep "\n\n" [

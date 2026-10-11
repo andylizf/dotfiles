@@ -97,6 +97,14 @@ darwin_repair_if_needed() {
   fi
 }
 
+# system/darwin.nix enables nix-darwin's homebrew module, which aborts activation
+# when brew is absent, and nothing else installs it on a fresh Mac.
+ensure_homebrew() {
+  if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then return; fi
+  log "Installing Homebrew (required by the nix-darwin homebrew module)..."
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+}
+
 ensure_nix_features() {
   local nix_conf="$HOME/.config/nix/nix.conf"
   mkdir -p "$(dirname "$nix_conf")"
@@ -354,6 +362,7 @@ EOF
   fi
 
   if [ "$OS_TARGET" = "darwin" ]; then
+    ensure_homebrew
     log "Activating nix-darwin (#default) with site override..."
     sudo --preserve-env=NIX_CONFIG nix run nix-darwin -- switch \
       --flake ".#default" \
