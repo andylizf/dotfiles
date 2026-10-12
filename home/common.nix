@@ -406,15 +406,6 @@ PYPIRC
     source = ./scripts/claude-statusline.sh;
     executable = true;
   };
-  # A turn that ends by handing work back gets blocked once, so the model
-  # re-reads the two stops CLAUDE.md allows and usually just carries on. The
-  # Stop hook entry in the settings.json template below wires it up, but that
-  # template seeds only fresh machines, so an existing settings.json needs the
-  # entry added by hand.
-  home.file.".claude/stop-gate.py" = {
-    source = ./scripts/claude-stop-gate.py;
-    executable = true;
-  };
   # `~/.claude/stop-gate-report.py` reads the gate's log for rates, latency and
   # cost, and checks every hook settings.json wires up — a hook that quietly
   # stops running leaves no trace anywhere else on this machine.
@@ -540,16 +531,6 @@ PYPIRC
                 {
                   "type": "command",
                   "command": "printf '\\a' > /dev/tty; if command -v afplay >/dev/null 2>&1; then afplay /System/Library/Sounds/Hero.aiff & elif command -v paplay >/dev/null 2>&1; then paplay /usr/share/sounds/freedesktop/stereo/complete.oga & fi"
-                }
-              ]
-            }
-          ]
-            {
-              "hooks": [
-                {
-                  "type": "command",
-                  "command": "~/.claude/stop-gate.py",
-                  "timeout": 10
                 }
               ]
             }
