@@ -198,4 +198,43 @@ PLIST
     run cp -f ${bootSafeFish} "${home}/.local/libexec/boot-safe/fish"
     run chmod 755 "${home}/.local/libexec/boot-safe/fish"
   '');
+
+  # Claude Code's native updater replaces ~/.local/bin/claude with a version symlink.
+  # When the private switchboard is installed, keep the public entry point as a
+  # wrapper and preserve the native binary as claude-real. The switchboard owns
+  # account names and credentials; dotfiles only keeps the entry point stable.
+  home.file.".local/bin/claude-switchboard-shim-guard" = {
+    source = ./scripts/claude-switchboard-shim-guard.sh;
+    executable = true;
+  };
+  home.file."Library/LaunchAgents/local.claude-switchboard-shim-guard.plist".text = ''
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0"><dict>
+      <key>Label</key><string>local.claude-switchboard-shim-guard</string>
+      <key>ProgramArguments</key><array>
+        <string>/bin/bash</string>
+        <string>${home}/.local/bin/claude-switchboard-shim-guard</string>
+      </array>
+      <key>StartInterval</key><integer>1800</integer>
+      <key>RunAtLoad</key><true/>
+      <key>StandardOutPath</key><string>${home}/.claude-switchboard/shim-guard.out.log</string>
+      <key>StandardErrorPath</key><string>${home}/.claude-switchboard/shim-guard.err.log</string>
+    </dict></plist>
+  '';
+
+  home.activation.installClaudeSwitchboardShim =
+    lib.hm.dag.entryAfter [ "installDevCLIs" "linkGeneration" ] (resilient "installClaudeSwitchboardShim" ''
+      BIN="${home}/.local/bin"
+      PLIST="${home}/Library/LaunchAgents/local.claude-switchboard-shim-guard.plist"
+      UIDNUM="$(/usr/bin/id -u)"
+      if [ -x "$BIN/claude-switchboard" ]; then
+        run "$BIN/claude-switchboard-shim-guard"
+        /bin/launchctl bootout "gui/$UIDNUM/local.claude-switchboard-shim-guard" 2>/dev/null || true
+        /bin/launchctl bootstrap "gui/$UIDNUM" "$PLIST" 2>/dev/null || true
+      else
+        /bin/launchctl bootout "gui/$UIDNUM/local.claude-switchboard-shim-guard" 2>/dev/null || true
+        run rm -f "$PLIST"
+      fi
+    '');
 }
