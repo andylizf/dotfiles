@@ -70,7 +70,7 @@ fingerprint() {
 # is expected rather than exceptional. It writes no cache, so the row simply
 # stays blank.
 resolve_credential() {
-  AUTH="" USAGE_SLOT="" SUBSCRIPTION=0 STORE_DIR=""
+  AUTH="" USAGE_SLOT="" SUBSCRIPTION=0 STORE_DIR="" ACCOUNT=""
   # Order per the documented precedence list (docs/en/authentication, "Authentication
   # precedence"): cloud providers, then ANTHROPIC_AUTH_TOKEN, then ANTHROPIC_API_KEY,
   # then CLAUDE_CODE_OAUTH_TOKEN, and the /login credential last. The bearer token
@@ -122,6 +122,12 @@ resolve_credential() {
   fi
   if [[ -n $STORE_DIR ]]; then
     fingerprint "$STORE_DIR"; USAGE_SLOT="cfg-$FP"
+    # Which of the side-by-side accounts this session is on. Two subscriptions of
+    # the same tier are indistinguishable on this row otherwise, and the usage
+    # figures below it then read as the wrong account's. The name is the store
+    # directory's suffix, which is also how credential-selection tooling names
+    # these accounts, so the two agree without a table to keep in step.
+    ACCOUNT=${STORE_DIR##*/}; ACCOUNT=${ACCOUNT#.claude-}
   fi
 }
 
@@ -399,6 +405,8 @@ if ((SUBSCRIPTION)) && [[ -r $TIER ]]; then
   read -r tier < "$TIER" 2>/dev/null
   [[ -n ${tier:-} ]] && AUTH="sub:$tier"
 fi
+# Only for a non-default store, so the common case spends no width on it.
+[[ -n ${ACCOUNT:-} ]] && AUTH+="@$ACCOUNT"
 
 # `claude-fable-5-1[1m]`: the context-window suffix gets its own colour.
 base=${model%%\[*}
@@ -410,9 +418,17 @@ line1="${ORANGE}${base}${RESET}"
 has "$ctx" && line1+="${SEP}${CYAN}${ctx}% ctx${RESET}"
 # Green for the subscription, amber for everything else: the distinction worth
 # seeing at a glance is whether this session spends against the plan or against
-# something metered.
-((SUBSCRIPTION)) && line1+="${SEP}${GREEN}${AUTH}${RESET}" \
-                 || line1+="${SEP}${YELLOW}${AUTH}${RESET}"
+# something metered. `api` gets red and a currency mark of its own: it is the one
+# billed per token, and a session can land on it without anyone having chosen it,
+# because tooling that picks between credentials falls through to the API key once
+# the subscriptions are out.
+if ((SUBSCRIPTION)); then
+  line1+="${SEP}${GREEN}${AUTH}${RESET}"
+elif [[ $AUTH == api ]]; then
+  line1+="${SEP}${RED}${AUTH} \$${RESET}"
+else
+  line1+="${SEP}${YELLOW}${AUTH}${RESET}"
+fi
 printf '%s\n' "$line1"
 
 window() {  # $1=label  $2=percent  $3=resets_at
