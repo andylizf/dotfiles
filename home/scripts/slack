@@ -84,11 +84,20 @@ def write_cookie(val):
     with open(COOKIE_FILE, "w") as f: f.write(val + "\n")
     os.chmod(COOKIE_FILE, 0o600)
 
+def app_data_dir():
+    """The desktop app's data directory: sandboxed for the App Store build,
+    plain Application Support for the direct download."""
+    for d in (f"{HOME}/Library/Containers/com.tinyspeck.slackmacgap/Data/Library/"
+              f"Application Support/Slack",
+              f"{HOME}/Library/Application Support/Slack"):
+        if os.path.exists(f"{d}/Cookies"): return d
+    return None
+
 def sniff_desktop_ua():
     """The installed app's own User-Agent, out of its logs."""
-    logs = (f"{HOME}/Library/Containers/com.tinyspeck.slackmacgap/Data/Library/"
-            f"Application Support/Slack/logs")
-    if not os.path.isdir(logs): return None
+    d = app_data_dir()
+    if not d or not os.path.isdir(f"{d}/logs"): return None
+    logs = f"{d}/logs"
     pat = re.compile(rb"Slack/[0-9.]+ Chrome/[0-9.]+ Electron/[0-9.]+ Safari/[0-9.]+")
     for root, _, files in os.walk(logs):
         for fn in files:
@@ -108,10 +117,10 @@ def extract_cookie_from_app():
 
     The key lives in the login Keychain as 'Slack Safe Storage'; macOS prompts
     once (choose Always Allow to make later runs silent)."""
-    db = (f"{HOME}/Library/Containers/com.tinyspeck.slackmacgap/Data/Library/"
-          f"Application Support/Slack/Cookies")
-    if not os.path.exists(db):
+    d = app_data_dir()
+    if not d:
         die("Slack desktop app data not found — is it installed and signed in?")
+    db = f"{d}/Cookies"
     key = subprocess.run(["security", "find-generic-password", "-ws",
                           "Slack Safe Storage"], capture_output=True,
                          text=True).stdout.strip()
