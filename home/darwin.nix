@@ -1,4 +1,4 @@
-{ config, pkgs, lib, resilient, ... }:
+{ config, pkgs, lib, ... }:
 let
   home = config.home.homeDirectory;
   user = config.home.username;
@@ -9,52 +9,10 @@ let
   #             string from Bitwarden and injects it via LARKSUITE_CLI_USER_ACCESS_TOKEN, so a reader
   #             never holds a refresh_token and can never break the writer's single-use refresh chain.
   writerHost = "zhifei-clawhouse";
-
-  # Deliberately `#!/bin/sh`, and free of any store path: this script runs in the
-  # window where /nix does not exist yet, so everything it names must live on the
-  # system or data volume.
-  bootSafeFish = pkgs.writeText "boot-safe-fish" ''
-    #!/bin/sh
-    # Wait for the real fish to appear instead of failing at it. See the
-    # installBootSafeShell activation below for why this exists.
-    FISH="/etc/profiles/per-user/${user}/bin/fish"
-    TIMEOUT=90
-
-    n=0
-    while [ ! -x "$FISH" ] && [ "$n" -lt "$TIMEOUT" ]; do
-    	sleep 1
-    	n=$((n + 1))
-    done
-
-    if [ -x "$FISH" ]; then
-    	[ "$n" -gt 0 ] && echo "(waited $n seconds for /nix to mount)" >&2
-    	exec "$FISH" "$@"
-    fi
-
-    echo "fish is still unavailable: /nix did not mount within $TIMEOUT seconds." >&2
-    echo "Check /var/log/determinate-nix-init.log to see how determinate-nixd fared." >&2
-    exec /bin/zsh "$@"
-  '';
 in
 {
   # macOS-specific home-manager config.
   # System-level settings (Finder, Dock, Homebrew) are in system/darwin.nix via nix-darwin.
-
-  # ---- container runtime ----
-  # macOS cannot run containers natively, so anything that needs one needs a
-  # Linux VM underneath. colima is the headless option: a plain CLI with no
-  # GUI app, no login item, and no licence terms — which is what a machine
-  # that is administered over ssh actually needs.
-  #
-  # Installing these only provides the commands. The VM is created on the
-  # first `colima start` (allocate CPU/memory/disk there, and mind that the
-  # disk is claimed up front on a machine that may not have much left).
-  # docker-client is the CLI alone — the daemon lives in colima's VM, and
-  # colima writes the docker context that points at it.
-  home.packages = with pkgs; [
-    colima
-    docker-client
-  ];
 
   # ---- lark-cli multi-machine token relay (via Bitwarden Secrets Manager) ----
   # Scripts deployed everywhere (harmless); the launchd agent + wrapper are hostname-gated below.
@@ -63,13 +21,13 @@ in
   home.file.".local/bin/lark-publish-tokens.sh" = { source = ./scripts/lark-publish-tokens.sh; executable = true; };
   home.file.".local/bin/lark-extract-ats.py"    = { source = ./scripts/lark-extract-ats.py;    executable = true; };
 
-  home.activation.ensureLarkSyncDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureLarkSyncDir" ''
+  home.activation.ensureLarkSyncDir = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     run mkdir -p "${home}/.config/lark-sync"
-  '');
+  '';
 
   # bws (Bitwarden Secrets Manager CLI): nixpkgs package fails to build, so fetch the prebuilt
   # binary to ~/.local/bin on first activation (idempotent). Needed by both readers and writer.
-  home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "installBws" ''
+  home.activation.installBws = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if [ ! -x "${home}/.local/bin/bws" ]; then
       run mkdir -p "${home}/.local/bin"
       arch="$(uname -m)"
@@ -89,7 +47,7 @@ in
         rm -rf "$tmp"
       fi
     fi
-  '');
+  '';
 
   # Hostname-gated role setup: pick writer vs reader and install the right launchd agent + wrapper.
   # Keyed on ComputerName, NOT LocalHostName: Bonjour silently appends "-2"/"-3" to LocalHostName on
@@ -97,7 +55,7 @@ in
   # (mac-mini LocalHostName drifted to "zhifei-clawhouse-3") → it was misdetected as a reader, so the
   # deploy booted out + deleted the refresh agent, killing the sole token-refresh chain until manual
   # repair. ComputerName is user-set, never auto-suffixed, and distinct across the macs → stable key.
-  home.activation.larkSyncRole = lib.hm.dag.entryAfter [ "linkGeneration" "installBws" "ensureLarkSyncDir" ] (resilient "larkSyncRole" ''
+  home.activation.larkSyncRole = lib.hm.dag.entryAfter [ "linkGeneration" "installBws" "ensureLarkSyncDir" ] ''
     BIN="${home}/.local/bin"
     LA="${home}/Library/LaunchAgents"
     CFG="${home}/.config/lark-sync"
@@ -143,8 +101,10 @@ in
 <plist version="1.0"><dict>
   <key>Label</key><string>local.lark-refresh</string>
   <key>ProgramArguments</key><array><string>/bin/bash</string><string>$BIN/lark-refresh.sh</string></array>
-  <!-- The official CLI decides when to refresh, including within five minutes of access-token
-       expiry. This timer requests a user API call and publishes the resulting access token. -->
+  <!-- 10min: lark-cli refreshes a token only once it has EXPIRED (no proactive/forced refresh), so
+       this interval bounds how long an expired token can sit in Bitwarden before the agent rotates
+       and republishes it. Rotation happens ~every 2h (on expiry), so a short interval adds no extra
+       token invalidations — it only shrinks the reader-visible expiry gap. -->
   <key>StartInterval</key><integer>600</integer>
   <key>StandardOutPath</key><string>$CFG/refresh-stdout.log</string>
   <key>StandardErrorPath</key><string>$CFG/refresh-stderr.log</string>
@@ -161,80 +121,5 @@ PLIST
       install_wrapper
       echo "[lark-sync] role=reader ($HOSTLOCAL)"
     fi
-  '');
-
-  # ---- boot-safe shell wrapper ----
-  # /nix is a FileVault-encrypted APFS volume marked `noauto` in /etc/fstab, so the
-  # system never mounts it on its own: determinate-nixd unlocks and mounts it after
-  # login, measured at 80-120s into boot. VS Code is restored by loginwindow well
-  # before that, so it resolves its configured shell while /nix is still absent and
-  # the restored terminal dies with "Path to shell executable ... does not exist".
-  # The same window swallows anything else that starts early and reaches into /nix,
-  # the login shell included, usually without saying so.
-  #
-  # The wrapper waits for the shell rather than failing at it, with a timeout and a
-  # zsh fallback so it can never hang a terminal. nix-darwin plays the same trick on
-  # its own activation daemon (`wait4path /nix/store && exec ...`).
-  #
-  # Two constraints shape the install:
-  #   - It must be a REAL FILE on the data volume. A home.file entry is a symlink
-  #     into the store, hence missing during exactly the window it exists to cover
-  #     — so it is copied out at activation, as installClaudeSettings does.
-  #   - Its basename must stay `fish`: VS Code keys terminal shell integration off
-  #     the executable name.
-  #
-  # To use it, point the editor's terminal profile at the path below. The directory
-  # sits outside PATH on purpose, so this shadows nothing.
-  home.activation.installBootSafeShell = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "installBootSafeShell" ''
-    # A dangling symlink on the way (this machine had ~/.local/libexec pointing at
-    # an uninstalled Homebrew formula) makes `mkdir -p` fail with "File exists",
-    # which aborts the whole activation. Clear anything that is not a directory.
-    for p in "${home}/.local/libexec" "${home}/.local/libexec/boot-safe"; do
-      if [ -e "$p" ] || [ -L "$p" ]; then
-        [ -d "$p" ] && [ ! -L "$p" ] || run rm -rf "$p"
-      fi
-    done
-    run mkdir -p "${home}/.local/libexec/boot-safe"
-    run cp -f ${bootSafeFish} "${home}/.local/libexec/boot-safe/fish"
-    run chmod 755 "${home}/.local/libexec/boot-safe/fish"
-  '');
-
-  # Claude Code's native updater replaces ~/.local/bin/claude with a version symlink.
-  # When the private switchboard is installed, keep the public entry point as a
-  # wrapper and preserve the native binary as claude-real. The switchboard owns
-  # account names and credentials; dotfiles only keeps the entry point stable.
-  home.file.".local/bin/claude-switchboard-shim-guard" = {
-    source = ./scripts/claude-switchboard-shim-guard.sh;
-    executable = true;
-  };
-  home.file."Library/LaunchAgents/local.claude-switchboard-shim-guard.plist".text = ''
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0"><dict>
-      <key>Label</key><string>local.claude-switchboard-shim-guard</string>
-      <key>ProgramArguments</key><array>
-        <string>/bin/bash</string>
-        <string>${home}/.local/bin/claude-switchboard-shim-guard</string>
-      </array>
-      <key>StartInterval</key><integer>1800</integer>
-      <key>RunAtLoad</key><true/>
-      <key>StandardOutPath</key><string>${home}/.claude-switchboard/shim-guard.out.log</string>
-      <key>StandardErrorPath</key><string>${home}/.claude-switchboard/shim-guard.err.log</string>
-    </dict></plist>
   '';
-
-  home.activation.installClaudeSwitchboardShim =
-    lib.hm.dag.entryAfter [ "installDevCLIs" "linkGeneration" ] (resilient "installClaudeSwitchboardShim" ''
-      BIN="${home}/.local/bin"
-      PLIST="${home}/Library/LaunchAgents/local.claude-switchboard-shim-guard.plist"
-      UIDNUM="$(/usr/bin/id -u)"
-      if [ -x "$BIN/claude-switchboard" ]; then
-        run "$BIN/claude-switchboard-shim-guard"
-        /bin/launchctl bootout "gui/$UIDNUM/local.claude-switchboard-shim-guard" 2>/dev/null || true
-        /bin/launchctl bootstrap "gui/$UIDNUM" "$PLIST" 2>/dev/null || true
-      else
-        /bin/launchctl bootout "gui/$UIDNUM/local.claude-switchboard-shim-guard" 2>/dev/null || true
-        run rm -f "$PLIST"
-      fi
-    '');
 }
