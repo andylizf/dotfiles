@@ -1,8 +1,8 @@
-{ lib, ... }:
+{ lib, resilient, ... }:
 {
   # Linux-specific tweaks can go here.
 
-  home.activation.ensureInotify = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+  home.activation.ensureInotify = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureInotify" ''
     SYSCTL_BIN=""
     if command -v sysctl >/dev/null 2>&1; then
       SYSCTL_BIN="$(command -v sysctl)"
@@ -50,5 +50,5 @@ EOF
         fi
       fi
     fi
-  '';
+  '');
 }

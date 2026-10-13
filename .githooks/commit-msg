@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Refuse a commit that changes an instruction file without recording whether it was reviewed.
+#
+# The review these files mandate produces nothing a later reader can look for: every
+# artefact of it is written by someone already following the rule, so a session that
+# skipped it leaves nothing visibly missing and the skip stays a private judgement.
+# The commit exists either way, so the trace goes here.
+#
+# Install:  git config core.hooksPath .githooks
+# Bypass:   git commit --no-verify   (deliberate, and visible in the absence of the line)
+
+set -euo pipefail
+msg_file="$1"
+
+guarded=$(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -E '(^|/)(CLAUDE|AGENTS)\.md$|(^|/)claude-skills/|(^|/)claude-config/' || true)
+
+[ -z "$guarded" ] && exit 0
+
+if grep -qiE '^Instruction-review:' "$msg_file"; then
+  exit 0
+fi
+
+cat >&2 <<EOF
+
+  This commit changes files that later sessions read back as rules:
+
+$(printf '    %s\n' $guarded)
+
+  Those files require the instruction-reviewer pass (see the writing-instructions
+  skill). Record the outcome in the commit message, on its own line:
+
+    Instruction-review: <what the review found, and what you rejected>
+    Instruction-review: none — <why not>
+
+  "The user told me what to write" is not a review. Their sign-off is on the
+  content; the review is about whether it works as an instruction, and they have
+  not read the file.
+
+EOF
+exit 1

@@ -8,6 +8,7 @@ let
     event="''${1:-}"
     export PATH="$HOME/.local/bin:$HOME/.nix-profile/bin:/etc/profiles/per-user/$(id -un)/bin:/run/current-system/sw/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
     export OMEM_MODE="''${OMEM_MODE:-full}"
+    export OMEM_MEMORY_MODE="''${OMEM_MEMORY_MODE:-index}"
     export OMEM_RUNNER=codex
     export OMEM_ROOT="''${OMEM_ROOT:-$HOME/omem-data}"
     export OMEM_TRANSCRIPTS="''${OMEM_TRANSCRIPTS:-$HOME/omem-transcripts}"
@@ -21,9 +22,12 @@ let
     fi
 
     case "$event" in
+      observe-write|publish-write) exec "$omem_bin" hook "$event" ;;
+      # Codex reads a Stop hook's exit 2 as "continue the turn with stderr", so an omem
+      # too old to know this event must come back as {} rather than as a prompt.
+      conflict-stop) "$omem_bin" hook conflict-stop || printf '{}\n' ;;
       session-start) exec "$omem_bin" hook session-start ;;
       recall) exec "$omem_bin" hook recall ;;
-      inject) exec "$omem_bin" hook inject ;;
       stash|extract)
         "$omem_bin" hook "$event"
         printf '{}\n'
@@ -81,17 +85,25 @@ in
     type = "command"
     command = "${omemManagedHook}/bin/omem-managed-hook recall"
     additionalContextLimit = 5000
-    statusMessage = "Checking shared omem"
 
+    # The publication sidecar is deliberately write-only and fail-open. It receives
+    # the exact apply_patch path set, never injects context, and never changes the host
+    # tool result. Recall/hybrid adds a separate explicit delivery profile; index mode
+    # has no all-tools PostToolUse callback.
     [[hooks.PostToolUse]]
-    matcher = ".*"
+    matcher = "apply_patch"
     [[hooks.PostToolUse.hooks]]
     type = "command"
-    command = "${omemManagedHook}/bin/omem-managed-hook inject"
-    additionalContextLimit = 5000
-    statusMessage = "Injecting shared omem recall"
+    command = "${omemManagedHook}/bin/omem-managed-hook publish-write"
 
     [[hooks.Stop]]
+    # Delivers the routed memory-conflict notice publish-write holds back under Codex:
+    # context from PostToolUse lands between a tool call and its output, which DeepSeek
+    # rejects on every later turn. A Stop block continues the turn after the output.
+    [[hooks.Stop.hooks]]
+    type = "command"
+    command = "${omemManagedHook}/bin/omem-managed-hook conflict-stop"
+
     [[hooks.Stop.hooks]]
     type = "command"
     command = "${omemManagedHook}/bin/omem-managed-hook stash"

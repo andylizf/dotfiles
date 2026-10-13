@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, resilient, ... }:
 let
   cfg = config.dotfiles;
 in
@@ -48,7 +48,7 @@ in
       mode = "0600";
     };
 
-    # GCP ADC for personal account (andylizf@gmail.com)
+    # GCP ADC for the personal Google account
     sops.secrets."gcloud/adc_personal" = {
       path = "${config.home.homeDirectory}/.config/gcloud/adc_personal.json";
       mode = "0600";
@@ -195,9 +195,23 @@ in
       mode = "0600";
     };
 
-    # Feishu bot webhook for lark token-refresh alerts (writer side / mac-mini only).
+    # Feishu bot webhook for lark token-refresh alerts (writer side only).
     sops.secrets."feishu/alert_webhook" = {
       path = "${config.home.homeDirectory}/.config/lark-sync/feishu-webhook";
+      mode = "0600";
+    };
+
+    # Site config for the lark-cli relay wrapper. Not secret in the cryptographic sense — these are
+    # client-side app ids and a hostname, not credentials — but they identify which organizations
+    # this account belongs to, and this repository is public. Encrypting them keeps the wrapper
+    # itself free of identifiers while still shipping the values to every machine automatically.
+    # profile_map: "<profile> <app_id>" per line. writer_host: the machine that refreshes tokens.
+    sops.secrets."lark/profile_map" = {
+      path = "${config.home.homeDirectory}/.config/lark-sync/profiles";
+      mode = "0600";
+    };
+    sops.secrets."lark/writer_host" = {
+      path = "${config.home.homeDirectory}/.config/lark-sync/writer-host";
       mode = "0600";
     };
 
@@ -213,7 +227,7 @@ in
       mode = "0600";
     };
     home.activation.sopsManualSync = lib.mkIf (sopsExec != null)
-      (lib.hm.dag.entryAfter [ "sops-nix" ] ''
+      (lib.hm.dag.entryAfter [ "sops-nix" ] (resilient "sopsManualSync" ''
         if ! (
           ${systemctlCheckSnippet}
         ); then
@@ -225,6 +239,6 @@ in
           fi
           ${sopsExec}
         fi
-      '');
+      ''));
   });
 }

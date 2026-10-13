@@ -30,6 +30,26 @@ HOST_NAME="${HOST_NAME:-unknown-host}"
 
 log() { printf "[setup] %s\n" "$*"; }
 
+configure_nix_github_token() {
+  local github_token access_tokens entry current_tokens
+  local -a existing_tokens
+  if command -v gh >/dev/null 2>&1 && github_token="$(gh auth token 2>/dev/null)" && [ -n "$github_token" ]; then
+    # Fetch credentials only for deployment; retain settings and other hosts.
+    current_tokens="$(nix config show access-tokens)"
+    access_tokens="github.com=$github_token"
+    if [ -n "$current_tokens" ]; then
+      read -r -a existing_tokens <<< "$current_tokens"
+      for entry in "${existing_tokens[@]}"; do
+        case "$entry" in
+          github.com=*) ;;
+          *) access_tokens+=" $entry" ;;
+        esac
+      done
+    fi
+    export NIX_CONFIG="${NIX_CONFIG:+$NIX_CONFIG$'\n'}access-tokens = $access_tokens"
+  fi
+}
+
 multiuser_source_env() {
   # Source multi-user Nix profile for both Linux and macOS if present
   local pf="/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
@@ -75,6 +95,14 @@ darwin_repair_if_needed() {
   if [ -x /nix/nix-installer ]; then
     sudo /nix/nix-installer repair || true
   fi
+}
+
+# system/darwin.nix enables nix-darwin's homebrew module, which aborts activation
+# when brew is absent, and nothing else installs it on a fresh Mac.
+ensure_homebrew() {
+  if [ -x /opt/homebrew/bin/brew ] || [ -x /usr/local/bin/brew ]; then return; fi
+  log "Installing Homebrew (required by the nix-darwin homebrew module)..."
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 }
 
 ensure_nix_features() {
@@ -138,7 +166,7 @@ activate_system_manager() {
     return
   fi
   log "Activating system-manager..."
-  (cd "$DOTFILES_DIR" && sudo env PATH="$PATH" nix run 'github:numtide/system-manager' -- switch --flake ".") || {
+  (cd "$DOTFILES_DIR" && sudo --preserve-env=NIX_CONFIG env PATH="$PATH" nix run 'github:numtide/system-manager' -- switch --flake ".") || {
     log "system-manager activation failed; skipping"
     return
   }
@@ -274,6 +302,7 @@ main() {
   log "Starting unified setup..."
   install_deps
   install_nix
+  configure_nix_github_token
 
   cd "$DOTFILES_DIR"
   # Detect OS target
@@ -333,8 +362,9 @@ EOF
   fi
 
   if [ "$OS_TARGET" = "darwin" ]; then
+    ensure_homebrew
     log "Activating nix-darwin (#default) with site override..."
-    sudo nix run nix-darwin -- switch \
+    sudo --preserve-env=NIX_CONFIG nix run nix-darwin -- switch \
       --flake ".#default" \
       --override-input site "path:$SITE_DIR"
   else
@@ -351,4 +381,6 @@ EOF
   register_login_shell
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi
