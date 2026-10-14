@@ -173,6 +173,13 @@ in
       path = "${config.home.homeDirectory}/.config/gws/credentials.json";
       mode = "0600";
     };
+    # The OAuth client's own file. gws reads the quota project from its project_id;
+    # without it gws bills the ADC's quota project, where this account may not call
+    # APIs, and every request comes back 403.
+    sops.secrets."gws/client_secret" = {
+      path = "${config.home.homeDirectory}/.config/gws/client_secret.json";
+      mode = "0600";
+    };
 
     # Cloudflare Access service token (CF-Access-Client-Id / Secret)
     sops.secrets."cloudflare/client_id" = {
