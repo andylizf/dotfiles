@@ -15,4 +15,14 @@ unset GOOGLE_WORKSPACE_CLI_CREDENTIALS_FILE
 export GOOGLE_WORKSPACE_CLI_CONFIG_DIR="$HOME/.config/gws-princeton"
 export GOOGLE_WORKSPACE_CLI_KEYRING_BACKEND=file
 
+# With no credential in the profile, gws silently falls back to gcloud's
+# Application Default Credentials and fails with that account's error (an
+# expired ADC token reads as `invalid_grant`), which looks like this profile's
+# own login has expired. Fail here instead, naming what is actually missing.
+dir="$GOOGLE_WORKSPACE_CLI_CONFIG_DIR"
+if [[ ! -f "$dir/credentials.enc" && ! -f "$dir/credentials.json" ]]; then
+  echo "gws-princeton: no credential in $dir (log in, or copy credentials.enc + .encryption_key + client_secret.json from a machine that has them)" >&2
+  exit 1
+fi
+
 exec gws "$@"
