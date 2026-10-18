@@ -21,7 +21,6 @@ let
     # Provider-selecting Claude variables stay out of the global shell. Set them
     # only on the command that deliberately uses that provider.
     ANTHROPIC_MODEL = "opus[1m]";
-    ANTHROPIC_DEFAULT_HAIKU_MODEL = "claude-sonnet-4-6";
 
     # gws encrypts its token cache with a key from either the OS keyring or a
     # local file. The keyring cannot be unlocked without a GUI session, so over
