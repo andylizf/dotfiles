@@ -290,10 +290,9 @@
 
   # Optional: set npm global prefix to ~/.local (safer PATH)
   home.activation.npmPrefix = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "npmPrefix" ''
-    if command -v npm >/dev/null 2>&1; then
-      npm config set prefix "$HOME/.local" --global || true
-      mkdir -p "$HOME/.local/bin"
-    fi
+    "${pkgs.nodejs_24}/bin/node" "${pkgs.nodejs_24}/bin/npm" \
+      config set prefix "$HOME/.local" --location=user
+    mkdir -p "$HOME/.local/bin"
   '');
 
   home.activation.ensureGcloudDir = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "ensureGcloudDir" ''
