@@ -137,7 +137,8 @@ in
     if [ "$HOSTLOCAL" = "${writerHost}" ]; then
       # ---- WRITER (mac-mini) ----
       remove_wrapper
-      cat > "$REFRESH_PLIST" <<PLIST
+      NEW_PLIST="$(/usr/bin/mktemp)"
+      cat > "$NEW_PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
@@ -151,9 +152,31 @@ in
   <key>EnvironmentVariables</key><dict><key>PATH</key><string>$AGENT_PATH</string></dict>
 </dict></plist>
 PLIST
-      /bin/launchctl bootout "gui/$UIDNUM/local.lark-refresh" 2>/dev/null || true
-      /bin/launchctl bootstrap "gui/$UIDNUM" "$REFRESH_PLIST" 2>/dev/null || true
-      echo "[lark-sync] role=writer ($HOSTLOCAL)"
+      # bootout kills a refresh that is running, and one killed mid-rotation spends the
+      # single-use refresh token, leaving no working chain. So reload only when the agent is
+      # missing or its plist changed, and then only once no refresh is running.
+      if /bin/launchctl print "gui/$UIDNUM/local.lark-refresh" >/dev/null 2>&1 \
+         && /usr/bin/cmp -s "$NEW_PLIST" "$REFRESH_PLIST"; then
+        rm -f "$NEW_PLIST"
+        echo "[lark-sync] role=writer ($HOSTLOCAL), agent unchanged, not reloaded"
+      else
+        state=""
+        for _ in {1..120}; do
+          state="$(/bin/launchctl print "gui/$UIDNUM/local.lark-refresh" 2>/dev/null \
+                   | /usr/bin/awk '/^\tstate = /{print $3; exit}')"
+          [ "$state" != running ] && break
+          /bin/sleep 1
+        done
+        if [ "$state" = running ]; then
+          rm -f "$NEW_PLIST"
+          echo "[lark-sync] role=writer ($HOSTLOCAL), refresh still running after 120s, agent left as it was"
+        else
+          mv -f "$NEW_PLIST" "$REFRESH_PLIST"
+          /bin/launchctl bootout "gui/$UIDNUM/local.lark-refresh" 2>/dev/null || true
+          /bin/launchctl bootstrap "gui/$UIDNUM" "$REFRESH_PLIST" 2>/dev/null || true
+          echo "[lark-sync] role=writer ($HOSTLOCAL), agent reloaded"
+        fi
+      fi
     else
       # ---- READER ----
       /bin/launchctl bootout "gui/$UIDNUM/local.lark-refresh" 2>/dev/null || true
