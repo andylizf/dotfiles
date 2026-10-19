@@ -474,13 +474,6 @@ PYPIRC
   home.file.".claude/agents/instruction-reviewer.md".source =
     ../claude-skills/writing-instructions/instruction-reviewer.agent.md;
 
-  # Reminder injected when a background subagent's report comes back (a
-  # <task-notification> turn); the hook entry itself is in the settings seed below.
-  home.file.".claude/hooks/subagent-report-reminder.sh" = {
-    source = ../claude-hooks/subagent-report-reminder.sh;
-    executable = true;
-  };
-
   # writing-reviewer: the same arrangement for drafts that go to a person. The
   # exhaustive half of the tell-scrub — the word table, the pattern list, the
   # frequency ceilings — lives in this agent rather than in the skill, because
@@ -519,17 +512,6 @@ PYPIRC
           "refreshInterval": 60
         },
         "hooks": {
-          "UserPromptSubmit": [
-            {
-              "hooks": [
-                {
-                  "type": "command",
-                  "command": "~/.claude/hooks/subagent-report-reminder.sh",
-                  "timeout": 5
-                }
-              ]
-            }
-          ],
           "SessionStart": [
             {
               "hooks": [
