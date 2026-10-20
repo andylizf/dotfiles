@@ -435,11 +435,10 @@ PYPIRC
   home.file.".agents/skills/claude".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/skills";
 
-  # writing-for-people is canonical here; the copy in the daily-agent repo stays
-  # for its unattended runs.
-  # Link the directory: Codex skips SKILL.md when the file itself is a symlink.
-  home.file.".claude/skills/writing-for-people".source =
-    ../claude-skills/writing-for-people;
+  # writing-for-people and its writing-reviewer agent live in a private repo,
+  # not here: they carry material about his own voice. Each machine links
+  # ~/.claude/skills/writing-for-people (the directory: Codex skips a symlinked
+  # SKILL.md) and ~/.claude/agents/writing-reviewer.md to that checkout by hand.
   # teach: how explanations should read. Linked as a whole directory so new
   # files under references/ need no change here. The tracked copy is
   # de-identified — this repo is public, so keep names, personal details, and
@@ -473,14 +472,6 @@ PYPIRC
   # will: with nothing but the file.
   home.file.".claude/agents/instruction-reviewer.md".source =
     ../claude-skills/writing-instructions/instruction-reviewer.agent.md;
-
-  # writing-reviewer: the same arrangement for drafts that go to a person. The
-  # exhaustive half of the tell-scrub — the word table, the pattern list, the
-  # frequency ceilings — lives in this agent rather than in the skill, because
-  # those only apply to finished text while the skill has to be in context
-  # before the first sentence is written.
-  home.file.".claude/agents/writing-reviewer.md".source =
-    ../claude-skills/writing-for-people/writing-reviewer.agent.md;
 
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
