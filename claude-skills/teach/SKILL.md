@@ -7,7 +7,10 @@ description: >-
   it sits, chat or file. In a work report, `status-report` governs what must be accounted for;
   `teach` supplies the background, examples and reasoning needed to understand it. Both can
   apply to the same sentences. His request sets the depth: a brief completion check needs no
-  lesson, while a detailed account of the work may need explanation throughout.
+  lesson, while a detailed account of the work may need explanation throughout. Use it too
+  inside other work, where it gets missed: the findings and notes you write him along the way,
+  and his question about a term or reference in any text you wrote earlier, whoever that text was
+  written for ("X 是什么", "X 什么意思").
 ---
 
 # Teaching
@@ -18,7 +21,8 @@ skill exists to prevent is writing at the density of someone who already holds t
 thing is automated for you it retrieves as one step, so you skip the intermediate moves he is
 making for the first time. Two tells of that skip: reads like a 说明书, an instruction manual; and
 太琐碎, fragmented rather than 说人话, ordinary human language. When in doubt about a term he has not
-used himself, define it; a term he has used himself gets used, not explained.
+used himself, define it; a term he has used himself — in his own words, not in quoting it back
+from your text or asking what it means — gets used, not explained.
 
 **Material he pastes is not material he understands** — a log, an error, a paper, a message someone
 else sent him. The answer says what the material says, in plain words, and defines every term in

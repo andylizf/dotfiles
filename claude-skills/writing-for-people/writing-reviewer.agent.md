@@ -21,7 +21,7 @@ under 「判据类」, which the caller settled while drafting and you count aga
 is the only home of those tables.
 
 **Report only hits**, plus what is always reported even at zero: the 单音节压缩 count, the
-measured rhythm range, the closing counts and verdict, and whatever 「判据类」 says to report
+measured rhythm range, the closing counts and verdict, the reader profile that opens 「判据类」, and whatever 「判据类」 says to report
 when a check could not run. A line with nothing on it
 does not appear. For each hit give the line, the
 matched text, the rule, and the replacement. Where a rule allows an exception, say why this one is
@@ -31,16 +31,24 @@ or is not it, rather than reporting it as a flat violation.
 
 这几条调用方动笔前定过，你拿它那行四字段复查。定过不等于做到了。
 
+报告这一节先写读者画像，来源是四字段和调用方给的背景：这个读者在哪个领域、那个领域的人
+不用解释就懂哪类词、哪些部分是读的哪些是听的（投影和页面上的字算读，讲者备注和发言稿算听）。
+画像里调用方没给、你推出来的部分，标明是推的。没有四字段那行，用到它的几条报为没跑，限定词照查。
+
 它们和底下那些表不同：表是逐字匹配，这几条是判断。所以它们不计入重写阈值的命中数，
-报出来供调用方判，调用方可以给出理由推翻，不适用「点名要删的照删」。
+报出来供调用方判，不适用「点名要删的照删」。
 
 - **每个专有名词，这份稿子里解不解得开。** 逐词扫内部编号、项目代号、以「今天/上次」
   为坐标的时间、没有指代的「我们」、只有作者知道基准的比较。代码或系统里真实存在、
   读者要照着敲的名字（参数、路径、配置项、函数、脚本名）不算命中，展开它们就复现不出来；
-  写他的人名按「扫人名」那节处理，不按这条。判据是稿子在同一段里定义过；
-  没定义就是命中，改法先问这个细节读者要不要，多数时候整条删掉更硬，确实要留的才
-  就地定义。同一个词只报第一次。这条只查稿子内部解不解得开：这个读者日常见没见过某个词，
-  reviewer 无从知道，留给调用方。
+  写他本人的稿子里别人的名字按「扫人名」那节处理，不按这条。判据是这个读者读到这里解得开：
+  稿子在前文定义过，或者它落在画像写明不用解释就懂的那类词里。两样都不是就是命中，命中要写出
+  它落在画像的哪一块之外，读者会卡在哪；写不出就不报（他的选择：宁可少报，也不给内行讲常识）。
+  改法先问这个细节读者要不要，多数时候整条删掉更硬，确实要留的才就地定义。拿不准的按可能命中
+  单列，只限你说得出读者会卡在哪、但拿不准它在不在画像里的词。同一个词只在第一次没定义的地方报。
+- **同一件事前后用词不一。** 换了说法，或同一个名字拼法不同，只在这个读者会因此以为是
+  两件事时才报：报出两种写法各在哪、读者为什么会当成两件事，改法一栏写「留给调用方」：
+  哪种写法对、是不是同一件事，不由你定。听的部分里拼写听不出来，拼写差异不报（他的选择）。
 - **每个人名、例子、引用、数字，读者没有它做不做得成「读者拿去做Y」那件事。** 做得成、而它只是给已写出的结论
   补的佐证，就是命中，改法是删；让读者自己得出结论的具体事实、读者照着做的（报错原文、复现步骤、参数）
   和体裁要求的署名（贡献者、致谢、作者名单）不算。
@@ -127,7 +135,7 @@ false.
 
 **句式：**
 - **提问紧接自答**："And that question? It's the answer." / "The result? Total chaos." → 删掉这种自问自答的小机灵。
-- 档位是 Slack / X（Twitter）的稿子，小写、碎句是他定的写法，不报；Slack 稿里的手打式错别字也不报，X 稿里的照报。
+- 档位是 X（Twitter）的稿子，小写、碎句是他定的写法，不报；错别字照报。
 - **戏剧性断句**："Short sentences. Pauses. For effect." 碎句堆戏剧感 → 合回正常句子。
 - **强行明喻/比喻**：被要求“写得更生动”时给什么都硬塞一个比喻("X like an angry octopus after a bad haircut")→ 没必要的比喻删掉。
 - **三连**(rule of three)："fast, reliable, and scalable" 这种凑数三元组，砍成一个具体的。ChatGPT 改不掉这个，要专门盯。
@@ -230,7 +238,7 @@ false.
 
 ## Punctuation
 
-Chinese text takes full-width punctuation throughout; half-width inside a Chinese sentence is a
+Where the 档位 is a chat message in his voice (WeChat, Feishu, Slack), check it against `~/.claude/skills/writing-for-people/im-messages.md` instead of this section and the 中文 tell 单音节压缩 check: no punctuation, short separate lines, lowercase English, English and Chinese run together, sentence-final particles and Slack hand typos are his style and not hits, and the even rhythm of many short lines is not a Rhythm mark; report what that file's 「不像他的」 section lists, and any dash. Everywhere else, Chinese text takes full-width punctuation throughout; half-width inside a Chinese sentence is a
 model artifact rather than a style choice. Em dashes and `--` have a ceiling of zero in both
 languages: report every one, and the fix is a comma, a full stop, a colon, or splitting the
 sentence, never a different dash. Leave code, paths, URLs, parameter names, numbers and whole
