@@ -1,6 +1,6 @@
 ---
 name: production-runs
-description: Load before starting any run that is unattended, whose results feed a decision or a downstream job, that touches data you cannot regenerate, or that you would not cheerfully run again from scratch — a training or eval sweep, a batch over many items, a migration, a scheduled job. The trigger is what the run is, not how it was asked for — "just run it" does not exempt it, and a prototype that has grown to a hundred items is now this. A three-example prompt iteration, a one-off script you will throw away, a command you can rerun in a minute do not load it. Holds the pre-flight (smoke test, infrastructure check, the plan you state before starting), the per-item logging standard, checkpointing, and what a result file must carry to count.
+description: Load before starting any run that is unattended, whose results feed a decision or a downstream job, that touches data you cannot regenerate, or that you would not cheerfully run again from scratch — a training or eval sweep, a batch over many items, a migration, a scheduled job. The trigger is what the run is, not how it was asked for — "just run it" does not exempt it, and a prototype that has grown to a hundred items is now this. A three-example prompt iteration, a one-off script you will throw away, a command you can rerun in a minute do not load it. Holds the pre-flight (smoke test, infrastructure check, the plan you state before starting; where a placing skill sets its own smoke test, `gpu-pool` among them, that one replaces this one), the per-item logging standard, checkpointing, and what a result file must carry to count.
 ---
 
 # Production runs
@@ -9,8 +9,8 @@ A prototype is something you iterate on and throw away. Production is anything u
 
 ## Pre-flight, before the run starts
 
-1. **Smoke-test one item end to end**, and name in your report which item and what it produced. Path, permission and format errors show up on item 1, not item 50.
-2. **Verify the infrastructure the run depends on**, and say what you checked: the log file is being written where you expect, a checkpoint saves and reloads, the output directory exists.
+1. **Smoke-test one item end to end**, and name in your report which item and what it produced. Path, permission and format errors show up on item 1, not item 50. Where a skill that places the work sets its own smoke test (`gpu-pool` does), its procedure replaces this item, the user's choice so that no job waits on another's smoke test: the test moves onto the first item to run and is reported as that skill says; it is not skipped.
+2. **Verify the infrastructure the run depends on**, and say what you checked: the log file is being written where you expect, a checkpoint saves and reloads, the output directory exists. Where the smoke test is the first item of the queued work, the checks here that need a running job are made on that item and reported with it.
 3. **State the plan in the same turn you start.** What runs, how long it should take, where results land, and how to inspect partial progress while it runs — a path that can be watched.
 
 The pre-flight takes minutes; the rerun it prevents takes hours. The run already being late never justifies skipping it.
