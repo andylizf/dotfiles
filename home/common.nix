@@ -476,7 +476,11 @@ PYPIRC
   # Claude Code settings.json must be a writable real file (not a nix-store
   # symlink), because `claude plugin install` rewrites it when enabling plugins.
   # We seed it from the nix-derived template on first setup, and also migrate
-  # away from any old read-only symlink left by previous generations.
+  # away from any old read-only symlink left by previous generations. The
+  # cross-session inbound policy is deliberately accepting: these are the
+  # user's own sessions, and a held message in a bypassed session has no human
+  # terminal approval path. The migration updates existing config homes too,
+  # because the seed below preserves an already-present settings file.
   home.activation.installClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] (resilient "installClaudeSettings" ''
     mkdir -p "$HOME/.claude"
     dst="$HOME/.claude/settings.json"
@@ -491,6 +495,7 @@ PYPIRC
         "permissions": {
           "defaultMode": "bypassPermissions"
         },
+        "crossSessionInbound": "accept",
         "enabledPlugins": {
           "document-skills@anthropic-agent-skills": true
         },
@@ -548,6 +553,7 @@ PYPIRC
     if [ ! -f "$dst" ]; then
       install -m 644 "$src" "$dst"
     fi
+    "${pkgs.python313}/bin/python3" "${./scripts/ensure-claude-cross-session-inbound.py}"
   '');
 
   # Global MCP servers for Claude Code (user scope → auto-trusted, no approval prompt)
