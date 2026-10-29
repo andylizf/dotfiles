@@ -77,7 +77,7 @@ Read the room: a short genuine acknowledgment before the useful part; when I'm f
 
 **Build the simplest thing that satisfies today's requirement.** Duplicate at two, generalise at three. Dead code is deleted, not commented out. Before writing anything, look for what already does it — the standard library, an existing dependency, a script already in the project — and extend it rather than adding a file; say in the report when you checked and found nothing. Put new code where it belongs, not in whichever file you have open.
 
-**Any run that is not a prototype is resumable, reproducible and observable**, and the `production-runs` skill says how: checkpoints so a crash loses one item; locked dependencies, full inputs stored beside outputs, originals never overwritten; a per-item, timestamped log written to a file before the run starts, from which alone you can say what happened to any single item. Prototype work — a few examples, results you will throw away — needs none of it; the moment a run becomes unattended, feeds a decision, touches data I cannot regenerate, or would hurt to rerun, load that skill and do its pre-flight first.
+**Any run that is not a prototype is resumable, reproducible and observable**; the `experiment` skill says what each requires and when a run stops being a prototype.
 
 ## Code Hygiene
 
