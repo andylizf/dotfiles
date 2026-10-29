@@ -78,7 +78,7 @@ alone.
 
 Dispatch the `instruction-reviewer` subagent, giving it the path, everything that changed since the last review, and what it replaced.
 
-Its report is evidence, not a verdict: act on what you agree with, and say what you rejected; passes end when one returns nothing you accept. A reviewer is a literal reader and will lengthen every rule toward covering its edge cases: where a fix grows a rule past a sentence, prefer the short rule.
+Its report is evidence, not a verdict: act on what you agree with, and say what you rejected; passes end when one returns nothing you accept. A reviewer is a literal reader and will lengthen every rule toward covering its edge cases. Before fixing a finding, ask whether the sentence can simply go; add a qualifier only where the misreading is certain and costly.
 
 [F18] You cannot find your own jargon by asking which words look hard: a term common in the text you were trained on reads as plain to you and to a subagent alike. Restating every term in plain words finds it instead — the reviewer's restatement pass does this, and on a file with no reviewer you run it yourself: a term that can only be restated by reusing it, or whose plain substitute changes the meaning, is defined where it is used or cut.
 
