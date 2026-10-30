@@ -435,26 +435,19 @@ PYPIRC
   home.file.".agents/skills/claude".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.claude/skills";
 
-  # writing-for-people and its writing-reviewer agent live in a private repo,
-  # not here: they carry material about his own voice. Each machine links
-  # ~/.claude/skills/writing-for-people (the directory: Codex skips a symlinked
-  # SKILL.md) and ~/.claude/agents/writing-reviewer.md to that checkout by hand.
-  # teach: how explanations should read. Linked as a whole directory so new
-  # files under references/ need no change here. The tracked copy is
-  # de-identified — this repo is public, so keep names, personal details, and
-  # verbatim user quotes out of it when editing.
-  home.file.".claude/skills/teach".source = ../claude-skills/teach;
+  # The writing skills (writing-core, writing-to-him, writing-for-people) and
+  # the writing-reviewer agent live in a private repo, not here: they carry
+  # material about his own voice. Each machine links ~/.claude/skills/<name>
+  # (the directory: Codex skips a symlinked SKILL.md) and
+  # ~/.claude/agents/writing-reviewer.md to that checkout by hand.
   # send-gate: the full approval rules for anything that reaches another
-  # human. Same de-identification rule as above. (personal-matters is
+  # human. The tracked copy is de-identified — this repo is public, so keep
+  # names, personal details, and verbatim user quotes out of it when
+  # editing. (personal-matters is
   # deliberately NOT here — it lives in a private repo, since health and
   # personal-life material does not belong in a public one.)
   home.file.".claude/skills/send-gate".source =
     ../claude-skills/send-gate;
-  # status-report: the shape of a report to him — anchor stamp, phenomenon
-  # before cause, decision decidable from the page. Same de-identification rule
-  # as above: the examples in it are constructed, never verbatim transcript.
-  home.file.".claude/skills/status-report".source =
-    ../claude-skills/status-report;
   # writing-instructions: which file a durable rule belongs in, the failures
   # that keep recurring in these files, and the subagent review to run before
   # saving one.
