@@ -19,20 +19,27 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
+
+    # gh alone comes from a newer nixpkgs: gh before 2.102 (go-gh before v2.16.1) writes its --cache entries in
+    # place, so concurrent gh processes sharing the cache read torn or interleaved responses.
+    nixpkgs-gh.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, nix-darwin, sops-nix, site, system-manager, flake-parts, ... }:
+  outputs = inputs@{ self, nixpkgs, nixpkgs-gh, home-manager, nix-darwin, sops-nix, site, system-manager, flake-parts, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [ "x86_64-linux" "aarch64-darwin" ];
 
       perSystem = { system, ... }: { };  # placeholders for future dev envs
 
       flake = let
+        ghOverlay = final: prev: { gh = nixpkgs-gh.legacyPackages.${prev.stdenv.hostPlatform.system}.gh; };
+
         mkHome = { system, extraModules ? [ ] }:
           home-manager.lib.homeManagerConfiguration {
             pkgs = import nixpkgs {
               inherit system;
               config.allowUnfree = true;
+              overlays = [ ghOverlay ];
             };
             modules = baseModules ++ extraModules ++ siteModules;
           };
@@ -63,6 +70,7 @@
               system.stateVersion = 6;
               system.primaryUser = darwinUser;
               nixpkgs.config.allowUnfree = true;
+              nixpkgs.overlays = [ ghOverlay ];
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               # Back up (instead of erroring on) any pre-existing unmanaged file at a managed path,
