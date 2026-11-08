@@ -116,27 +116,6 @@ let
     [ -f "$HOME/.config/anthropic/claude-oauth-token" ] && \
       export CLAUDE_CODE_OAUTH_TOKEN="$(tr -d "[:space:]" < "$HOME/.config/anthropic/claude-oauth-token")"'';
 
-  # Gemini: one file, two variables; the fallback must not clobber an existing one.
-  fishGemini = ''
-    if test -f ~/.config/gemini/token
-      set -l _gemini (string trim (cat ~/.config/gemini/token))
-      if test -n "$_gemini"
-        set -gx GOOGLE_API_KEY "$_gemini"
-        if not set -q GEMINI_API_KEY
-          set -gx GEMINI_API_KEY "$_gemini"
-        end
-      end
-    end'';
-  shGemini = ''
-    if [ -f "$HOME/.config/gemini/token" ]; then
-      _gemini="$(tr -d "[:space:]" < "$HOME/.config/gemini/token")"
-      if [ -n "$_gemini" ]; then
-        export GOOGLE_API_KEY="$_gemini"
-        [ -n "''${GEMINI_API_KEY:-}" ] || export GEMINI_API_KEY="$_gemini"
-      fi
-      unset _gemini
-    fi'';
-
   # Lambda Labs: 'default' -> LAMBDA_API_KEY, any other profile -> LAMBDA_API_KEY_<NAME>.
   fishLambda = ''
     for f in ~/.config/lambda/*
@@ -170,10 +149,10 @@ let
     unset f _p _v'';
 
   fishBody = concatStringsSep "\n\n" [
-    fishStatic fishTokens fishPaths fishClaudeToken fishGemini fishLambda
+    fishStatic fishTokens fishPaths fishClaudeToken fishLambda
   ];
   shBody = concatStringsSep "\n\n" [
-    shStatic shTokens shPaths shClaudeToken shGemini shLambda
+    shStatic shTokens shPaths shClaudeToken shLambda
   ];
 
 in {

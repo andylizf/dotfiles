@@ -82,12 +82,6 @@ in
       mode = "0600";
     };
 
-    # 7) Gemini API token (used for GOOGLE_API_KEY / GEMINI_API_KEY)
-    sops.secrets."tokens/gemini" = {
-      path = "${config.home.homeDirectory}/.config/gemini/token";
-      mode = "0600";
-    };
-
     # 8) Anthropic API key (used for ANTHROPIC_API_KEY)
     sops.secrets."tokens/claude" = {
       path = "${config.home.homeDirectory}/.config/anthropic/token";
