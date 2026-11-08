@@ -581,11 +581,6 @@ PYPIRC
     else
       echo "[dotfiles] Codex already present; skipping install"
     fi
-    if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/gemini" ]; then
-      "$NPM" i -g --force @google/gemini-cli --prefix "$HOME/.local" 2>&1 || true
-    else
-      echo "[dotfiles] Gemini already present; skipping install"
-    fi
     if [ "$force_update" = 1 ] || [ ! -x "$HOME/.local/bin/gws" ]; then
       "$NPM" i -g @googleworkspace/cli@latest --prefix "$HOME/.local" 2>&1 || true
     else
