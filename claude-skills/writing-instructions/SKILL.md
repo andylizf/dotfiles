@@ -21,16 +21,22 @@ Rules are read months later by a reader with none of this context — sometimes 
 read before the skill loads, so it carries everything that decides *whether* to load: the trigger,
 and every sentence that closes an exemption — that a one-line reply still counts, that being asked
 first changes nothing, that the commonest miss is the shape which does not feel like the work at
-all. The body is read after that decision and holds what to do once you are here. A trigger rule
-written into the body cannot fire: whoever needed it never got that far. **Descriptions reach a
+all. The body is read after that decision and holds everything to do once you are here, a file to
+read before starting included, named by path with the instruction to read it, because a reader who
+has loaded the skill follows the body, not the description. A trigger rule
+written into the body cannot fire: whoever needed it never got that far. A description stays under
+1,024 characters. Past some length the skill listing cuts it, and whatever sits past the cut never
+reaches the reader, so the trigger, the exemption-closing sentences and the name of any skill that
+fires on the same moment go first; where they do not fit, shorten each rather than dropping one or
+moving it to the body. **Descriptions reach a
 session two ways — a listing of all of them, and a per-turn push of the ones that look relevant to
 the task in hand — and they are the only place triggering is governed from.** A rule that must always hold lives in a skill only if the skill's description names the trigger in
 words that will be in front of the reader at the moment the rule applies; where no such description
 can be written, it is proposed for the global file. A stop — a line that makes the reader halt and ask, whatever it is called — is the exception: a stop
 written into a skill halts work only while that skill's procedure is running, so a halt wanted everywhere is proposed
 for the global file too. Where two skills you own would fire on the same moment, each description
-says which one's rules win there and names the other; a skill you cannot edit is named from yours
-alone.
+says which one's rules win there and names the other, and each body states the same ruling; a skill
+you cannot edit is named from yours alone.
 
 **[L3] A tool installed on every machine by the same provisioning step is not a machine fact**, however local it looks: how to drive it travels with the work, so it goes to the skill that work belongs to. Where one fact carries both, split it rather than filing the whole where its most obvious half points.
 
