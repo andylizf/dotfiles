@@ -9,6 +9,7 @@ token store to keep fresh. Deployed to `~/.local/bin/slack`.
 slack ls                                   workspaces
 slack inbox [-w <ws>] [-m N]               unread everywhere except muted conversations, mentions and DMs first
   [--include-muted] [--dms] [--mentions]   keep muted / only DMs and group DMs / only @mentions of you
+  unread replies in threads you follow are listed as `thread in <conversation>`, with `thread_ts` under --json
 slack channels <ws> [--all]                channels (--all includes ones you're not in)
 slack dms <ws>                             direct messages
 slack users <ws> [query]                   find people

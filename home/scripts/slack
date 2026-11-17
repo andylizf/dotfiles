@@ -657,7 +657,7 @@ def cmd_search(a, cache, cookie, as_json):
               f"{r['user']}: {clip(r['text'], 150)}")
 
 def cmd_inbox(a, cache, cookie, as_json):
-    """Everything unread and not muted, across every workspace."""
+    """Everything unread and not muted, across every workspace, unread thread replies included."""
     m = 0
     include_muted, dms_only, mentions_only = (f in a for f in ("--include-muted", "--dms", "--mentions"))
     a = [x for x in a if x not in ("--include-muted", "--dms", "--mentions")]
@@ -683,17 +683,33 @@ def cmd_inbox(a, cache, cookie, as_json):
                                   "mentions": c.get("mention_count", 0),
                                   "last_read": c.get("last_read")})
         th = r.get("threads", {}) or {}
-        if not items and (dms_only or mentions_only or not th.get("has_unreads")): return ws, []
+        if th.get("has_unreads") and not dms_only:
+            # Unread replies in followed threads never show in a conversation's own unread state.
+            thread_mentions = th.get("mention_count_by_channel") or {}
+            view = ws.api("subscriptions.thread.getView", limit=50)
+            for t in view.get("threads", []):
+                root = t.get("root_msg") or {}
+                ch = root.get("channel")
+                if not t.get("unread_replies") or not ch: continue
+                if ch in muted and not include_muted: continue
+                if mentions_only and not thread_mentions.get(ch): continue
+                items.append({"id": ch, "kind": "threads", "thread_ts": root.get("ts"),
+                              "mentions": thread_mentions.get(ch, 0),
+                              "replies": t["unread_replies"]})
+        if not items: return ws, []
         if items:
             byid = {c["id"]: c for c in ws.conversations()}
             for it in items:
                 conv = byid.get(it["id"], {"id": it["id"]})
                 it["name"] = ws.convname(conv)
-                if m:
+                if it["kind"] == "threads":
+                    it["name"] = f"thread in {it['name']}"
+                    if m: it["messages"] = it["replies"][-m:]
+                elif m:
                     h = ws.api("conversations.history", channel=it["id"],
                                limit=m, oldest=it.get("last_read") or 0)
                     it["messages"] = list(reversed(h.get("messages", [])))
-        rank = {"ims": 1, "mpims": 2, "channels": 3}
+        rank = {"ims": 1, "mpims": 2, "threads": 3, "channels": 4}
         items.sort(key=lambda i: (0 if i["mentions"] else 1,
                                   rank.get(i["kind"], 9), i.get("name") or ""))
         return ws, items
@@ -707,6 +723,7 @@ def cmd_inbox(a, cache, cookie, as_json):
                 out.append({"workspace": ws.domain, "team": ws.team,
                             "conversation": it.get("name"), "id": it["id"],
                             "kind": it["kind"], "mentions": it["mentions"],
+                            **({"thread_ts": it["thread_ts"]} if it.get("thread_ts") else {}),
                             "messages": [msg_json(ws, x)
                                          for x in it.get("messages", [])]})
         print(json.dumps(out, indent=2)); return
