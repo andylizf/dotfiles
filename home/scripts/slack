@@ -10,6 +10,7 @@ dependency at runtime. Pure stdlib; runs anywhere the cookie is present.
   slack setup                                extract the cookie (macOS desktop app)
   slack ls                                   list workspaces
   slack inbox [-w <ws>] [-m N]               unread across ALL workspaces, muted left out
+             [--include-muted] [--dms] [--mentions]   keep muted / only DMs / only @mentions
   slack channels <ws> [--all]                channels
   slack dms <ws>                             direct messages
   slack users <ws> [query]                   find people
@@ -658,6 +659,8 @@ def cmd_search(a, cache, cookie, as_json):
 def cmd_inbox(a, cache, cookie, as_json):
     """Everything unread and not muted, across every workspace."""
     m = 0
+    include_muted, dms_only, mentions_only = (f in a for f in ("--include-muted", "--dms", "--mentions"))
+    a = [x for x in a if x not in ("--include-muted", "--dms", "--mentions")]
     if "-m" in a:
         k = a.index("-m"); m = int(a[k + 1]); a = a[:k] + a[k + 2:]
     targets = (all_ws(cache, cookie) if "-w" not in a
@@ -671,15 +674,16 @@ def cmd_inbox(a, cache, cookie, as_json):
         muted = {cid for cid, p in notif.get("channels", {}).items() if p.get("muted")}
         muted |= set(filter(None, (prefs.get("muted_channels") or "").split(",")))
         items = []
-        for kind in ("channels", "ims", "mpims"):
+        for kind in ("ims", "mpims") if dms_only else ("channels", "ims", "mpims"):
             for c in r.get(kind, []):
-                if c["id"] in muted: continue
+                if c["id"] in muted and not include_muted: continue
+                if mentions_only and not c.get("mention_count"): continue
                 if c.get("has_unreads") or c.get("mention_count"):
                     items.append({"id": c["id"], "kind": kind,
                                   "mentions": c.get("mention_count", 0),
                                   "last_read": c.get("last_read")})
         th = r.get("threads", {}) or {}
-        if not items and not th.get("has_unreads"): return ws, []
+        if not items and (dms_only or mentions_only or not th.get("has_unreads")): return ws, []
         if items:
             byid = {c["id"]: c for c in ws.conversations()}
             for it in items:
