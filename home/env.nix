@@ -48,7 +48,6 @@ let
   # Absent file means the variable is simply not set.
   tokenFiles = {
     HF_TOKEN = "huggingface/token";
-    OPENAI_API_KEY = "openai/token";
     CF_ACCESS_CLIENT_ID = "cloudflare/client-id";
     CF_ACCESS_CLIENT_SECRET = "cloudflare/client-secret";
     CLOUDFLARE_API_TOKEN = "cloudflare/api-token";
