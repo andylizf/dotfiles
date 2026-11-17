@@ -9,7 +9,7 @@ dependency at runtime. Pure stdlib; runs anywhere the cookie is present.
 
   slack setup                                extract the cookie (macOS desktop app)
   slack ls                                   list workspaces
-  slack inbox [-w <ws>] [-m N]               unread across ALL workspaces
+  slack inbox [-w <ws>] [-m N]               unread across ALL workspaces, muted left out
   slack channels <ws> [--all]                channels
   slack dms <ws>                             direct messages
   slack users <ws> [query]                   find people
@@ -656,7 +656,7 @@ def cmd_search(a, cache, cookie, as_json):
               f"{r['user']}: {clip(r['text'], 150)}")
 
 def cmd_inbox(a, cache, cookie, as_json):
-    """Everything unread, across every workspace."""
+    """Everything unread and not muted, across every workspace."""
     m = 0
     if "-m" in a:
         k = a.index("-m"); m = int(a[k + 1]); a = a[:k] + a[k + 2:]
@@ -665,9 +665,15 @@ def cmd_inbox(a, cache, cookie, as_json):
     def one(ws):
         r = ws.api("client.counts", thread_counts_by_channel="true")
         if not r.get("ok"): return ws, []
+        # Muted conversations are left out, as the desktop app's unread view does.
+        prefs = ws.api("users.prefs.get").get("prefs", {})
+        notif = json.loads(prefs.get("all_notifications_prefs") or "{}")
+        muted = {cid for cid, p in notif.get("channels", {}).items() if p.get("muted")}
+        muted |= set(filter(None, (prefs.get("muted_channels") or "").split(",")))
         items = []
         for kind in ("channels", "ims", "mpims"):
             for c in r.get(kind, []):
+                if c["id"] in muted: continue
                 if c.get("has_unreads") or c.get("mention_count"):
                     items.append({"id": c["id"], "kind": kind,
                                   "mentions": c.get("mention_count", 0),

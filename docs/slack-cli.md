@@ -7,7 +7,7 @@ token store to keep fresh. Deployed to `~/.local/bin/slack`.
 
 ```
 slack ls                                   workspaces
-slack inbox [-w <ws>] [-m N]               unread everywhere, mentions and DMs first
+slack inbox [-w <ws>] [-m N]               unread everywhere except muted conversations, mentions and DMs first
 slack channels <ws> [--all]                channels (--all includes ones you're not in)
 slack dms <ws>                             direct messages
 slack users <ws> [query]                   find people
