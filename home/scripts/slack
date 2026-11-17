@@ -686,20 +686,31 @@ def cmd_inbox(a, cache, cookie, as_json):
         if th.get("has_unreads") and not dms_only:
             # Unread replies in followed threads never show in a conversation's own unread state.
             thread_mentions = th.get("mention_count_by_channel") or {}
-            view = ws.api("subscriptions.thread.getView", limit=50)
-            for t in view.get("threads", []):
-                root = t.get("root_msg") or {}
-                ch = root.get("channel")
-                if not t.get("unread_replies") or not ch: continue
-                if ch in muted and not include_muted: continue
-                if mentions_only and not thread_mentions.get(ch): continue
-                items.append({"id": ch, "kind": "threads", "thread_ts": root.get("ts"),
-                              "mentions": thread_mentions.get(ch, 0),
-                              "replies": t["unread_replies"]})
+            # Threads come newest reply first; page on until a page holds no unread one.
+            cursor = {}
+            while True:
+                view = ws.api("subscriptions.thread.getView", limit=50, **cursor)
+                if not view.get("ok"):
+                    items.append({"id": "", "kind": "error", "mentions": 0,
+                                  "name": f"threads unreadable: {view.get('error')}"})
+                    break
+                unread = [t for t in view.get("threads", []) if t.get("unread_replies")]
+                for t in unread:
+                    root = t.get("root_msg") or {}
+                    ch = root.get("channel")
+                    if not ch or (ch in muted and not include_muted): continue
+                    if mentions_only and not thread_mentions.get(ch): continue
+                    items.append({"id": ch, "kind": "threads", "thread_ts": root.get("ts"),
+                                  "mentions": thread_mentions.get(ch, 0),
+                                  "replies": t["unread_replies"]})
+                threads = view.get("threads") or []
+                if not unread or not view.get("has_more") or not threads: break
+                cursor = {"current_ts": (threads[-1].get("root_msg") or {}).get("latest_reply")}
         if not items: return ws, []
         if items:
             byid = {c["id"]: c for c in ws.conversations()}
             for it in items:
+                if it["kind"] == "error": continue
                 conv = byid.get(it["id"], {"id": it["id"]})
                 it["name"] = ws.convname(conv)
                 if it["kind"] == "threads":
@@ -709,7 +720,7 @@ def cmd_inbox(a, cache, cookie, as_json):
                     h = ws.api("conversations.history", channel=it["id"],
                                limit=m, oldest=it.get("last_read") or 0)
                     it["messages"] = list(reversed(h.get("messages", [])))
-        rank = {"ims": 1, "mpims": 2, "threads": 3, "channels": 4}
+        rank = {"error": 0, "ims": 1, "mpims": 2, "threads": 3, "channels": 4}
         items.sort(key=lambda i: (0 if i["mentions"] else 1,
                                   rank.get(i["kind"], 9), i.get("name") or ""))
         return ws, items
